@@ -1,3 +1,7 @@
+/*
+комментарии на русском временное решение
+*/
+
 #ifndef SRC_S21_VSPRINTF_
 #define SRC_S21_VSPRINTF_
 

@@ -1,3 +1,6 @@
+/*
+комментарии на русском временное решение
+*/
 #include "s21_vsprintf.h"
 
 int s21_vsprintf(char *str, const char *format, va_list args) {
