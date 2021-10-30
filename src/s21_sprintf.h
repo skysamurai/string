@@ -1,17 +1,18 @@
-#ifndef SRC_S21_VSPRINTF_
-#define SRC_S21_VSPRINTF_
+#ifndef SRC_S21_SPRINTF_
+#define SRC_S21_SPRINTF_
 
 #include "stdarg.h"
+#include "stdio.h"
 #include "string.h"
 
 /* sprintf flags */
 #define LEFT_ALIGMENT (1 << 0) /* выравние по левому краю */
 #define SHOW_SIGN (1 << 1) /* отображение '+/-' */
 #define REPLACE_SIGN_SPACE (1 << 2) /* замена знака '+' проблом */
-#define NUMBER_SYSTEM (1 << 3) /* отображение системы счисления */
+#define SHOW_NUMBER_SYSTEM (1 << 3) /* отображение системы счисления */
 #define ZERO_PADDING (1 << 4) /* заполнение пустого места пробелами */
 /* sprintf string format */
-#define SIGN (1 << 5) /* знак числа */
+#define SIGNED (1 << 5) /* может ли число быть знаковым */
 #define CAPITALIZE (1 << 6) /* вывод заглавными буквами */
 /* number size format */
 #define LONG 'l'
@@ -22,7 +23,7 @@
 
 #ifndef __S21_NULL
 #define __S21_NULL (void*)0
-#endif  // SRC_S21_VSPRINTF_
+#endif  // SRC_S21_SPRINTF_
 
 #ifdef __S21_WORDSIZE_8
 typedef unsigned long long s21_size_t;
@@ -42,9 +43,9 @@ struct format_info {
 };
 
 
-int s21_vsprintf(char *str, const char *format, va_list args);
-void number_to_char(char **str, unsigned long long number, struct format_info *info);
-
+int s21_sprintf(char *str, const char *format, va_list args);
+void int_number_to_char(char **str, unsigned long long int number, struct format_info *info);
+void real_number_to_char(char **str, long double number, struct format_info *info);
 
 void parse_format_flag(const char **format, struct format_info *info, va_list args);
 void parse_field_width(const char **format, struct format_info *info, va_list args);
@@ -61,6 +62,9 @@ int atoi_cursoring(const char **cursor);
 void put_char_cursoring(char **str, struct format_info *info, va_list args);
 void put_string_cursoring(char **str, struct format_info *info, va_list args);
 void put_pointer_cursoring(char **str, struct format_info *info, va_list args);
+void put_hex_number_cursoring(char **str, struct format_info *info, va_list args);
+void put_dec_number_cursoring(char **str, struct format_info *info, va_list args);
+void put_udec_number_cursoring(char **str, struct format_info *info, va_list args);
 void put_octo_number_cursoring(char **str, struct format_info *info, va_list args);
 
-#endif /* SRC_S21_VSPRINTF_ */
+#endif /* SRC_S21_SPRINTF_ */

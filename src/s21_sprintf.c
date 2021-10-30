@@ -1,6 +1,8 @@
-#include "s21_vsprintf.h"
 
-int s21_vsprintf(char *str, const char *format, va_list args) {
+
+#include "s21_sprintf.h"
+
+int s21_sprintf(char *str, const char *format, va_list args) {
 
   struct format_info info;
 
@@ -34,13 +36,14 @@ int s21_vsprintf(char *str, const char *format, va_list args) {
     } else if(*f_cursor == 'o') {
       put_octo_number_cursoring(&s_cursor, &info, args);
     } else if(*f_cursor == 'X') {
-
+      info.number_flags |= CAPITALIZE;
+      put_hex_number_cursoring(&s_cursor, &info, args);
     } else if(*f_cursor == 'x') {
-
+      put_hex_number_cursoring(&s_cursor, &info, args);
     } else if(*f_cursor == 'd' || *f_cursor == 'i') {
-
+      put_dec_number_cursoring(&s_cursor, &info, args);
     } else if(*f_cursor == 'u') {
-
+      put_udec_number_cursoring(&s_cursor, &info, args);
     } else if(*f_cursor == 'e') {
 
     } else if(*f_cursor == 'E') {
@@ -70,7 +73,7 @@ void parse_format_flag(const char **format, struct format_info *info, va_list ar
       info->number_flags |= REPLACE_SIGN_SPACE;
     }
     else if(**format == '#') {
-      info->number_flags |= NUMBER_SYSTEM;
+      info->number_flags |= SHOW_NUMBER_SYSTEM;
     }
     else if(**format == '0') {
       info->number_flags |= ZERO_PADDING;
@@ -187,20 +190,38 @@ void put_string_cursoring(char **str, struct format_info *info, va_list args) {
 
 void put_pointer_cursoring(char **str, struct format_info *info, va_list args) {
   info->number_system = 16;
-  info->number_flags |= NUMBER_SYSTEM;
-  number_to_char(str, (unsigned long long) va_arg(args, void *), info);
+  info->number_flags |= SHOW_NUMBER_SYSTEM;
+  info->number_flags |= SIGNED;
+  int_number_to_char(str, (unsigned long long) va_arg(args, void *), info);
+}
+
+void put_hex_number_cursoring(char **str, struct format_info *info, va_list args) {
+  info->number_system = 16;
+  int_number_to_char(str, (unsigned long long) va_arg(args, void *), info);
+}
+
+void put_dec_number_cursoring(char **str, struct format_info *info, va_list args) {
+  info->number_system = 10;
+  info->number_flags |= SIGNED;
+  int_number_to_char(str, (unsigned long long) va_arg(args, void *), info);
+}
+
+void put_udec_number_cursoring(char **str, struct format_info *info, va_list args) {
+  info->number_system = 10;
+  info->number_flags &= ~SIGNED;
+  int_number_to_char(str, (unsigned long long) va_arg(args, void *), info);
 }
 
 void put_octo_number_cursoring(char **str, struct format_info *info, va_list args) {
   info->number_system = 8;
-  info->number_flags |= NUMBER_SYSTEM;
-  number_to_char(str, (unsigned long long) va_arg(args, void *), info);
+  int_number_to_char(str, (unsigned long long) va_arg(args, void *), info);
 }
 
-void number_to_char(char **str, unsigned long long number, struct format_info *info) {
+void int_number_to_char(char **str, unsigned long long int number, struct format_info *info) {
+  int signed_number = (signed long long int)number;
   char chr;
   char sign;
-  char tmp[65];
+  char tmp[64];
   const char *digits_template; /* numbers from 0 to Z */
   int i;
 
@@ -222,25 +243,28 @@ void number_to_char(char **str, unsigned long long number, struct format_info *i
 
   sign = '\0';
 
-  if(info->number_flags & SHOW_SIGN) {
-    if ((signed long long)number < 0) {
+  /* get sign of number */
+  if(info->number_flags & SIGNED) {
+    if((signed)number < 0) {
       sign = '-';
-      number = - (signed long long)number;
+      number = - (signed)number;
       info->field_width--;
-    } else if (info->number_flags & SHOW_SIGN ) {
+    } else if(info->number_flags & SHOW_SIGN ) {
       sign = '+';
       info->field_width--;
-    } else if (info->number_flags & REPLACE_SIGN_SPACE) {
+    } else if(info->number_flags & REPLACE_SIGN_SPACE) {
       sign = ' ';
       info->field_width--;
     }
   }
 
-  if(info->number_flags & NUMBER_SYSTEM) {
+  /* In the hexadecimal number system 
+  two characters are assigned to "0x" */
+  if(info->number_flags & SHOW_NUMBER_SYSTEM) {
     if (info->number_system == 16) {
-        info->field_width -= 2;
-    } else if (info->number_system == 8) {
-        info->field_width--;
+      info->field_width -= 2;
+    } else if(info->number_system == 8) {
+      info->field_width -= 1;
     }
   }
 
@@ -258,7 +282,7 @@ void number_to_char(char **str, unsigned long long number, struct format_info *i
 
   info->field_width -= info->precision;
 
-  if(!(info->number_flags  & (ZERO_PADDING | LEFT_ALIGMENT))) {
+  if(!(info->number_flags & (ZERO_PADDING | LEFT_ALIGMENT))) {
     while(info->field_width-- > 0) {
       *(*str)++ = ' ';
     }
@@ -268,12 +292,12 @@ void number_to_char(char **str, unsigned long long number, struct format_info *i
     *(*str)++ = sign;
   }
 
-  if(info->number_flags & NUMBER_SYSTEM) {
-    if(info->number_system == 8) {
-      *(*str)++ = '0';
-    } else if (info->number_system==16) {
+  if(info->number_flags & SHOW_NUMBER_SYSTEM) {
+    if (info->number_system == 16) {
       *(*str)++ = '0';
       *(*str)++ = digits_template[33];
+    } else if (info->number_system == 8) {
+      *(*str)++ = '0';
     }
   }
 
@@ -293,4 +317,12 @@ void number_to_char(char **str, unsigned long long number, struct format_info *i
 
   while (info->field_width-- > 0)
     *(*str)++ = ' ';
+}
+
+void real_number_to_char(char **str, long double number, struct format_info *info) {
+  char chr;
+  char sign;
+  char tmp[64];
+  char digits[] = "0123456789";
+  
 }
