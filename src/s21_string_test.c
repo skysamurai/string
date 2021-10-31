@@ -10,7 +10,7 @@ void s21_strcpy_test();
 void s21_strlen_test();
 
 int main(void) {
-    printf("==========NEW_RUN=============\n\n");
+    printf("==========NEW_RUN============1\n\n");
     s21_strcpy_test();
     s21_strlen_test();
 }

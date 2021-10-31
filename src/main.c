@@ -25,7 +25,7 @@ return flag;
 }
 
 size_t s21_strlen(const char *string) {
-    size_t i = 0;
-    while (string[i] != 0) ++i;
-return i;
+    size_t j = 0;
+    while (string[j] != 0) ++j;
+return j;
 }
