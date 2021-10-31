@@ -23,3 +23,9 @@ int s21_strcmp(const char *string, const char *string1) {
     }
 return flag;
 }
+
+size_t s21_strlen(const char *string) {
+    size_t i = 0;
+    while (string[i] != 0) ++i;
+return i;
+}
