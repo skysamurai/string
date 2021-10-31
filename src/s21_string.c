@@ -9,15 +9,21 @@
 
 
 
-// char *strncat(char *dest, const char *src, size_t n) 
+ 
+ 
+//  char *strncat(char *dest, const char *src, size_t n)
 
 
 
+// char *s21_strchr(const char *str, int c) 
 
+// {
+//      for (; *str != '\0'; ++str)
+//   if (*str == c)
+//     return (char *) str;
 
-// char *strchr(const char *str, int c) 
-
-
+// return NULL;
+// }
 
 
 
