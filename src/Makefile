@@ -1,19 +1,20 @@
 COMPILLER = gcc
-FLAG = -Werror -Wall -Wextra
 FILE = main.c
 
-all: clean cpplint cppcheck build
+all: clean cpplint build run
 
-biuld: clean
-	${COMPILLER} ${FLAG} ${FILE} -o main.o
+build: clean
+	${COMPILLER} *.c -o main.o
 
 cpplint:
 	cp ../materials/linters/CPPLINT.cfg CPPLINT.cfg
 	python3 ../materials/linters/cpplint.py CPPLINT.cfg ${FILE}
 	rm -rf CPPLINT.cfg
+run:
+	./main.o
 
-cppcheck:
-	cppcheck --enable=all --suppress=missingIncludeSystem ${FILE}
+# cppcheck:
+# 	cppcheck --enable=all --suppress=missingIncludeSystem ${FILE}
 
 clean:
 	rm -rf *.o
