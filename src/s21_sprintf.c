@@ -1,26 +1,23 @@
-
-
 #include "s21_sprintf.h"
 
 int s21_sprintf(char *str, const char *format, va_list args) {
 
   struct format_info info;
 
-  char* buf_string;
   char *s_cursor = str;
   const char *f_cursor = format;
 
-  for(s_cursor, f_cursor; *f_cursor != '\0'; ++f_cursor) {
+  for(; *f_cursor != '\0'; ++f_cursor) {
 
     if(*f_cursor != '%') {
       *s_cursor++ = *f_cursor;
       continue;
     }
 
-    parse_format_flag(&f_cursor, &info, args);
+    parse_format_flag(&f_cursor, &info);
     parse_field_width(&f_cursor, &info, args);
     parse_precision(&f_cursor, &info, args);
-    parse_qualifier(&f_cursor, &info, args);
+    parse_qualifier(&f_cursor, &info);
 
     info.number_system = 10;
     if(*f_cursor == 'c') {
@@ -30,7 +27,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
     } else if(*f_cursor == 'p') {
       put_pointer_cursoring(&s_cursor, &info, args);
     } else if(*f_cursor == 'n') {
-      write_count_writen_char(s_cursor - str, &info, args);
+      write_count_recorded_char(s_cursor - str, &info, args);
     } else if(*f_cursor == '%') {
       *s_cursor++ = '%';
     } else if(*f_cursor == 'o') {
@@ -45,7 +42,8 @@ int s21_sprintf(char *str, const char *format, va_list args) {
     } else if(*f_cursor == 'u') {
       put_udec_number_cursoring(&s_cursor, &info, args);
     } else if(*f_cursor == 'e') {
-
+      info.number_flags |= EXPONENT;
+      real_number_to_char(&s_cursor, va_arg(args, double), &info);
     } else if(*f_cursor == 'E') {
 
     } else if(*f_cursor == 'g' || *f_cursor == 'G') {
@@ -58,7 +56,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
   return s_cursor - str;
 }
 
-void parse_format_flag(const char **format, struct format_info *info, va_list args) {
+void parse_format_flag(const char **format, struct format_info *info) {
   int is_found = 1;
   info->number_flags = 0;
   while(**format && is_found) {
@@ -113,7 +111,7 @@ void parse_precision(const char **format, struct format_info *info, va_list args
   }
 }
 
-void parse_qualifier(const char **format, struct format_info *info, va_list args) {
+void parse_qualifier(const char **format, struct format_info *info) {
   info->qualifier = -1;
   if(**format == 'l' && *(*format + 1) == 'l') {
     info->qualifier = LONG_LONG;
@@ -130,7 +128,7 @@ void parse_qualifier(const char **format, struct format_info *info, va_list args
   }
 }
 
-void write_count_writen_char(char element_count, struct format_info *info, va_list args) {
+void write_count_recorded_char(char element_count, struct format_info *info, va_list args) {
   void *number = va_arg(args, void *);
   if(info->qualifier == LONG_LONG) {
     *((long long *)number) = (long long)(element_count);
@@ -148,7 +146,7 @@ int is_digit(char chr) {
 }
 
 int is_hexdec_digit(char chr) {
-  return is_digit(chr) || (chr >= 'a') && (chr <= 'f') || (chr >= 'A') && (chr <= 'F');
+  return ((is_digit(chr)) || ((chr >= 'a') && (chr <= 'f')) || ((chr >= 'A') && (chr <= 'F')));
 }
 
 int atoi_cursoring(const char **cursor) {
@@ -218,7 +216,6 @@ void put_octo_number_cursoring(char **str, struct format_info *info, va_list arg
 }
 
 void int_number_to_char(char **str, unsigned long long int number, struct format_info *info) {
-  int signed_number = (signed long long int)number;
   char chr;
   char sign;
   char tmp[64];
@@ -240,10 +237,9 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
   }
 
   chr = (info->number_flags & ZERO_PADDING) ? '0' : ' ';
-
   sign = '\0';
 
-  /* get sign of number */
+  /* get the sign of a number */
   if(info->number_flags & SIGNED) {
     if((signed)number < 0) {
       sign = '-';
@@ -258,8 +254,9 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
     }
   }
 
-  /* In the hexadecimal number system 
-  two characters are assigned to "0x" */
+  /* In the 16 number system 
+  two characters are assigned to "0x",
+  in 8 number system to 0 */
   if(info->number_flags & SHOW_NUMBER_SYSTEM) {
     if (info->number_system == 16) {
       info->field_width -= 2;
@@ -268,6 +265,7 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
     }
   }
 
+  /* put the number int the buffer */
   i = 0;
   if (number == 0)
     tmp[i++]='0';
@@ -279,7 +277,6 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
   if(i > info->precision) {
     info->precision = i;
   }
-
   info->field_width -= info->precision;
 
   if(!(info->number_flags & (ZERO_PADDING | LEFT_ALIGMENT))) {
@@ -319,10 +316,59 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
     *(*str)++ = ' ';
 }
 
-void real_number_to_char(char **str, long double number, struct format_info *info) {
+void real_number_to_char(char **str, double number, struct format_info *info) {
+  int exponent_size;
   char chr;
   char sign;
   char tmp[64];
-  char digits[] = "0123456789";
-  
+
+
+  chr = (info->number_flags & ZERO_PADDING) ? '0' : ' ';
+
+  sign = '\0';
+  if(number < 0) {
+    sign = '-';
+    info->field_width--;
+  } else if(info->number_flags & SHOW_SIGN) {
+    sign = '+';
+    info->field_width--;
+  } else if(info->number_flags & REPLACE_SIGN_SPACE) {
+    sign = ' ';
+    info->field_width--;
+  }
+
+  if(info->number_flags & LEFT_ALIGMENT) {
+    info->number_flags &= ~ZERO_PADDING;
+  }
+
+  if(info->number_flags & (EXPONENT | FLOAT)) {
+    if(info->precision < 0) {
+      info->field_width -= info->precision;
+    } else {
+      info->field_width -= 6;
+    }
+  } else {
+    if(info->precision < 0) {
+      info->field_width -= info->precision;
+    } else {
+      
+    }
+  }
+
+  /* calculate exponent size */
+  if(info->number_flags & EXPONENT) {
+    exponent_size = 0;
+    while((number > 0 ? (signed)number : -(signed)number) / 10 == 0) {
+      number *= 10;
+      --exponent_size;
+    }
+    while((number > 0 ? (signed)number : -(signed)number) / 10 > 0) {
+      number /= 10;
+      ++exponent_size;
+    }
+
+    if(exponent_size > 99) {
+
+    }
+  }
 }

@@ -14,6 +14,8 @@
 /* sprintf string format */
 #define SIGNED (1 << 5) /* может ли число быть знаковым */
 #define CAPITALIZE (1 << 6) /* вывод заглавными буквами */
+#define EXPONENT (1<< 7) /* вывод в экспоненциальной */
+#define FLOAT (1 << 8) /* float тип */
 /* number size format */
 #define LONG 'l'
 #define SHORT 'h'
@@ -22,8 +24,8 @@
 
 
 #ifndef __S21_NULL
-#define __S21_NULL (void*)0
-#endif  // SRC_S21_SPRINTF_
+#define S21_NULL (void*)0
+#endif  // __S21_NULL
 
 #ifdef __S21_WORDSIZE_8
 typedef unsigned long long s21_size_t;
@@ -32,10 +34,9 @@ typedef unsigned long long s21_size_t;
 typedef unsigned long s21_size_t;
 #endif
 
-typedef unsigned char s21_byte_t;
 
 struct format_info {
-    s21_byte_t number_flags;    /* флаги для обработки числа */
+    int number_flags;    /* флаги для обработки числа */
     int field_width;            /* минимальная ширина вывода поля */
     int precision;              /* точность числа */
     int qualifier;              /* размерность */
@@ -45,13 +46,13 @@ struct format_info {
 
 int s21_sprintf(char *str, const char *format, va_list args);
 void int_number_to_char(char **str, unsigned long long int number, struct format_info *info);
-void real_number_to_char(char **str, long double number, struct format_info *info);
+void real_number_to_char(char **str, double number, struct format_info *info);
 
-void parse_format_flag(const char **format, struct format_info *info, va_list args);
+void parse_format_flag(const char **format, struct format_info *info);
 void parse_field_width(const char **format, struct format_info *info, va_list args);
 void parse_precision(const char **format, struct format_info *info, va_list args);
-void parse_qualifier(const char **format, struct format_info *info, va_list args);
-void write_count_writen_char(char element_count, struct format_info *info, va_list args);
+void parse_qualifier(const char **format, struct format_info *info);
+void write_count_recorded_char(char element_count, struct format_info *info, va_list args);
 
 
 int is_digit(char chr);

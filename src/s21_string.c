@@ -1,5 +1,6 @@
 #include "s21_string.h"
 
+
 int s21_wrapper_sprintf(char *str, char *format, ...) {
   va_list args;
   int changes_count;
