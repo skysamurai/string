@@ -10,6 +10,7 @@ void s21_strcmp_test();
 void s21_strncmp_test();
 void s21_strcpy_test();
 void s21_strncpy_test();
+void s21_strcspn_test();
 void s21_strlen_test();
 
 
@@ -22,6 +23,8 @@ int main(void) {
     s21_strcpy_test();
     printf("\n==========strNcpy============-\n");
     s21_strncpy_test();
+    printf("\n==========!strcspn!============-\n");
+    s21_strcspn_test();
     printf("\n==========strlen============-\n");
     s21_strlen_test();
 }
@@ -98,6 +101,26 @@ void s21_strncpy_test() {
             } else {
                 printf("strNcpy FAIL\n");
                 }
+    }
+}
+
+void s21_strcspn_test() {
+    char string_1[3][30] = {{"abc123"},
+                            {"------\0abс"},
+                            {"++0\0"}};
+    char string_2[3][30] = {{"0123456789"},
+                            {"0123456789"},
+                            {"012345 \0789"}};
+    int rezult[3] = {3,6,2};
+    for (size_t i = 0; i < 3; ++i) {
+        printf("%s ", string_1[i]);
+        printf("%s ", string_2[i]);
+        printf(" %i ", s21_strcspn(string_1[i], string_2[i]));
+        if (s21_strcspn(string_1[i], string_2[i]) == rezult[i]) {
+                printf("strNcpy SUCCESS\n");
+            } else {
+                printf("strNcpy FAIL\n");
+            }
     }
 }
 
