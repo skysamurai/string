@@ -6,7 +6,6 @@ int s21_strcmp(const char *str1, const char *str2) {
     int i = 0;
     int flag = 0;
     while ((flag != -1) && (str1[i] != '\0') && ((str2[i] != '\0'))) {
-      printf("%c %c ", str1[i], str2[i]);
         if (str1[i] != str2[i])
             flag = -1;
         else
@@ -19,7 +18,7 @@ int s21_strncmp(const char *str1, const char *str2, size_t n) {
     int i = 0;
     int flag = 0;
     while ((flag != -1) && (i != n) && ((str2[i] != '\0'))) {
-      printf("%c %c ", str1[i], str2[i]);
+      // printf("%c %c ", str1[i], str2[i]);
         if (str1[i] != str2[i])
             flag = -1;
         else
