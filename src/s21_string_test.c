@@ -6,16 +6,42 @@
 // TEST C11 FILE
 
 void s21_strcmp_test();
-void s21_strcpy_test();
-void s21_strlen_test();
+// 10 - 15 tests
 void s21_strncmp_test();
+void s21_strcpy_test();
+void s21_strncpy_test();
+void s21_strlen_test();
+
+
 
 int main(void) {
     printf("==========NEW_RUN============-\n\n");
-    s21_strcpy_test();
-    s21_strlen_test();
     printf("\n==========strNcmp============-\n");
     s21_strncmp_test();
+    printf("\n==========strcpy============-\n");
+    s21_strcpy_test();
+    printf("\n==========strNcpy============-\n");
+    s21_strncpy_test();
+    printf("\n==========strlen============-\n");
+    s21_strlen_test();
+}
+
+void s21_strcmp_test() {
+    char string_test_1[3][30] = {{"Abcd12345#"},
+                                      {"1234\0abс"},
+                                      {"1234abc\0"}};
+    char string_out_1[3][30] = {{"Abcd12345#"},
+                                     {"1234\0abс"},
+                                     {"1234abc\0"}};
+    for (size_t i = 0; i < 3; ++i) {
+            printf("%s ", string_test_1[i]);
+            printf("%s ", string_out_1[i]);
+            if (s21_strcmp(string_test_1[i], string_out_1[i]) != -1) {
+                printf("SUCCESS\n");
+            } else {
+                printf("FAIL\n");
+                }
+    }
 }
 
 void s21_strncmp_test() {
@@ -30,24 +56,6 @@ void s21_strncmp_test() {
             printf("%s ", string_test_1[i]);
             printf("%s ", string_out_1[i]);
             if (s21_strncmp(string_test_1[i], string_out_1[i], n) != -1) {
-                printf("SUCCESS\n");
-            } else {
-                printf("FAIL\n");
-                }
-    }
-}
-
-void s21_strcmp_test() {
-    char string_test_1[3][30] = {{"Abcd12345#"},
-                                      {"1234\0abс"},
-                                      {"1234abc\0"}};
-    char string_out_1[3][30] = {{"Abcd12345#"},
-                                     {"1234\0abс"},
-                                     {"1234abc\0"}};
-    for (size_t i = 0; i < 3; ++i) {
-            printf("%s ", string_test_1[i]);
-            printf("%s ", string_out_1[i]);
-            if (s21_strcmp(string_test_1[i], string_out_1[i]) != -1) {
                 printf("SUCCESS\n");
             } else {
                 printf("FAIL\n");
@@ -70,6 +78,25 @@ void s21_strcpy_test() {
                 printf("SUCCESS\n");
             } else {
                 printf("FAIL\n");
+                }
+    }
+}
+
+void s21_strncpy_test() {
+    char string_test_1[3][30] = {{"\0"},
+                                      {""},
+                                      {"12"}};
+    char string_out_1[3][30] = {{"Abcd12345#"},
+                                     {"1234\0abс"},
+                                     {"1234abc\0"}};
+    for (size_t i = 0; i < 3; ++i) {
+        printf("%s ", string_out_1[i]);
+        s21_strncpy(string_out_1[i], string_test_1[i], 3);
+        printf("%s ", string_out_1[i]);
+        if (s21_strcmp(string_test_1[i], string_out_1[i]) != -1) {
+                printf("strNcpy SUCCESS\n");
+            } else {
+                printf("strNcpyFAIL\n");
                 }
     }
 }
