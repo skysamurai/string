@@ -117,12 +117,11 @@ char *s21_strpbrk(const char *str1, const char *str2) {
     return returnVal;
 }
 
-
 void *s21_trim(const char *src, const char *trim_chars) {
     int i = 0, j = s21_strlen(src);
     char tp[2] = {*(char*)(src + i), '\0'};
     while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
-         i++;
+        i++;
         tp[0] = *(char*)(src + i);
     }
     tp[0] = *(char*)(src + j - 1);
@@ -133,4 +132,17 @@ void *s21_trim(const char *src, const char *trim_chars) {
     void* temp = malloc((j - i) * sizeof(char)); 
     s21_memcpy(temp, (char*)(src + i), j - i + 1);
     return temp;
+}
+
+char *s21_strstr(const char *haystack, const char *needle) {
+    int i = 0, j = 0;
+    while (needle[j] != haystack[i]) {
+        i++;
+    }
+    int k = i;
+    while (needle[j] == haystack[k]) {
+        j++;
+        k++;
+    }
+    return (char*)haystack + i;
 }

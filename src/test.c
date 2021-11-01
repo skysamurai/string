@@ -6,8 +6,8 @@
 int main(void) {
 
    // Исходный массив
-   char src[22]="     Hello World-----\0";
-   char new_src[5]="* \'-\0";
+   char src[255]="Hello me";
+   char new_src[255]="llo";
  
 /*    // Заполняем массив символом ‘1’
    memset (src, 'a', 10);
@@ -55,16 +55,11 @@ int main(void) {
 
    printf ("src2: %s\n", new_src);
 
-   char* trim = (char*)s21_trim(src, new_src);
+   char* strstr = (char*)s21_strstr(src, new_src);
 
-   printf ("trim: -%s-\n",trim);
+   printf ("s21_strstr: -%s-\n", strstr);
 
    printf ("src: %s\n", src);
 
    printf ("src2: %s\n", new_src);
-
-   printf ("src: %s\n", src);
-
-   free(trim);
-
 }

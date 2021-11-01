@@ -24,11 +24,17 @@ s21_string.o:
 s21_string.a: s21_string.o
 	ar rcs libs21_string.a s21_string.o
 	
-test: s21_string.a
+test: clean s21_string.a 
 	$(GCC) test.c -L. -ls21_string
+	./a.out
 	
 all: s21_string.a
 	$(MAKE) clean
 	$(MAKE) s21_string.a
 	$(MAKE) test 
+
+push: clean
+	git add *
+	git commit -m"just save $RANDOM*$RANDOM"
+	git push
 	
