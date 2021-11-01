@@ -35,6 +35,6 @@ all: s21_string.a
 
 push: clean
 	git add *
-	git commit -m"just save $RANDOM*$RANDOM"
+	git commit -m"just save $$RANDOM*$$RANDOM"
 	git push
 	
