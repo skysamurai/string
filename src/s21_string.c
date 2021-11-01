@@ -4,28 +4,23 @@
 
 
 
-char *s21_strcat(char *dest, const char *src)
-{
-    char *a = dest ;
-    for (; *dest != '\0' ; dest ++  );    
-    for (; *src != '\0' ; src ++);
-    *dest = *src ;
+char *s21_strcat(char *dest, const char *src) {
+    char *a = dest;
+    for (; *dest != '\0' ; dest++) {}
+    for (; *src != '\0' ; src++) {}
+    *dest = *src;
     return a;
 }
 
 
 
- 
- 
 //  char *strncat(char *dest, const char *src, size_t n)
 
 
 
-char *s21_strchr(const char *str, int c) 
-
-{
+char *s21_strchr(const char *str, int c) {
      for (; *str != '\0'; str++)
-  if (*str == c)
+    if (*str == c)
     return (char *) str;
 
 return NULL;
@@ -34,11 +29,9 @@ return NULL;
 
 
 
-int s21_strcmp(const char *str1, const char *str2)
-
-{
-    for (; *str1 && *str1 == *str2 ; str2 ++ , str1 ++ ) ;
-    return *str1 - *str2 ;
+int s21_strcmp(const char *str1, const char *str2) {
+    for (; *str1 && *str1 == *str2 ; str2++, str1++) ;
+    return *str1 - *str2;
 }
 
 
