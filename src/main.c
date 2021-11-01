@@ -26,6 +26,7 @@ int s21_strncmp(const char *str1, const char *str2, size_t n) {
     }
 return flag;
 }
+
 char *s21_strcpy(char *dest, const char *src) {
     size_t i = 0;
     while (src[i] != 0) {
@@ -59,6 +60,12 @@ size_t s21_strcspn(const char *str1, const char *str2) {
     }
 return i;
 }
+
+char *s21_strerror(int errnum) {
+    errnum = 123;
+    printf("%i, ", errnum);
+}
+
 size_t s21_strlen(const char *str) {
     size_t i = 0;
     while (str[i] != 0) ++i;
