@@ -12,16 +12,19 @@ int main(void) {
   printf("%s~~%d\n",   a, b);
 
 
-  char c[255] = "Holla, how are u ?";
+  char c[255] = "Holla,    how are u ?";
   char *tok;
   char delim[] = ", ?";
   tok = s21_strtok(c, delim);
-  while(tok != NULL) {
+  while(tok != S21_NULL) {
     printf("%s|", tok);
-    tok = s21_strtok(NULL, delim);
+    tok = s21_strtok(S21_NULL, delim);
   }
 
-  tok = strtok(c, delim);
+  printf("\n");
+
+  char x[255] = "Holla,    how are u ?";
+  tok = strtok(x, delim);
   while(tok != NULL) {
     printf("%s|", tok);
     tok = strtok(NULL, delim);

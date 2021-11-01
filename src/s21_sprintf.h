@@ -23,9 +23,9 @@
 #define LONG_DOUBLE 'L'
 
 
-#ifndef __S21_NULL
+#ifndef S21_NULL
 #define S21_NULL (void*)0
-#endif  // __S21_NULL
+#endif  // S21_NULL
 
 #ifdef __S21_WORDSIZE_8
 typedef unsigned long long s21_size_t;
@@ -36,7 +36,7 @@ typedef unsigned long s21_size_t;
 
 
 struct format_info {
-    int number_flags;    /* флаги для обработки числа */
+    int number_flags;           /* флаги для обработки числа */
     int field_width;            /* минимальная ширина вывода поля */
     int precision;              /* точность числа */
     int qualifier;              /* размерность */
@@ -68,4 +68,4 @@ void put_dec_number_cursoring(char **str, struct format_info *info, va_list args
 void put_udec_number_cursoring(char **str, struct format_info *info, va_list args);
 void put_octo_number_cursoring(char **str, struct format_info *info, va_list args);
 
-#endif /* SRC_S21_SPRINTF_ */
+#endif  /* SRC_S21_SPRINTF_ */
