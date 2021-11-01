@@ -5,7 +5,9 @@
 
 
 // char *strcat(char *dest, const char *src)
-
+// {
+//     for (; )
+// }
 
 
 
@@ -15,15 +17,15 @@
 
 
 
-// char *s21_strchr(const char *str, int c) 
+char *s21_strchr(const char *str, int c) 
 
-// {
-//      for (; *str != '\0'; ++str)
-//   if (*str == c)
-//     return (char *) str;
+{
+     for (; *str != '\0'; ++str)
+  if (*str == c)
+    return (char *) str;
 
-// return NULL;
-// }
+return NULL;
+}
 
 
 
