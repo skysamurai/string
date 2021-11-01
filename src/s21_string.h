@@ -1,10 +1,10 @@
 #ifndef S21_SIZE_T
 #define S21_SIZE_T
 typedef unsigned int s21_size_t;
-#endif
-#ifndef NULL
-#define NULL ((void*)0)
-#endif
+#endif // S21_SIZE_T
+#ifndef S21_NULL
+#define S21_NULL ((void*)0)
+#endif // S21_NULL
 void *s21_memchr(const void *str, int c, s21_size_t n);
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n);
 void *s21_memcpy(void *dest, const void *src, s21_size_t n);

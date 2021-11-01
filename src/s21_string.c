@@ -1,7 +1,7 @@
 #include "s21_string.h"
-#include <malloc.h>
+#include <stdlib.h>
 void *s21_memchr(const void *str, int c, s21_size_t n) {
-    void* res = NULL;
+    void* res = S21_NULL;
     s21_size_t i = 0;
     while ((*((char*)str + i) != c) & (i < n)) {
         i++;
@@ -91,12 +91,11 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
     s21_size_t n_src = s21_strlen(src), n_str = s21_strlen(str);
     void* temp;
     if (start_index > n_src - 1) {
-        temp = NULL;
+        temp = S21_NULL;
     } else {
         int n = n_src + n_str;  
         temp = malloc(n * sizeof(char)); 
         s21_memcpy(temp, (char*)src, start_index);
-        printf ("func: %s\n",str);
         s21_memcpy((char*)(temp + start_index), (char*)str, n_str);
         s21_memcpy(((char*)temp + start_index + n_str), ((char*)src + start_index), n_src - start_index);
     }
@@ -104,9 +103,9 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
 }
 
 char *s21_strpbrk(const char *str1, const char *str2) {
-    char *returnVal = NULL;
+    char *returnVal = S21_NULL;
     int i = 0;
-    while (str1[i] != '\0' && returnVal == NULL) {
+    while (str1[i] != '\0' && returnVal == S21_NULL) {
         for (int j = 0; str2[j] != '\0'; j++) {
             if (str1[i] == str2[j]) {
                 returnVal = ((char *)str1) + i;
@@ -122,12 +121,12 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 void *s21_trim(const char *src, const char *trim_chars) {
     int i = 0, j = s21_strlen(src);
     char tp[2] = {*(char*)(src + i), '\0'};
-    while (s21_strpbrk(trim_chars, tp) != NULL) {
+    while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
          i++;
         tp[0] = *(char*)(src + i);
     }
     tp[0] = *(char*)(src + j - 1);
-    while (s21_strpbrk(trim_chars, tp) != NULL) {
+    while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
         j--;
         tp[0] = *(char*)(src + j);
     }
