@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "check.h": "c",
+        "stdio.h": "c",
+        "signal.h": "c"
+    }
+}

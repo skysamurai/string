@@ -17,3 +17,13 @@ char *s21_strpbrk(const char *str1, const char *str2) {
     }
     return returnVal;
 }
+
+char *s21_strrchr(const char *str, int c) {
+    char *returnVal = NULL;
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (str[i] == c) {
+            returnVal = (((char *)str) + i);
+        }
+    }
+    return returnVal;
+}
