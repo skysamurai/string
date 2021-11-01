@@ -6,6 +6,16 @@
 
 
 
+START_TEST(s21_strcatTEST) //Конечно, на практике мы не пишем тесты, обреченные на провал
+{ char dest [100] = "privet";
+char src [10]  = "kak";
+
+    ck_assert_msg(strcat(dest ,src) == s21_strcat(dest,src), "failed on 12");
+  
+}
+END_TEST
+
+
 START_TEST(s21_strchrTEST) //Конечно, на практике мы не пишем тесты, обреченные на провал
 { char str [] = "privet";
 char c  = 112;
@@ -34,6 +44,11 @@ int main(void)
     SRunner *sr = srunner_create(s1); //Лаунчер сьюита
     int nf; // Статус тестов сьюита
 
+
+ TCase *strcatCase = tcase_create("JumBaseTest"); //Новый кейс getCase для функции get
+    suite_add_tcase(s1, strcatCase); //Добавляем кейс getCase для запуска
+    //В кейс getCase добавляем тесты, описанные выше
+    tcase_add_test(strcatCase, s21_strcatTEST);
 
   TCase *strchrCase = tcase_create("GumBaseTest"); //Новый кейс getCase для функции get
     suite_add_tcase(s1, strchrCase); //Добавляем кейс getCase для запуска

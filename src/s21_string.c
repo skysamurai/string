@@ -4,10 +4,14 @@
 
 
 
-// char *strcat(char *dest, const char *src)
-// {
-//     for (; )
-// }
+char *s21_strcat(char *dest, const char *src)
+{
+    char *a = dest ;
+    for (; *dest != '\0' ; dest ++  );    
+    for (; *src != '\0' ; src ++);
+    *dest = *src ;
+    return a;
+}
 
 
 
@@ -20,7 +24,7 @@
 char *s21_strchr(const char *str, int c) 
 
 {
-     for (; *str != '\0'; ++str)
+     for (; *str != '\0'; str++)
   if (*str == c)
     return (char *) str;
 
