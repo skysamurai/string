@@ -3,129 +3,61 @@
 int s21_sprintf(char *str, const char *format, va_list args) {
 
   struct format_info info;
+  char *percent_pointer;
 
-  char *s_cursor = str;
+  char *s_cursor = str;  /* string cursor */
   const char *f_cursor = format;
 
-  for(; *f_cursor != '\0'; ++f_cursor) {
-
-    if(*f_cursor != '%') {
-      *s_cursor++ = *f_cursor;
-      continue;
-    }
-
-    parse_format_flag(&f_cursor, &info);
-    parse_field_width(&f_cursor, &info, args);
-    parse_precision(&f_cursor, &info, args);
-    parse_qualifier(&f_cursor, &info);
-
-    info.number_system = 10;
-    if(*f_cursor == 'c') {
-      put_char_cursoring(&s_cursor, &info, args);
-    } else if(*f_cursor == 's') {
-      put_string_cursoring(&s_cursor, &info, args);
-    } else if(*f_cursor == 'p') {
-      put_pointer_cursoring(&s_cursor, &info, args);
-    } else if(*f_cursor == 'n') {
-      write_count_recorded_char(s_cursor - str, &info, args);
-    } else if(*f_cursor == '%') {
-      *s_cursor++ = '%';
-    } else if(*f_cursor == 'o') {
-      put_octo_number_cursoring(&s_cursor, &info, args);
-    } else if(*f_cursor == 'X') {
-      info.number_flags |= CAPITALIZE;
-      put_hex_number_cursoring(&s_cursor, &info, args);
-    } else if(*f_cursor == 'x') {
-      put_hex_number_cursoring(&s_cursor, &info, args);
-    } else if(*f_cursor == 'd' || *f_cursor == 'i') {
-      put_dec_number_cursoring(&s_cursor, &info, args);
-    } else if(*f_cursor == 'u') {
-      put_udec_number_cursoring(&s_cursor, &info, args);
-    } else if(*f_cursor == 'e') {
-      info.number_flags |= EXPONENT;
-      real_number_to_char(&s_cursor, va_arg(args, double), &info);
-    } else if(*f_cursor == 'E') {
-
-    } else if(*f_cursor == 'g' || *f_cursor == 'G') {
-
-    } if (*f_cursor == 'f') {
-
-    }
-  }
-  *s_cursor = '\0';
-  return s_cursor - str;
-}
-
-void parse_format_flag(const char **format, struct format_info *info) {
-  int is_found = 1;
-  info->number_flags = 0;
-  while(**format && is_found) {
-    ++(*format);
-    if(**format == '-') {
-      info->number_flags |= LEFT_ALIGMENT;
-    }
-    else if(**format == '+') {
-      info->number_flags |= SHOW_SIGN;
-    }
-    else if(**format == ' ') {
-      info->number_flags |= REPLACE_SIGN_SPACE;
-    }
-    else if(**format == '#') {
-      info->number_flags |= SHOW_NUMBER_SYSTEM;
-    }
-    else if(**format == '0') {
-      info->number_flags |= ZERO_PADDING;
+  while(f_cursor != S21_NULL) {
+    percent_pointer = strpbrk(f_cursor, "%");
+    if(percent_pointer != S21_NULL) {
+      memcpy(s_cursor, f_cursor, percent_pointer - f_cursor);
+      s_cursor += percent_pointer - f_cursor;
+      f_cursor += s_cursor - str;
     } else {
-      is_found = 0;
+      memcpy(s_cursor, f_cursor, strlen(f_cursor));
+      s_cursor += strlen(f_cursor);
+      *s_cursor = '\0';
+      f_cursor = S21_NULL;
     }
-  }
-}
 
-void parse_field_width(const char **format, struct format_info *info, va_list args) {
-  info->field_width = -1;
-  if(is_digit(**format)) {
-    info->field_width = atoi_cursoring(format);
-  } else if (**format == '*') {
-    ++(*format);
-    info->field_width = va_arg(args, int);
-    if (info->field_width < 0) {
-      info->field_width = -info->field_width;
-      info->number_flags |= LEFT_ALIGMENT;
-    }
-  }
-}
+    if(*s_cursor != '\0') {
+      parse_format(&f_cursor, &info, args);
+      if(*f_cursor == 'c') {
+        put_char_cursoring(&s_cursor, &info, args);
+      } else if(*f_cursor == 's') {
+        put_string_cursoring(&s_cursor, &info, args);
+      } else if(*f_cursor == 'p') {
+        put_pointer_cursoring(&s_cursor, &info, args);
+      } else if(*f_cursor == 'n') {
+        write_count_recorded_char(s_cursor - str, &info, args);
+      } else if(*f_cursor == '%') {
+        *s_cursor++ = '%';
+      } else if(*f_cursor == 'o') {
+        put_octo_number_cursoring(&s_cursor, &info, args);
+      } else if(*f_cursor == 'X') {
+        info.flags |= CAPITALIZE;
+        put_hex_number_cursoring(&s_cursor, &info, args);
+      } else if(*f_cursor == 'x') {
+        put_hex_number_cursoring(&s_cursor, &info, args);
+      } else if(*f_cursor == 'd' || *f_cursor == 'i') {
+        put_dec_number_cursoring(&s_cursor, &info, args);
+      } else if(*f_cursor == 'u') {
+        put_udec_number_cursoring(&s_cursor, &info, args);
+      } else if(*f_cursor == 'e') {
+        info.flags |= EXPONENT;
+        real_number_to_char(&s_cursor, va_arg(args, double), &info);
+      } else if(*f_cursor == 'E') {
 
-void parse_precision(const char **format, struct format_info *info, va_list args) {
-  info->precision = -1;
-  if(**format == '.') {
-    ++(*format);
-    if(is_digit(**format)) {
-      info->precision = atoi_cursoring(format);
-    } else if (**format == '*') {
-      ++(*format);
-      info->precision = va_arg(args, int);
-    }
-    if(info->precision < 0) {
-      info->precision = 0;
-    }
-  }
-}
+      } else if(*f_cursor == 'g' || *f_cursor == 'G') {
 
-void parse_qualifier(const char **format, struct format_info *info) {
-  info->qualifier = -1;
-  if(**format == 'l' && *(*format + 1) == 'l') {
-    info->qualifier = LONG_LONG;
-    (*format) += 2;
-  } else if(**format == 'h') {
-    info->qualifier = SHORT;
-    (*format) += 1;
-  } else if(**format == 'l') { 
-    info->qualifier = LONG;
-    (*format) += 1;
-  } else if(**format == 'L') {
-    info->qualifier = LONG_DOUBLE;
-    (*format) += 1;
+      } if (*f_cursor == 'f') {
+
+      }
+      f_cursor++;
+    }
   }
+  return s_cursor - str;
 }
 
 void write_count_recorded_char(char element_count, struct format_info *info, va_list args) {
@@ -141,28 +73,12 @@ void write_count_recorded_char(char element_count, struct format_info *info, va_
   }
 }
 
-int is_digit(char chr) {
-  return (chr >= '0') && (chr <= '9');
-}
-
-int is_hexdec_digit(char chr) {
-  return ((is_digit(chr)) || ((chr >= 'a') && (chr <= 'f')) || ((chr >= 'A') && (chr <= 'F')));
-}
-
-int atoi_cursoring(const char **cursor) {
-  char chr;
-  int i;
-  for (i = 0; is_digit(chr = **cursor); ++*cursor)
-    i = i * 10 + chr - '0';
-  return i;
-}
-
 void put_char_cursoring(char **str, struct format_info *info, va_list args) {
-  if (!(info->number_flags & LEFT_ALIGMENT))
+  if(!(info->flags & LEFT_JUSTIFY))
     while (--info->field_width > 0)
       *(*str)++ = ' ';
   *(*str)++ = va_arg(args, int);
-  while (--info->field_width > 0)
+  while(--info->field_width > 0)
     *(*str)++ = ' ';
 }
 
@@ -177,7 +93,7 @@ void put_string_cursoring(char **str, struct format_info *info, va_list args) {
 
   string_len = strlen(buf_string);
 
-  if (!(info->number_flags & LEFT_ALIGMENT))
+  if (!(info->flags & LEFT_JUSTIFY))
     while (string_len < info->field_width--)
       *(*str)++ = ' ';
   for (int i = 0; i < string_len; ++i)
@@ -188,8 +104,8 @@ void put_string_cursoring(char **str, struct format_info *info, va_list args) {
 
 void put_pointer_cursoring(char **str, struct format_info *info, va_list args) {
   info->number_system = 16;
-  info->number_flags |= SHOW_NUMBER_SYSTEM;
-  info->number_flags |= SIGNED;
+  info->flags |= NUMBER_SYSTEM;
+  info->flags |= SIGNED;
   int_number_to_char(str, (unsigned long long) va_arg(args, void *), info);
 }
 
@@ -200,13 +116,13 @@ void put_hex_number_cursoring(char **str, struct format_info *info, va_list args
 
 void put_dec_number_cursoring(char **str, struct format_info *info, va_list args) {
   info->number_system = 10;
-  info->number_flags |= SIGNED;
+  info->flags |= SIGNED;
   int_number_to_char(str, (unsigned long long) va_arg(args, void *), info);
 }
 
 void put_udec_number_cursoring(char **str, struct format_info *info, va_list args) {
   info->number_system = 10;
-  info->number_flags &= ~SIGNED;
+  info->flags &= ~SIGNED;
   int_number_to_char(str, (unsigned long long) va_arg(args, void *), info);
 }
 
@@ -222,33 +138,33 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
   const char *digits_template; /* numbers from 0 to Z */
   int i;
 
-  if(info->number_flags & CAPITALIZE) {
+  if(info->flags & CAPITALIZE) {
     digits_template = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   } else {
     digits_template = "0123456789abcdefghijklmnopqrstuvwxyz";
   }
 
-  if(info->number_flags & LEFT_ALIGMENT) {
-    info->number_flags &= ~ZERO_PADDING;
+  if(info->flags & LEFT_JUSTIFY) {
+    info->flags &= ~ZERO_PADDING;
   }
 
   if (info->number_system < 2 || info->number_system > 36) {
     return;
   }
 
-  chr = (info->number_flags & ZERO_PADDING) ? '0' : ' ';
+  chr = (info->flags & ZERO_PADDING) ? '0' : ' ';
   sign = '\0';
 
   /* get the sign of a number */
-  if(info->number_flags & SIGNED) {
-    if((signed)number < 0) {
+  if(info->flags & SIGNED) {
+    if((signed long)number < 0) {
       sign = '-';
-      number = - (signed)number;
+      number = - (signed long)number;
       info->field_width--;
-    } else if(info->number_flags & SHOW_SIGN ) {
+    } else if(info->flags & SHOW_SIGN ) {
       sign = '+';
       info->field_width--;
-    } else if(info->number_flags & REPLACE_SIGN_SPACE) {
+    } else if(info->flags & SPACE_INSTEAD_SIGN) {
       sign = ' ';
       info->field_width--;
     }
@@ -257,7 +173,7 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
   /* In the 16 number system 
   two characters are assigned to "0x",
   in 8 number system to 0 */
-  if(info->number_flags & SHOW_NUMBER_SYSTEM) {
+  if(info->flags & NUMBER_SYSTEM) {
     if (info->number_system == 16) {
       info->field_width -= 2;
     } else if(info->number_system == 8) {
@@ -279,7 +195,7 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
   }
   info->field_width -= info->precision;
 
-  if(!(info->number_flags & (ZERO_PADDING | LEFT_ALIGMENT))) {
+  if(!(info->flags & (ZERO_PADDING | LEFT_JUSTIFY))) {
     while(info->field_width-- > 0) {
       *(*str)++ = ' ';
     }
@@ -289,7 +205,7 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
     *(*str)++ = sign;
   }
 
-  if(info->number_flags & SHOW_NUMBER_SYSTEM) {
+  if(info->flags & NUMBER_SYSTEM) {
     if (info->number_system == 16) {
       *(*str)++ = '0';
       *(*str)++ = digits_template[33];
@@ -298,7 +214,7 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
     }
   }
 
-  if(!(info->number_flags & LEFT_ALIGMENT)) {
+  if(!(info->flags & LEFT_JUSTIFY)) {
     while(info->field_width-- > 0) {
       *(*str)++ = chr;
     }
@@ -323,26 +239,26 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
   char tmp[64];
 
 
-  chr = (info->number_flags & ZERO_PADDING) ? '0' : ' ';
+  chr = (info->flags & ZERO_PADDING) ? '0' : ' ';
 
   sign = '\0';
   if(number < 0) {
     sign = '-';
     info->field_width--;
-  } else if(info->number_flags & SHOW_SIGN) {
+  } else if(info->flags & SHOW_SIGN) {
     sign = '+';
     info->field_width--;
-  } else if(info->number_flags & REPLACE_SIGN_SPACE) {
+  } else if(info->flags & SPACE_INSTEAD_SIGN) {
     sign = ' ';
     info->field_width--;
   }
 
-  if(info->number_flags & LEFT_ALIGMENT) {
-    info->number_flags &= ~ZERO_PADDING;
+  if(info->flags & LEFT_JUSTIFY) {
+    info->flags &= ~ZERO_PADDING;
   }
 
-  if(info->number_flags & (EXPONENT | FLOAT)) {
-    if(info->precision < 0) {
+  if(info->flags & (EXPONENT | FLOAT)) {
+    if(info->precision >= 0) {
       info->field_width -= info->precision;
     } else {
       info->field_width -= 6;
@@ -356,7 +272,7 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
   }
 
   /* calculate exponent size */
-  if(info->number_flags & EXPONENT) {
+  if(info->flags & EXPONENT) {
     exponent_size = 0;
     while((number > 0 ? (signed)number : -(signed)number) / 10 == 0) {
       number *= 10;

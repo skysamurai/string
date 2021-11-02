@@ -5,27 +5,29 @@
 #include "stdio.h"
 #include "string.h"
 
-/* sprintf flags */
-#define LEFT_ALIGMENT (1 << 0) /* выравние по левому краю */
-#define SHOW_SIGN (1 << 1) /* отображение '+/-' */
-#define REPLACE_SIGN_SPACE (1 << 2) /* замена знака '+' проблом */
-#define SHOW_NUMBER_SYSTEM (1 << 3) /* отображение системы счисления */
-#define ZERO_PADDING (1 << 4) /* заполнение пустого места пробелами */
+/* flags */
+#define LEFT_JUSTIFY (1U << 0U)        /* left alignment */
+#define SHOW_SIGN (1U << 1U)           /* display '+' or '-' */
+#define SPACE_INSTEAD_SIGN (1U << 2U)  /* replace '+' sign with a space */
+#define NUMBER_SYSTEM (1U << 3U)       /* display number system */
+#define ZERO_PADDING (1U << 4U)        /* fill empty space right with zeros */
 /* sprintf string format */
-#define SIGNED (1 << 5) /* может ли число быть знаковым */
-#define CAPITALIZE (1 << 6) /* вывод заглавными буквами */
-#define EXPONENT (1<< 7) /* вывод в экспоненциальной */
-#define FLOAT (1 << 8) /* float тип */
+#define SIGNED (1U << 5U)      /* signed number */
+#define CAPITALIZE (1U << 6U)  /* output in capital letters */
+#define EXPONENT (1U << 7U)    /* output in exponential form */
+#define FLOAT (1U << 8U)       /* float тип */
+#define SHORTEST_FLOAT
 /* number size format */
 #define LONG 'l'
 #define SHORT 'h'
+#define DOUBLE 'L'
 #define LONG_LONG 'w'
-#define LONG_DOUBLE 'L'
+#define LONG_DOUBLE 'q'
 
 
 #ifndef S21_NULL
 #define S21_NULL (void*)0
-#endif  // S21_NULL
+#endif  /* S21_NULL */
 
 #ifdef __S21_WORDSIZE_8
 typedef unsigned long long s21_size_t;
@@ -36,11 +38,11 @@ typedef unsigned long s21_size_t;
 
 
 struct format_info {
-    int number_flags;           /* флаги для обработки числа */
-    int field_width;            /* минимальная ширина вывода поля */
-    int precision;              /* точность числа */
-    int qualifier;              /* размерность */
-    int number_system;          /* система счисления */
+    int flags;
+    int field_width;
+    int precision;
+    int qualifier;
+    int number_system;
 };
 
 
@@ -48,13 +50,15 @@ int s21_sprintf(char *str, const char *format, va_list args);
 void int_number_to_char(char **str, unsigned long long int number, struct format_info *info);
 void real_number_to_char(char **str, double number, struct format_info *info);
 
+/* specifiers parser */
+void parse_format(const char **format, struct format_info *info, va_list args);
 void parse_format_flag(const char **format, struct format_info *info);
 void parse_field_width(const char **format, struct format_info *info, va_list args);
 void parse_precision(const char **format, struct format_info *info, va_list args);
 void parse_qualifier(const char **format, struct format_info *info);
 void write_count_recorded_char(char element_count, struct format_info *info, va_list args);
 
-
+/* support functions */
 int is_digit(char chr);
 int is_hexdec_digit(char chr);
 int atoi_cursoring(const char **cursor);

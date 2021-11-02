@@ -1,34 +1,27 @@
 #include "s21_string.h"
 #include "string.h"
+#include "time.h"
 
 int main(void) {
-  char a[255] = "holla, | wow ||| how are u ?";
+  char a[100] = "holla,?";
   int b = 0;
 
-  s21_wrapper_sprintf(a, "|%10.100e\\|/ _  word|", 300.0000000000000000016);
-  printf("%s~~%d\n", a, b);
+  clock_t begin = clock();
+  //
+  s21_wrapper_sprintf(a, "|%d word|", 300);
+  printf("\\%s~~%d/", a, b);
+  //
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("%f\n", time_spent);
 
-              sprintf(a, "|%10.100e\\|/ _  word|", 300.0000000000000000016);
-  printf("%s~~%d\n",   a, b);
-
-
-  char c[255] = "Holla,    how are u ?";
-  char *tok;
-  char delim[] = ", ?";
-  tok = s21_strtok(c, delim);
-  while(tok != S21_NULL) {
-    printf("%s|", tok);
-    tok = s21_strtok(S21_NULL, delim);
-  }
-
-  printf("\n");
-
-  char x[255] = "Holla,    how are u ?";
-  tok = strtok(x, delim);
-  while(tok != NULL) {
-    printf("%s|", tok);
-    tok = strtok(NULL, delim);
-  }
-
+  begin = clock();
+  //
+              sprintf(a, "|%d word|", 300);
+  printf("\\%s~~%d/", a, b);
+  //
+  end = clock();
+  time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  printf("%f\n", time_spent);
   return 0;
 }
