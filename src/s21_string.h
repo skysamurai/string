@@ -8,6 +8,12 @@ typedef unsigned int s21_size_t;
 #ifndef S21_NULL
 #define S21_NULL ((void *)0)
 #endif  // S21_NULL
+
+#include "s21_sprintf.h"
+
+int s21_wrapper_sprintf(char *str, char *format, ...);
+char *s21_strtok(char *str, const char *delim);
+
 void *s21_memchr(const void *str, int c, s21_size_t n);
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n);
 void *s21_memcpy(void *dest, const void *src, s21_size_t n);
