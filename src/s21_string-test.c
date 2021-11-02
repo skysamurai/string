@@ -27,6 +27,9 @@ int main(void) {
     TCase *memchrCase = CreateMemchrCase();
     suite_add_tcase(s1, memchrCase);
 
+    TCase *trimCase = CreateTrimCase();
+    suite_add_tcase(s1, trimCase);
+
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
