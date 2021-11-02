@@ -10,9 +10,12 @@ s21_string.a:
 	rm s21_string.o
 
 test: s21_string.a
-	gcc s21_string.a s21_string-test.c $(flags) $(checkFlags)
+	gcc s21_string.a s21_string-test.c ./tests/*.c $(flags) $(checkFlags)
 
 clean: clear all
 
 clear:
-	$(RM) *.o *.a
+	$(RM) *.o *.a a.out
+
+pol: s21_string.a
+	gcc polygon.c s21_string.a $(checkFlags) $(flags)
