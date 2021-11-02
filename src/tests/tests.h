@@ -6,5 +6,7 @@
 TCase* CreateStrpbrkCase();
 TCase* CreateStrrchrCase();
 TCase* CreateMemcmpCase();
+TCase* CreateStrcspnCase();
+TCase* CreateMemchrCase();
 
 #endif  // SRC_TESTS_TESTS_H_

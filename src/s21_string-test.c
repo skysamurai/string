@@ -18,8 +18,14 @@ int main(void) {
     TCase *strrchrCase = CreateStrrchrCase();
     suite_add_tcase(s1, strrchrCase);
 
-    TCase *memcmpCate = CreateMemcmpCase();
-    suite_add_tcase(s1, memcmpCate);
+    TCase *memcmpCase = CreateMemcmpCase();
+    suite_add_tcase(s1, memcmpCase);
+
+    TCase *strcspnCase = CreateStrcspnCase();
+    suite_add_tcase(s1, strcspnCase);
+
+    TCase *memchrCase = CreateMemchrCase();
+    suite_add_tcase(s1, memchrCase);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

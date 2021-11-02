@@ -32,7 +32,7 @@ START_TEST(arg1NULLTest) {  // must create SIGSEGV
     char ch = 's';
     char *origOutput;
 
-    origOutput = strrchr(S21_NULL, ch);
+    origOutput = s21_strrchr(S21_NULL, ch);
 }
 
 START_TEST(arg2NULLTest) {  // must create SIGSEGV
@@ -41,6 +41,13 @@ START_TEST(arg2NULLTest) {  // must create SIGSEGV
     char *origOutput;
 
     origOutput = s21_strrchr(str, *emptyChar);
+}
+END_TEST
+
+START_TEST(arg2NegativeTest) {
+    char str[] = "This is a sample string";
+
+    ck_assert(s21_strrchr(str, -1) == strchr(str, -1));
 }
 END_TEST
 
@@ -53,11 +60,11 @@ START_TEST(argsNULLTest) {  // must create SIGSEGV
 END_TEST
 
 TCase *CreateStrrchrCase() {
-    TCase *strrchrCase = tcase_create("StrrchrCase");
+    TCase *strrchrCase = tcase_create("strrchr case");
 
     tcase_add_test(strrchrCase, normalTest);
-
     tcase_add_test(strrchrCase, arg1EmptyTest);
+    tcase_add_test(strrchrCase, arg2NegativeTest);
 
     tcase_add_test_raise_signal(strrchrCase, arg1NULLTest, SIGSEGV);
     tcase_add_test_raise_signal(strrchrCase, arg2NULLTest, SIGSEGV);

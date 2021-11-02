@@ -77,7 +77,7 @@ START_TEST(argsNULLTest) {  // must create SIGSEGV
 END_TEST
 
 TCase* CreateStrpbrkCase() {
-    TCase* strpbrkCase = tcase_create("StrpbrkCase");
+    TCase* strpbrkCase = tcase_create("strpbrk case");
     tcase_add_test(strpbrkCase, normalTest);
     tcase_add_test(strpbrkCase, noCharTest);
     tcase_add_test(strpbrkCase, arg1EmptyTest);
