@@ -45,7 +45,6 @@ struct format_info {
     int number_system;
 };
 
-
 int s21_sprintf(char *str, const char *format, va_list args);
 void int_number_to_char(char **str, unsigned long long int number, struct format_info *info);
 void real_number_to_char(char **str, double number, struct format_info *info);
@@ -62,7 +61,7 @@ void write_count_recorded_char(char element_count, struct format_info *info, va_
 int is_digit(char chr);
 int is_hexdec_digit(char chr);
 int atoi_cursoring(const char **cursor);
-
+int get_digit_count(int number);
 
 void put_char_cursoring(char **str, struct format_info *info, va_list args);
 void put_string_cursoring(char **str, struct format_info *info, va_list args);

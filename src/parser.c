@@ -84,6 +84,15 @@ int is_digit(char chr) {
   return (chr >= '0') && (chr <= '9');
 }
 
+int get_digit_count(int number) {
+  int len = 0;
+  while(number % 10) {
+    number /= 10;
+    len++;
+  }
+  return len;
+}
+
 int is_hexdec_digit(char chr) {
   return ((is_digit(chr)) || ((chr >= 'a') && (chr <= 'f')) || ((chr >= 'A') && (chr <= 'F')));
 }

@@ -8,17 +8,18 @@ int main(void) {
 
   clock_t begin = clock();
   //
-  s21_wrapper_sprintf(a, "|%d word|", 300);
+  s21_wrapper_sprintf(a, "|%+.25e word|", 0.642);
   printf("\\%s~~%d/", a, b);
   //
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   printf("%f\n", time_spent);
 
+  char aa[100] = "holla,?";
   begin = clock();
   //
-              sprintf(a, "|%d word|", 300);
-  printf("\\%s~~%d/", a, b);
+              sprintf(aa, "|%+.25e word|", 0.642);
+  printf("\\%s~~%d/", aa, b);
   //
   end = clock();
   time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
