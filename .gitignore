@@ -57,3 +57,5 @@ src/CPPLINT.cfg
 materials/linters/cpplint.py
 materials/.DS_Store
 materials/linters/cpplint.py
+src/polygon.c
+src/polygon.c.disabled
