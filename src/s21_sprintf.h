@@ -62,6 +62,7 @@ int is_digit(char chr);
 int is_hexdec_digit(char chr);
 int atoi_cursoring(const char **cursor);
 int get_digit_count(int number);
+void getSEM(unsigned int *sign, unsigned int *exponent, unsigned long long *mantiss, double number);
 
 void put_char_cursoring(char **str, struct format_info *info, va_list args);
 void put_string_cursoring(char **str, struct format_info *info, va_list args);

@@ -104,3 +104,10 @@ int atoi_cursoring(const char **cursor) {
     i = i * 10 + chr - '0';
   return i;
 }
+
+void getSEM(unsigned int *sign, unsigned int *exponent, unsigned long long *mantiss, double number) {
+  unsigned long long* pnumber = (unsigned long long*)&number;
+  *mantiss = *pnumber & 0xFFFFFFFFFFFFF; /* fifty two '1' */
+  *exponent = (*pnumber >> 52) & 0x3FF;
+  *sign = (*pnumber >> 52+11) & 1;
+}

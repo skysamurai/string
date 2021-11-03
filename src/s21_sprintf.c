@@ -1,7 +1,6 @@
 #include "s21_sprintf.h"
 
 int s21_sprintf(char *str, const char *format, va_list args) {
-
   struct format_info info;
   char *percent_pointer;
 
@@ -231,7 +230,6 @@ void int_number_to_char(char **str, unsigned long long int number, struct format
   while (info->field_width-- > 0)
     *(*str)++ = ' ';
 }
-
 
 void real_number_to_char(char **str, double number, struct format_info *info) {
   int i;
