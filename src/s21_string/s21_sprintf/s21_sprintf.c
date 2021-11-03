@@ -276,7 +276,7 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
       number /= 10;
       ++exponent_val;
     }
-    if(exponent_len = get_digit_count(exponent_val) < 2) {
+    if((exponent_len = get_digit_count(exponent_val)) < 2) {
       exponent_len = 2;
     }
     /* <number> and 'e' and '-' need extra 2 position */
@@ -330,7 +330,7 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
     if(exponent_val > 0 && exponent_val < 10) {
       *(*str)++ = '0';
     }
-    for(i; i > 0; --i) {
+    for(; i > 0; --i) {
       *(*str)++ = tmp[i - 1];
     }
 
