@@ -158,14 +158,12 @@ char *s21_strtok(char *str, const char *delim) {
     char *result;
     char *start_token;
     char *end_token;
-    static char *last_point;
+    static char *last_point = S21_NULL;
 
     if (str != S21_NULL) {
         last_point = str;
-        start_token = last_point;
-    } else {
-        start_token = last_point;
     }
+    start_token = last_point;
 
     if (start_token != S21_NULL) {
         start_token += strspn(start_token, delim); /* clear delim from start */
@@ -175,7 +173,6 @@ char *s21_strtok(char *str, const char *delim) {
             last_point = S21_NULL;
             result = S21_NULL;
         } else {
-            last_point = S21_NULL;
             result = start_token;
         }
 
