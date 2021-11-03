@@ -192,3 +192,66 @@ char *s21_strtok(char *str, const char *delim) {
 
     return result;
 }
+
+int s21_strcmp(const char *str1, const char *str2) {
+    int i = 0;
+    int flag = 0;
+    while ((flag != -1) && (str1[i] != '\0') && ((str2[i] != '\0'))) {
+        if (str1[i] != str2[i])
+            flag = -1;
+        else
+            ++i;
+    }
+return flag;
+}
+
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
+    s21_size_t i = 0;
+    int flag = 0;
+    while ((flag != -1) && (i != n) && ((str2[i] != '\0'))) {
+        if (str1[i] != str2[i])
+            flag = -1;
+        else
+            ++i;
+    }
+return flag;
+}
+
+char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
+    s21_size_t i = 0;
+    while ((src[i] != 0) && (i <= n)) {
+        dest[i] = src[i];
+        ++i;
+    }
+return dest;
+}
+
+s21_size_t s21_strcspn(const char *str1, const char *str2) {
+    s21_size_t j, i = 0;
+    int flag = 1;
+    while ((str1[i] != 0) && (flag != 0 )) {
+        j = 0;
+        while ((str2[j] != 0) && (flag != 0)) {
+            if (str1[i] == str2[j])
+                flag = 0;
+        ++j;
+        }
+        if (flag != 0)
+            ++i;
+    }
+return i;
+}
+
+const char *s21_strerror(int errnum) {
+   const char *err;
+    err = "Unknown error";    
+   return err;
+}
+
+char *s21_strcat(char *dest, const char *src) {
+    char *a = dest;
+    for (; *dest != '\0' ; dest++) {}
+    for (; *src != '\0' ; src++) {}
+    *dest = *src;
+    return a;
+}
