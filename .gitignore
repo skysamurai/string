@@ -53,3 +53,19 @@ dkms.conf
 
 # VScode Folders
 *.vscode
+
+*DS_Store
+.vscode/settings.json
+.vscode/c_cpp_properties.json
+src/CPPLINT.cfg
+materials/linters/cpplint.py
+materials/.DS_Store
+materials/linters/cpplint.py
+src/polygon.c
+src/polygon.c.disabled
+src/Makefile
+src/.vscode/settings.json
+src/.vscode/tasks.json
+src/.vscode/c_cpp_properties.json
+src/.vscode/launch.json
+
