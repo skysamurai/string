@@ -30,10 +30,12 @@ END_TEST
 
 START_TEST(arg1NULLTest) {  // must NOT create segfault
     char ch = 's';
+    char *nullStr = S21_NULL;
     char *origOutput;
     char *s21Output;
 
-    origOutput = memchr(S21_NULL, ch, 0);
+    origOutput = memchr(nullStr, ch, 0);
+
     s21Output = s21_memchr(S21_NULL, ch, 0);
 
     ck_assert(origOutput == s21Output);

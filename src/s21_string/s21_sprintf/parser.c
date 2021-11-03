@@ -84,6 +84,15 @@ int is_digit(char chr) {
   return (chr >= '0') && (chr <= '9');
 }
 
+int get_digit_count(int number) {
+  int len = 0;
+  while(number % 10) {
+    number /= 10;
+    len++;
+  }
+  return len;
+}
+
 int is_hexdec_digit(char chr) {
   return ((is_digit(chr)) || ((chr >= 'a') && (chr <= 'f')) || ((chr >= 'A') && (chr <= 'F')));
 }
@@ -94,4 +103,11 @@ int atoi_cursoring(const char **cursor) {
   for (i = 0; is_digit(chr = **cursor); ++*cursor)
     i = i * 10 + chr - '0';
   return i;
+}
+
+void getSEM(unsigned int *sign, unsigned int *exponent, unsigned long long *mantiss, double number) {
+  unsigned long long* pnumber = (unsigned long long*)&number;
+  *mantiss = *pnumber & 0xFFFFFFFFFFFFF; /* fifty two '1' */
+  *exponent = (*pnumber >> 52) & 0x3FF;
+  *sign = (*pnumber >> (63)) & 1;
 }
