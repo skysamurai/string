@@ -1,13 +1,14 @@
 #include "s21_string.h"
+
 #include <stdlib.h>
 
 int s21_wrapper_sprintf(char *str, char *format, ...) {
-  va_list args;
-  int changes_count;
-  va_start(args, format);
-  changes_count = s21_sprintf(str, format, args);
-  va_end(args);
-  return changes_count;
+    va_list args;
+    int changes_count;
+    va_start(args, format);
+    changes_count = s21_sprintf(str, format, args);
+    va_end(args);
+    return changes_count;
 }
 
 void *s21_memchr(const void *str, int c, s21_size_t n) {
@@ -151,4 +152,46 @@ char *s21_strrchr(const char *str, int c) {
         }
     }
     return returnVal;
+}
+
+char *s21_strtok(char *str, const char *delim) {
+    char *result;
+    char *start_token;
+    char *end_token;
+    static char *last_point;
+
+    if (str != S21_NULL) {
+        last_point = str;
+        start_token = last_point;
+    } else {
+        start_token = last_point;
+    }
+
+    if (start_token != S21_NULL) {
+        start_token += strspn(start_token, delim); /* clear delim from start */
+        end_token = start_token;
+
+        if (*start_token == '\0') {
+            last_point = S21_NULL;
+            result = S21_NULL;
+        } else {
+            last_point = S21_NULL;
+            result = start_token;
+        }
+
+        end_token = start_token + (strpbrk(start_token, delim) - start_token);
+        if (end_token != S21_NULL) {
+            *end_token = '\0';
+            last_point = end_token + 1;
+        } else {
+            last_point = S21_NULL;
+            result = start_token;
+        }
+
+    } else {
+        last_point = S21_NULL;
+        result = S21_NULL;
+    }
+
+    return result;
 }

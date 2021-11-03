@@ -8,5 +8,8 @@ TCase* CreateStrrchrCase();
 TCase* CreateMemcmpCase();
 TCase* CreateStrcspnCase();
 TCase* CreateMemchrCase();
+TCase* CreateTrimCase();
+TCase* CreateStrtokCase();
+TCase* CreateSprintfCase();
 
 #endif  // SRC_TESTS_TESTS_H_
