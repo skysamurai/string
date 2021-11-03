@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string.h"
+#include "../s21_string/s21_string.h"
 #include "tests.h"
 
 START_TEST(normalTest) {
@@ -100,7 +100,6 @@ TCase *CreateMemchrCase() {
     tcase_add_test(memchrCase, arg1EmptyTest);
     tcase_add_test(memchrCase, arg1NULLTest);
     tcase_add_test(memchrCase, arg2NegativeTest);
-
     tcase_add_test(memchrCase, arg3NegativeTest);
 
     tcase_add_test_raise_signal(memchrCase, arg2NULLTest, SIGSEGV);

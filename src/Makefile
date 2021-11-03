@@ -1,15 +1,22 @@
-compiler = gcc
-flags = -std=c11 -ggdb3 -D __S21_WORDSIZE_8 -I ./
-eflags = -Wextra -Werror -Wpedantic -O2
-target = main.o
+flags = -Wall -Werror -Wextra
+checkFlags = -I$(HOME)/homebrew/include -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
 
-all: clean
-	clear
-	$(compiler) *.c -o $(target)
-	./main.o
 
-valgrind: all
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose ./main.o
+all: s21_string.a test
 
-clean:
-	rm -rf ./*.o
+s21_string.a:
+	$(RM) *.o
+	gcc ./s21_string/*.c ./s21_string/s21_sprintf/*.c -c $(flags)
+	ar -r s21_string.a *.o
+	$(RM) *.o
+
+test: s21_string.a
+	gcc s21_string.a ./tests/*.c $(flags) $(checkFlags)
+
+clean: clear all
+
+clear:
+	$(RM) *.o *.a a.out
+
+pol: s21_string.a
+	gcc polygon.c s21_string.a $(checkFlags) $(flags)
