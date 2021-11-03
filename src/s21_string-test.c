@@ -30,6 +30,9 @@ int main(void) {
     TCase *trimCase = CreateTrimCase();
     suite_add_tcase(s1, trimCase);
 
+    TCase *strtokCase = CreateStrtokCase();
+    suite_add_tcase(s1, strtokCase);
+
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
