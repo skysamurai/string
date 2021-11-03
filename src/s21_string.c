@@ -1,6 +1,7 @@
 #include "s21_string.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <errno.h>
 
 int s21_wrapper_sprintf(char *str, char *format, ...) {
   va_list args;
@@ -114,7 +115,7 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
 
 char *s21_strpbrk(const char *str1, const char *str2) {
     char *returnVal = S21_NULL;
-    int i = 0;
+    s21_size_t i = 0;
     while (str1[i] != '\0' && returnVal == S21_NULL) {
         for (int j = 0; str2[j] != '\0'; j++) {
             if (str1[i] == str2[j]) {
@@ -153,7 +154,7 @@ char *s21_strrchr(const char *str, int c) {
     }
     return returnVal;
 }
-// jdreama
+// jdreama begin
 int s21_strcmp(const char *str1, const char *str2) {
     int i = 0;
     int flag = 0;
@@ -167,7 +168,7 @@ return flag;
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-    int i = 0;
+    s21_size_t i = 0;
     int flag = 0;
     while ((flag != -1) && (i != n) && ((str2[i] != '\0'))) {
         if (str1[i] != str2[i])
@@ -203,3 +204,17 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 return i;
 }
 
+const char *s21_strerror(int errnum) {
+   const char *err;
+    err = "Unknown error";    
+   return err;
+}
+// jdreama end
+
+char *s21_strcat(char *dest, const char *src) {
+    char *a = dest;
+    for (; *dest != '\0' ; dest++) {}
+    for (; *src != '\0' ; src++) {}
+    *dest = *src;
+    return a;
+}
