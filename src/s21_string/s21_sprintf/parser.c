@@ -109,5 +109,5 @@ void getSEM(unsigned int *sign, unsigned int *exponent, unsigned long long *mant
   unsigned long long* pnumber = (unsigned long long*)&number;
   *mantiss = *pnumber & 0xFFFFFFFFFFFFF; /* fifty two '1' */
   *exponent = (*pnumber >> 52) & 0x3FF;
-  *sign = (*pnumber >> 52+11) & 1;
+  *sign = (*pnumber >> (63)) & 1;
 }
