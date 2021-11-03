@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string.h"
+#include "../s21_string/s21_string.h"
 #include "tests.h"
 
 START_TEST(normalTest) {

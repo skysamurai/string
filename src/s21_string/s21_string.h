@@ -9,7 +9,7 @@ typedef unsigned int s21_size_t;
 #define S21_NULL ((void *)0)
 #endif  // S21_NULL
 
-#include "s21_sprintf.h"
+#include "./s21_sprintf/s21_sprintf.h"
 
 int s21_wrapper_sprintf(char *str, char *format, ...);
 char *s21_strtok(char *str, const char *delim);
