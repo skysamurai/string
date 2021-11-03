@@ -38,6 +38,7 @@ START_TEST(arg1NULLTest) {  // must NOT create segfault
 
     ck_assert(origOutput == s21Output);
 }
+END_TEST
 
 START_TEST(arg2NULLTest) {  // must create SIGSEGV
     char str[] = "This is a sample string";

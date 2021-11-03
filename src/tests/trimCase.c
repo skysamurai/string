@@ -11,6 +11,7 @@ START_TEST(normalTest) {
     char* result = s21_trim(banner, charsToTrim);
     ck_assert(strcmp(result, "Much Ado About Nothing") == 0);
 }
+END_TEST
 
 START_TEST(arg1EmptyTest) {
     char charsToTrim[] = {'*', ' ', '\''};
@@ -18,12 +19,14 @@ START_TEST(arg1EmptyTest) {
     char* result = s21_trim(banner, charsToTrim);
     ck_assert(strcmp(result, "") == 0);
 }
+END_TEST
 
 START_TEST(arg1NULLTest) {  // throws runtime exeption in C#
     char charsToTrim[] = {'*', ' ', '\''};
     char* banner = S21_NULL;
     s21_trim(banner, charsToTrim);
 }
+END_TEST
 
 START_TEST(arg2EmptyTest) {
     char charsToTrim[] = {};
@@ -31,16 +34,19 @@ START_TEST(arg2EmptyTest) {
     char* result = s21_trim(banner, charsToTrim);
     ck_assert(strcmp(result, "*** Much Ado About Nothing ***") == 0);
 }
+END_TEST
 
 START_TEST(arg2NULLTest) {
     char* banner = "*** Much Ado About Nothing ***";
     char* result = s21_trim(banner, S21_NULL);
     ck_assert(strcmp(result, "*** Much Ado About Nothing ***") == 0);
 }
+END_TEST
 
 START_TEST(argsNULLTest) {  // throws runtime exeption in C#
     s21_trim(S21_NULL, S21_NULL);
 }
+END_TEST
 
 TCase* CreateTrimCase() {
     TCase* trimCase = tcase_create("trim case");
