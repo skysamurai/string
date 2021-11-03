@@ -6,10 +6,10 @@
 #include "tests.h"
 
 START_TEST(normalTest) {
-    char* origToken;
+    char* origToken = S21_NULL;
     char origString[] = "a string, of, ,tokens\0,after null terminator";
 
-    char* s21Token;
+    char* s21Token = S21_NULL;
     char s21String[] = "a string, of, ,tokens\0,after null terminator";
 
     origToken = strtok(origString, ",");
@@ -17,16 +17,63 @@ START_TEST(normalTest) {
 
     ck_assert(strcmp(origToken, s21Token) == 0);
     ck_assert(strcmp(origString, s21String) == 0);
+    int i = 0;
     do {
-        origToken = strtok(NULL, ",");
-        s21Token = s21_strtok(NULL, ",");
+        ck_assert_msg(strcmp(origToken, s21Token) == 0,
+                      "fail 1: orig Token:|%s|, s21 Token: |%s|",
+                      origToken != S21_NULL ? origToken : "NULL",
+                      s21Token != S21_NULL ? s21Token : "NULL");
+        ck_assert_msg(strcmp(origString, s21String) == 0,
+                      "fail 2: orig Token:|%s|, s21 Token: |%s|",
+                      origToken != S21_NULL ? origToken : "NULL",
+                      s21Token != S21_NULL ? s21Token : "NULL");
 
-        ck_assert(strcmp(origToken, s21Token) == 0);
-        ck_assert(strcmp(origString, s21String) == 0);
+        origToken = strtok(S21_NULL, ",");
+        s21Token = s21_strtok(S21_NULL, ",");
+        i++;
+    } while (origToken != S21_NULL &&
+             s21Token != S21_NULL);  // prevent strcmp segfault
 
-    } while (origToken && s21Token);
+    ck_assert_msg(origToken == S21_NULL && s21Token == S21_NULL,
+                  "fail 3: orig Token:|%s|, s21 Token: |%s|",
+                  origToken != S21_NULL ? origToken : "NULL",
+                  s21Token != S21_NULL ? s21Token : "NULL");
+}
+END_TEST
+
+START_TEST(noInitialStringTest) {  // must NOT create segfault
+    char* origToken = S21_NULL;
+    char origString[] = "a string, of, ,tokens\0,after null terminator";
+
+    char* s21Token = S21_NULL;
+    char s21String[] = "a string, of, ,tokens\0,after null terminator";
+
+    // origToken = strtok(origString, ",");
+    // s21Token = s21_strtok(s21String, ",");
+
     ck_assert(strcmp(origToken, s21Token) == 0);
     ck_assert(strcmp(origString, s21String) == 0);
+    int i = 0;
+    do {
+        ck_assert_msg(strcmp(origToken, s21Token) == 0,
+                      "fail 1: orig Token:|%s|, s21 Token: |%s|",
+                      origToken != S21_NULL ? origToken : "NULL",
+                      s21Token != S21_NULL ? s21Token : "NULL");
+        ck_assert_msg(strcmp(origString, s21String) == 0,
+                      "fail 2: orig Token:|%s|, s21 Token: |%s|",
+                      origToken != S21_NULL ? origToken : "NULL",
+                      s21Token != S21_NULL ? s21Token : "NULL");
+
+        origToken = strtok(S21_NULL, ",");
+        s21Token = s21_strtok(S21_NULL, ",");
+        i++;
+    } while (origToken != S21_NULL &&
+             s21Token != S21_NULL);  // prevent strcmp segfault
+
+    ck_assert_msg(origToken == S21_NULL && s21Token == S21_NULL,
+                  "fail 3: orig Token:|%s|, s21 Token: |%s|",
+                  origToken != S21_NULL ? origToken : "NULL",
+                  s21Token != S21_NULL ? s21Token : "NULL");
 }
 END_TEST
 
@@ -34,6 +81,7 @@ TCase* CreateStrtokCase() {
     TCase* strtokCase = tcase_create("strtok case");
 
     tcase_add_test(strtokCase, normalTest);
+    tcase_add_test(strtokCase, noInitialStringTest);
 
     return strtokCase;
 }
