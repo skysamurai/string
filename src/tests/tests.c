@@ -1,10 +1,9 @@
-#include "s21_string.h"
+#include "tests.h"
+
 #include <check.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
-
-#include "tests/tests.h"
 
 int main(void) {
     Suite *s1 = suite_create("Core");
@@ -25,6 +24,15 @@ int main(void) {
 
     TCase *memchrCase = CreateMemchrCase();
     suite_add_tcase(s1, memchrCase);
+
+    TCase *trimCase = CreateTrimCase();
+    suite_add_tcase(s1, trimCase);
+
+    TCase *strtokCase = CreateStrtokCase();
+    suite_add_tcase(s1, strtokCase);
+
+    TCase *sprintfCase = CreateSprintfCase();
+    suite_add_tcase(s1, sprintfCase);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

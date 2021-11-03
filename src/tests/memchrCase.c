@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string.h"
+#include "../s21_string/s21_string.h"
 #include "tests.h"
 
 START_TEST(normalTest) {
@@ -38,6 +38,7 @@ START_TEST(arg1NULLTest) {  // must NOT create segfault
 
     ck_assert(origOutput == s21Output);
 }
+END_TEST
 
 START_TEST(arg2NULLTest) {  // must create SIGSEGV
     char str[] = "This is a sample string";
@@ -100,7 +101,6 @@ TCase *CreateMemchrCase() {
     tcase_add_test(memchrCase, arg1EmptyTest);
     tcase_add_test(memchrCase, arg1NULLTest);
     tcase_add_test(memchrCase, arg2NegativeTest);
-
     tcase_add_test(memchrCase, arg3NegativeTest);
 
     tcase_add_test_raise_signal(memchrCase, arg2NULLTest, SIGSEGV);

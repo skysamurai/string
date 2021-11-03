@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string.h"
+#include "../s21_string/s21_string.h"
 #include "tests.h"
 
 START_TEST(normalTest) {
@@ -70,7 +70,6 @@ START_TEST(arg2NULLTest) {  // must create SIGSEGV
 }
 END_TEST
 
-END_TEST
 START_TEST(argsNULLTest) {  // must create SIGSEGV
     s21_strpbrk(S21_NULL, S21_NULL);
 }
