@@ -51,18 +51,20 @@ START_TEST(noInitialStringTest) {  // must NOT create segfault
     // origToken = strtok(origString, ",");
     // s21Token = s21_strtok(s21String, ",");
 
-    ck_assert(strcmp(origToken, s21Token) == 0);
-    ck_assert(strcmp(origString, s21String) == 0);
+    ck_assert(s21Token == S21_NULL && origToken == S21_NULL);
+
     int i = 0;
     do {
-        ck_assert_msg(strcmp(origToken, s21Token) == 0,
-                      "fail 1: orig Token:|%s|, s21 Token: |%s|",
-                      origToken != S21_NULL ? origToken : "NULL",
-                      s21Token != S21_NULL ? s21Token : "NULL");
-        ck_assert_msg(strcmp(origString, s21String) == 0,
-                      "fail 2: orig Token:|%s|, s21 Token: |%s|",
-                      origToken != S21_NULL ? origToken : "NULL",
-                      s21Token != S21_NULL ? s21Token : "NULL");
+        if (s21Token != S21_NULL && origToken != S21_NULL) {
+            ck_assert_msg(strcmp(origToken, s21Token) == 0,
+                          "fail 1: orig Token:|%s|, s21 Token: |%s|",
+                          origToken != S21_NULL ? origToken : "NULL",
+                          s21Token != S21_NULL ? s21Token : "NULL");
+            ck_assert_msg(strcmp(origString, s21String) == 0,
+                          "fail 2: orig Token:|%s|, s21 Token: |%s|",
+                          origToken != S21_NULL ? origToken : "NULL",
+                          s21Token != S21_NULL ? s21Token : "NULL");
+        }
 
         origToken = strtok(S21_NULL, ",");
         s21Token = s21_strtok(S21_NULL, ",");
