@@ -202,7 +202,7 @@ int s21_strcmp(const char *str1, const char *str2) {
         else
             ++i;
     }
-return flag;
+    return flag;
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
@@ -214,7 +214,7 @@ int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
         else
             ++i;
     }
-return flag;
+    return flag;
 }
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
@@ -223,35 +223,38 @@ char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
         dest[i] = src[i];
         ++i;
     }
-return dest;
+    return dest;
 }
 
 s21_size_t s21_strcspn(const char *str1, const char *str2) {
     s21_size_t j, i = 0;
     int flag = 1;
-    while ((str1[i] != 0) && (flag != 0 )) {
+    while ((str1[i] != 0) && (flag != 0)) {
         j = 0;
         while ((str2[j] != 0) && (flag != 0)) {
-            if (str1[i] == str2[j])
-                flag = 0;
-        ++j;
+            if (str1[i] == str2[j]) flag = 0;
+            ++j;
         }
-        if (flag != 0)
-            ++i;
+        if (flag != 0) ++i;
     }
-return i;
+    return i;
 }
 
 const char *s21_strerror(int errnum) {
-   const char *err;
-    err = "Unknown error";    
-   return err;
+    int a = errnum;
+    a = a + 1;
+
+    const char *err;
+    err = "Unknown error";
+    return err;
 }
 
 char *s21_strcat(char *dest, const char *src) {
     char *a = dest;
-    for (; *dest != '\0' ; dest++) {}
-    for (; *src != '\0' ; src++) {}
+    for (; *dest != '\0'; dest++) {
+    }
+    for (; *src != '\0'; src++) {
+    }
     *dest = *src;
     return a;
 }
