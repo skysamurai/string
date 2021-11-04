@@ -1,5 +1,6 @@
 #include "s21_string.h"
-#include <stdio.h>
+
+#include <errno.h>
 #include <stdlib.h>
 
 int s21_wrapper_sprintf(char *str, char *format, ...) {
@@ -252,11 +253,11 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 }
 
 const char *s21_strerror(int errnum) {
-    int a = errnum;
-    a = a + 1;
-
     const char *err;
-    err = "Unknown error";
+    if ((errnum > 0) && (errnum < 134))
+        err = sys_errlist[errnum];
+    else
+        err = "Unknown error";
     return err;
 }
 
