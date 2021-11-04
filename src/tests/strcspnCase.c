@@ -7,10 +7,13 @@
 
 // TODO
 START_TEST(normalTest) {
-    // char string[] = "This is the source string";
-    // char* substring = "axle";
-
-    ck_assert(1 == 1);
+    char str[] = "fcba73";
+    char keys[] = "1234567890";
+    int i;
+    i = strcspn (str,keys);
+    int s21_i;
+    s21_i = s21_strcspn (str,keys);
+    ck_assert(i == s21_i);
 }
 END_TEST
 
