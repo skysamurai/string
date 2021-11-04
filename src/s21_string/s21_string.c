@@ -1,5 +1,6 @@
 #include "s21_string.h"
 
+#include <errno.h>
 #include <stdlib.h>
 
 int s21_wrapper_sprintf(char *str, char *format, ...) {
@@ -14,19 +15,25 @@ int s21_wrapper_sprintf(char *str, char *format, ...) {
 void *s21_memchr(const void *str, int c, s21_size_t n) {
     void *res = S21_NULL;
     s21_size_t i = 0;
-    while ((*((char *)str + i) != c) & (i < n)) {
+    while ((str != NULL) && (*((char *)str + i) != c) && (i < n)) {
         i++;
     }
-    if (*((char *)str + i) == c) res = (char *)str + i;
+    if ((str != NULL) && (*((char *)str + i) == c)) res = (char *)str + i;
     return res;
 }
 
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
-    int res = 0;
+    int res = 0, n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2);
     s21_size_t i = 0;
-    while ((res == 0) & (i < n)) {
-        res = *((char *)str1 + i) - *((char *)str2 + i);
-        i++;
+    if (n_str1 > n_str2)
+        res = 1;
+    if (n_str1 < n_str2)
+    res = -1;
+    if (n_str1 == n_str2) {
+        while ((res == 0) & (i < n)) {
+            res = *((char *)str1 + i) - *((char *)str2 + i);
+            i++;
+        }
     }
     return res;
 }
@@ -128,19 +135,24 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {
-    int i = 0, j = s21_strlen(src);
-    char tp[2] = {*(char *)(src + i), '\0'};
-    while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
-        i++;
-        tp[0] = *(char *)(src + i);
+    void* temp;
+    if (trim_chars == S21_NULL) {
+        temp = src;
+    } else {
+        int i = 0, j = s21_strlen(src);
+        char tp[2] = {*(char *)(src + i), '\0'};
+        while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
+            i++;
+            tp[0] = *(char *)(src + i);
+        }
+        tp[0] = *(char *)(src + j - 1);
+        while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
+            j--;
+            tp[0] = *(char *)(src + j);
+        }
+        temp = malloc((j - i) * sizeof(char));
+        s21_memcpy(temp, (char *)(src + i), j - i + 1);
     }
-    tp[0] = *(char *)(src + j - 1);
-    while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
-        j--;
-        tp[0] = *(char *)(src + j);
-    }
-    void *temp = malloc((j - i) * sizeof(char));
-    s21_memcpy(temp, (char *)(src + i), j - i + 1);
     return temp;
 }
 
@@ -241,12 +253,22 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 }
 
 const char *s21_strerror(int errnum) {
-    int a = errnum;
-    a = a + 1;
-
+    #ifdef Linux
     const char *err;
-    err = "Unknown error";
+    if ((errnum > 0) && (errnum < 134))
+        err = sys_errlist[errnum];
+    else
+        err = "Unknown error";
     return err;
+    #endif
+    #ifdef MAC
+        const char *err;
+    if ((errnum > 0) && (errnum < 106))
+        err = sys_errlist[errnum];
+    else
+        err = "Unknown error";
+    return err;
+    #endif
 }
 
 char *s21_strcat(char *dest, const char *src) {
@@ -257,4 +279,21 @@ char *s21_strcat(char *dest, const char *src) {
     }
     *dest = *src;
     return a;
+}
+
+char *s21_strstr(const char *haystack, const char *needle) {
+    int i = 0, j = 0, n_haystack = s21_strlen(haystack), n_needle = s21_strlen(needle);
+    while ((j < n_needle) && (i < n_haystack)) {
+        j = 0;
+        while (needle[j] != haystack[i]) {
+            i++;
+        }
+        int k = i;
+        while ((needle[j] == haystack[k]) && (k < n_haystack) && (j < n_needle)) {
+            j++;
+            k++;
+        }
+        i++; 
+    }
+    return (char *)haystack + i;
 }
