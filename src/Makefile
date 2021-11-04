@@ -1,13 +1,13 @@
 CC = clang
-e_flags = -Wall -Wextra -Werror -g3
-h_path = -I${HOME}/.brew/include -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
-check_flags = -L$(HOME)/.brew/Cellar/check/0.15.2/lib -lcheck
+e_flags = -Wall -Wextra
+h_path = -I${HOME}/homebrew/include -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
+check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
 target = a.o
 
 all: programm tests
 
 programm:
-	$(CC) main.c ./s21_string/*.c ./s21_string/s21_sprintf/*.c $(h_path) -o $(target)
+	$(CC) main.c ./s21_string/*.c ./s21_string/s21_sprintf/*.c $(h_path) -o $(target) $(e_flags)
 
 test:
 	$(CC) ./tests/*.c ./s21_string/*.c ./s21_string/s21_sprintf/*.c $(h_path) $(check_flags) -o $(target)

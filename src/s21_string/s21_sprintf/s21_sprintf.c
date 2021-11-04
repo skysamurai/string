@@ -1,4 +1,6 @@
 #include "s21_sprintf.h"
+#include "../s21_string.h"
+#include "math.h"
 
 int s21_sprintf(char *str, const char *format, va_list args) {
     struct format_info info;
@@ -47,9 +49,12 @@ int s21_sprintf(char *str, const char *format, va_list args) {
                 info.flags |= EXPONENT;
                 real_number_to_char(&s_cursor, va_arg(args, double), &info);
             } else if (*f_cursor == 'E') {
+
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
+
             }
             if (*f_cursor == 'f') {
+
             }
             f_cursor++;
         }
@@ -60,9 +65,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
 void write_count_recorded_char(char element_count, struct format_info *info,
                                va_list args) {
     void *number = va_arg(args, void *);
-    if (info->qualifier == LONG_LONG) {
-        *((long long *)number) = (long long)(element_count);
-    } else if (info->qualifier == SHORT) {
+    if (info->qualifier == SHORT) {
         *((short *)number) = (short)(element_count);
     } else if (info->qualifier == LONG) {
         *((long *)number) = (long)(element_count);
@@ -127,36 +130,33 @@ void put_octo_number_cursoring(char **str, struct format_info *info,
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
-void int_number_to_char(char **str, unsigned long long int number,
+void int_number_to_char(char **str, unsigned long number,
                         struct format_info *info) {
-    char chr;
+    char aggregate;
     char sign;
     char tmp[64];
-    const char *digits_template; /* numbers from 0 to Z */
-    int i;
+    const char *digits_template;
+    int i = sizeof(short int);
 
-    if (info->flags & CAPITALIZE) {
+    if(info->flags & CAPITALIZE) {
         digits_template = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     } else {
         digits_template = "0123456789abcdefghijklmnopqrstuvwxyz";
     }
 
-    if (info->flags & LEFT_JUSTIFY) {
+    /* left alignment has a higher priority than zero padding */
+    if(info->flags & LEFT_JUSTIFY) {
         info->flags &= ~ZERO_PADDING;
     }
 
-    if (info->number_system < 2 || info->number_system > 36) {
-        return;
-    }
-
-    chr = (info->flags & ZERO_PADDING) ? '0' : ' ';
-    sign = '\0';
+    aggregate = (info->flags & ZERO_PADDING) ? '0' : ' ';
 
     /* get the sign of a number */
+    sign = '\0';
     if (info->flags & SIGNED) {
         if ((signed long)number < 0) {
             sign = '-';
-            number = -(signed long)number;
+            number = -(signed long long)number;
             info->field_width--;
         } else if (info->flags & SHOW_SIGN) {
             sign = '+';
@@ -180,13 +180,25 @@ void int_number_to_char(char **str, unsigned long long int number,
 
     /* put the number int the buffer */
     i = 0;
-    if (number == 0)
-        tmp[i++] = '0';
-    else
-        while (number != 0) {
-            tmp[i++] = digits_template[number % info->number_system];
-            number = number / info->number_system;
+    if(info->number_system & SIGNED) {
+        if (number == 0) {
+            tmp[i++] = '0';
+        } else {
+            while (number != 0) {
+                tmp[i++] = digits_template[number % info->number_system];
+                number = number / info->number_system;
+            }
         }
+    } else {
+        if (number == 0) {
+            tmp[i++] = '0';
+        } else {
+            while ((int)number != 0) {
+                tmp[i++] = digits_template[-(int)(signed long long)number % info->number_system];
+                number = -(int)(signed long long)number / info->number_system;
+            }
+        }
+    }
 
     if (i > info->precision) {
         info->precision = i;
@@ -214,7 +226,7 @@ void int_number_to_char(char **str, unsigned long long int number,
 
     if (!(info->flags & LEFT_JUSTIFY)) {
         while (info->field_width-- > 0) {
-            *(*str)++ = chr;
+            *(*str)++ = aggregate;
         }
     }
 
@@ -230,13 +242,14 @@ void int_number_to_char(char **str, unsigned long long int number,
 }
 
 void real_number_to_char(char **str, double number, struct format_info *info) {
+  int digit;
   int i;
   char exponent_sign;
   int exponent_len;
   int exponent_val;
   char aggregate;
   char sign;
-  char tmp[64];
+  char tmp[64] = {'\0'};
 
   sign = '\0';
   if(number < 0) {
@@ -267,23 +280,36 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
   /* calculating exponent size */
   if(info->flags & EXPONENT) {
     exponent_val = 0;
-    exponent_len = 0; 
-    while((number > 0 ? (signed)number : -(signed)number) / 10 == 0) {
-      number *= 10;
-      --exponent_val;
+    exponent_len = 0;
+
+    if(number == 0.0) {
+        number = 0;
+        exponent_val = 0;
+    } else {
+        while (number >= 1.0) {
+            number /= 10.0;
+            ++exponent_val;
+        }
+        while (number < 0.1) {
+            number *= 10.0;
+            --exponent_val;
+        }
+        exponent_val--;
+        number *= 10.0;
     }
-    while((number > 0 ? (signed)number : -(signed)number) / 10 > 0) {
-      number /= 10;
-      ++exponent_val;
-    }
+
     if((exponent_len = get_digit_count(exponent_val)) < 2) {
       exponent_len = 2;
     }
-    /* <number> and 'e' and '-' need extra 2 position */
+    /* additional positions for service symbols */
     info->field_width -= exponent_len + 4;
 
     exponent_sign = exponent_val >= 0 ? '+' : '-';
     exponent_val = exponent_val >= 0 ? exponent_val : -exponent_val;
+
+    if(sign != '\0' && (info->flags &  ZERO_PADDING)) {
+      *(*str)++ = sign;
+    }
 
     if(!(info->flags & LEFT_JUSTIFY)) {
       while(info->field_width-- > 0) {
@@ -291,7 +317,7 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
       }
     }
 
-    if(sign != '\0') {
+    if(sign != '\0' && !(info->flags & ZERO_PADDING)) {
       *(*str)++ = sign;
     }
 
@@ -306,7 +332,6 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
       info->field_width -= 1;
     }
 
-    number *= 10;
     for(;info->precision > 0; info->precision--, number *= 10) {
       if((int)number % 10 < 0) {
         *(*str)++ = '0' + ((unsigned int)number % 10);
@@ -315,23 +340,24 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
       }
     }
 
+
+
     *(*str)++ = 'e';
     *(*str)++ = exponent_sign;
-
-    for(i = 0; exponent_val > 0; exponent_val /= 10, ++i) {
-      tmp[i] = '0' + exponent_val % 10;
-    }
 
     if(exponent_val == 0) {
       *(*str)++ = '0';
       *(*str)++ = '0';
-    }
-
-    if(exponent_val > 0 && exponent_val < 10) {
-      *(*str)++ = '0';
-    }
-    for(; i > 0; --i) {
-      *(*str)++ = tmp[i - 1];
+    } else {
+        if(exponent_val < 9) {
+            *(*str)++ = '0';
+        }
+        for(i = 0; exponent_val > 0; ++i) {
+            tmp[i] = '0' + exponent_val % 10;
+        }
+        for(; i > 0; --i) {
+            *(*str)++ = tmp[i - 1];
+        }
     }
 
     while(info->field_width-- > 0) {

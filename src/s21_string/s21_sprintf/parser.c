@@ -65,17 +65,14 @@ void parse_precision(const char **format, struct format_info *info, va_list args
 
 void parse_qualifier(const char **format, struct format_info *info) {
   info->qualifier = -1;
-  if(**format == 'l' && *(*format + 1) == 'l') {
-    info->qualifier = LONG_LONG;
-    (*format) += 2;
-  } else if(**format == 'h') {
+  if(**format == 'h') {
     info->qualifier = SHORT;
     (*format) += 1;
   } else if(**format == 'l') { 
     info->qualifier = LONG;
     (*format) += 1;
   } else if(**format == 'L') {
-    info->qualifier = LONG_DOUBLE;
+    info->qualifier = LONG;
     (*format) += 1;
   }
 }
