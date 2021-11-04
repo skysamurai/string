@@ -50,3 +50,21 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# VScode Folders
+*.vscode
+
+
+src/Makefile
+*DS_Store
+.vscode/settings.json
+.vscode/c_cpp_properties.json
+src/CPPLINT.cfg
+materials/.DS_Store
+materials/linters/cpplint.py
+src/polygon.c
+src/polygon.c.disabled
+src/.vscode/settings.json
+src/.vscode/tasks.json
+src/.vscode/c_cpp_properties.json
+src/.vscode/launch.json
