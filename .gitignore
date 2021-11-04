@@ -55,7 +55,6 @@ dkms.conf
 *.vscode
 
 
-src/Makefile
 *DS_Store
 .vscode/settings.json
 .vscode/c_cpp_properties.json

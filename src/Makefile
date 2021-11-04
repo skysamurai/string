@@ -1,40 +1,32 @@
-GCC = gcc -Wall -Wextra -Werror -std=c11
+CC = clang
+e_flags = -Wall -Wextra -Werror -g3
+h_path = -I${HOME}/homebrew/include -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
+check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
+target = a.o
 
-clean:
-	rm -f *.o *.out *.a
-
-cfg:
-	cp ../materials/linters/CPPLINT.cfg CPPLINT.cfg
-
-cpplint:
-	python3 ../materials/linters/cpplint.py --extensions=c *.c
-
-cppcheck:
-	cppcheck --enable=all --suppress=missingIncludeSystem *.c
-
-check:
-	clear
-	$(MAKE) cppcheck
-	$(MAKE) cpplint
-	$(MAKE) cpplint
+all: programm tests
 
 s21_string.o:
-	$(GCC) -c s21_string.c
+	$(CC) -c ./s21_string/*.c ./s21_string/s21_sprintf/*.c $(h_path)
 
 s21_string.a: s21_string.o
-	ar rcs libs21_string.a s21_string.o
-	
-test: clean s21_string.a 
-	$(GCC) test.c -L. -ls21_string
-	./a.out
-	
-all: s21_string.a
-	$(MAKE) clean
-	$(MAKE) s21_string.a
-	$(MAKE) test 
+	ar rcs libs21_string.a *.o
 
-push: clean
-	git add *
-	git commit -m"just save $$RANDOM*$$RANDOM"
-	git push
-	
+programm:
+	$(CC) main.c -L. -ls21_string -o $(target)
+
+test:
+	$(CC) ./tests/*.c -L. -ls21_string $(check_flags) -o $(target) -I${HOME}/homebrew/include
+
+clean:
+	rm -rf *.o* *.a
+
+cls:
+	clear
+
+run_programm:
+	./$(target)
+
+f_prog: cls clean programm run_programm
+
+f_test: cls clean s21_string.a test run_programm

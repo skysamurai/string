@@ -258,3 +258,20 @@ char *s21_strcat(char *dest, const char *src) {
     *dest = *src;
     return a;
 }
+
+char *s21_strstr(const char *haystack, const char *needle) {
+    int i = 0, j = 0, n_haystack = s21_strlen(haystack), n_needle = s21_strlen(needle);
+    while ((j < n_needle) && (i < n_haystack)) {
+        j = 0;
+        while (needle[j] != haystack[i]) {
+            i++;
+        }
+        int k = i;
+        while ((needle[j] == haystack[k]) && (k < n_haystack) && (j < n_needle)) {
+            j++;
+            k++;
+        }
+        i++; 
+    }
+    return (char *)haystack + i;
+}
