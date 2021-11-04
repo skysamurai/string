@@ -9,6 +9,8 @@ char* origToken = S21_NULL;
 
     // origToken = strtok(origString, ",");
     // s21Token = s21_strtok(s21String, ",");
+    printf("%d\n", s21_memcmp("aaaa", "aaa", 4));
+    printf("%d\n", memcmp("aaaa", "aaa", 4));
 
     int i = 0;
     do {

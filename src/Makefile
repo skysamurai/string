@@ -27,6 +27,6 @@ cls:
 run_programm:
 	./$(target)
 
-f_prog: cls clean programm run_programm
+f_prog: cls clean s21_string.a programm run_programm
 
 f_test: cls clean s21_string.a test run_programm
