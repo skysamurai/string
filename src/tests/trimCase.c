@@ -44,7 +44,7 @@ START_TEST(arg2NULLTest) {
 END_TEST
 
 START_TEST(argsNULLTest) {  // throws runtime exeption in C#
-    s21_trim(S21_NULL, S21_NULL);
+    ck_assert(s21_trim(S21_NULL, S21_NULL) == S21_NULL);
 }
 END_TEST
 
@@ -55,7 +55,7 @@ TCase* CreateTrimCase() {
     tcase_add_test_raise_signal(trimCase, arg1NULLTest, SIGSEGV);
     tcase_add_test(trimCase, arg2EmptyTest);
     tcase_add_test(trimCase, arg2NULLTest);
-    tcase_add_test_raise_signal(trimCase, argsNULLTest, SIGSEGV);
+    tcase_add_test(trimCase, argsNULLTest);
 
     return trimCase;
 }
