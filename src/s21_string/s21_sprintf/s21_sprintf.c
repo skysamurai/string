@@ -10,7 +10,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
     while (f_cursor != S21_NULL) {
         percent_pointer = strpbrk(f_cursor, "%");
         if (percent_pointer != S21_NULL) {
-            memcpy(s_cursor, f_cursor, percent_pointer - f_cursor);
+            memcpy(s_cursor, f_cursor, percent_pointer - f_cursor + 1);
             s_cursor += percent_pointer - f_cursor;
             f_cursor += s_cursor - str;
         } else {
