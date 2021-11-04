@@ -10,7 +10,7 @@ s21_string.a:
 	rm s21_string.o
 
 test: s21_string.a
-	gcc s21_string.a ./tests/*.c $(flags) $(checkFlags)
+	gcc s21_string.a s21_string-test.c ./tests/*.c $(flags) $(checkFlags)
 
 clean: clear all
 

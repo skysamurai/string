@@ -13,7 +13,6 @@ int s21_memcmp(const void *str1, const void *str2, s21_size_t n);
 void *s21_memcpy(void *dest, const void *src, s21_size_t n);
 void *s21_memmove(void *dest, const void *src, s21_size_t n);
 void *s21_memset(void *str, int c, s21_size_t n);
-// char *s21_strchr(const char *str, int c);
 s21_size_t s21_strlen(const char *str);
 void *s21_to_upper(const char *str);
 void *s21_to_lower(const char *str);

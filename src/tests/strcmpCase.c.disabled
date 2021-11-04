@@ -1,0 +1,91 @@
+#include <check.h>
+#include <signal.h>
+#include <string.h>
+
+#include "../s21_string.h"
+#include "tests.h"
+
+START_TEST(normalTest) {
+    char str[] = "This is a sample string";
+    char keys[] = "aeiou";
+    char* origOutput;
+    char* s21Output;
+
+    origOutput = strcmp(keys, str);
+    s21Output = s21_strcmp(keys, str);
+    ck_assert(origOutput == s21Output);
+}
+END_TEST
+
+START_TEST(noCharTest) {
+    char str[] = "This is a sample string";
+    char* origOutput;
+    char* s21Output;
+
+    origOutput = strcmp("df", str);
+    s21Output = s21_strcmp("df", str);
+    ck_assert(origOutput == s21Output);
+}
+END_TEST
+
+START_TEST(arg1EmptyTest) {
+    char str[] = "This is a sample string";
+    char* origOutput;
+    char* s21Output;
+
+    origOutput = strcmp("", str);
+    s21Output = s21_strcmp("", str);
+    ck_assert(origOutput == s21Output);
+}
+END_TEST
+
+START_TEST(arg2EmptyTest) {
+    char keys[] = "aeiou";
+    char* origOutput;
+    char* s21Output;
+    origOutput = strcmp(keys, "");
+    s21Output = s21_strcmp(keys, "");
+    ck_assert(origOutput == s21Output);
+}
+END_TEST
+
+START_TEST(argsEmptyTest) {
+    char* origOutput;
+    char* s21Output;
+    origOutput = strcmp("", "");
+    s21Output = s21_strcmp("", "");
+    ck_assert(origOutput == s21Output);
+}
+END_TEST
+
+START_TEST(arg1NULLTest) {  // must create SIGSEGV
+    char str[] = "This is a sample string";
+    s21_strcmp(S21_NULL, str);
+}
+END_TEST
+
+START_TEST(arg2NULLTest) {  // must create SIGSEGV
+    char str[] = "This is a sample string";
+    s21_strcmp(str, S21_NULL);
+}
+END_TEST
+
+END_TEST
+START_TEST(argsNULLTest) {  // must create SIGSEGV
+    s21_strcmp(S21_NULL, S21_NULL);
+}
+END_TEST
+
+TCase* CreatestrcmpCase() {
+    TCase* strcmpCase = tcase_create("strcmpCase");
+    tcase_add_test(strcmpCase, normalTest);
+    tcase_add_test(strcmpCase, noCharTest);
+    tcase_add_test(strcmpCase, arg1EmptyTest);
+    tcase_add_test(strcmpCase, arg2EmptyTest);
+    tcase_add_test(strcmpCase, argsEmptyTest);
+    tcase_add_test_raise_signal(strcmpCase, arg1NULLTest, SIGSEGV);
+    tcase_add_test_raise_signal(strcmpCase, arg2NULLTest, SIGSEGV);
+    tcase_add_test_raise_signal(strcmpCase, argsNULLTest, SIGSEGV);
+
+    return strcmpCase;
+}
