@@ -354,9 +354,10 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
         }
         for(i = 0; exponent_val > 0; ++i) {
             tmp[i] = '0' + exponent_val % 10;
+            exponent_val /= 10;
         }
-        for(; i > 0; --i) {
-            *(*str)++ = tmp[i - 1];
+        while(i > 0) {
+            *(*str)++ = tmp[(i--) - 1];
         }
     }
 
