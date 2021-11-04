@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string.h"
+#include "../s21_string/s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -51,7 +51,7 @@ START_TEST(arg2NULLTest) {  // must return SIGSEGV
 END_TEST
 
 TCase* CreateMemcmpCase() {
-    TCase* memcmpCase = tcase_create("memcmpCase");
+    TCase* memcmpCase = tcase_create("memcmp case");
 
     tcase_add_test(memcmpCase, normalEqualTest);
     tcase_add_test(memcmpCase, normalLessTest);
