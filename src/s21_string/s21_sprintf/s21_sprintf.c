@@ -10,7 +10,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
     while (f_cursor != S21_NULL) {
         percent_pointer = strpbrk(f_cursor, "%");
         if (percent_pointer != S21_NULL) {
-            memcpy(s_cursor, f_cursor, percent_pointer - f_cursor);
+            memcpy(s_cursor, f_cursor, percent_pointer - f_cursor + 1);
             s_cursor += percent_pointer - f_cursor;
             f_cursor += s_cursor - str;
         } else {
@@ -230,112 +230,112 @@ void int_number_to_char(char **str, unsigned long long int number,
 }
 
 void real_number_to_char(char **str, double number, struct format_info *info) {
-  int i;
-  char exponent_sign;
-  int exponent_len;
-  int exponent_val;
-  char aggregate;
-  char sign;
-  char tmp[64];
+    int i;
+    char exponent_sign;
+    int exponent_len;
+    int exponent_val;
+    char aggregate;
+    char sign;
+    char tmp[64];
 
-  sign = '\0';
-  if(number < 0) {
-    sign = '-';
-    info->field_width--;
-  } else if(info->flags & SHOW_SIGN) {
-    sign = '+';
-    info->field_width--;
-  } else if(info->flags & SPACE_INSTEAD_SIGN) {
-    sign = ' ';
-    info->field_width--;
-  }
-
-  if(info->flags & LEFT_JUSTIFY) {
-    info->flags &= ~ZERO_PADDING;
-  }
-  aggregate = (info->flags & ZERO_PADDING) ? '0' : ' ';
-
-  if(info->flags & (EXPONENT | FLOAT)) {
-    if(info->precision >= 0) {
-      info->field_width -= info->precision;
-    } else {
-      info->field_width -= 6;
-      info->precision = 6;
-    }
-  }
-
-  /* calculating exponent size */
-  if(info->flags & EXPONENT) {
-    exponent_val = 0;
-    exponent_len = 0; 
-    while((number > 0 ? (signed)number : -(signed)number) / 10 == 0) {
-      number *= 10;
-      --exponent_val;
-    }
-    while((number > 0 ? (signed)number : -(signed)number) / 10 > 0) {
-      number /= 10;
-      ++exponent_val;
-    }
-    if((exponent_len = get_digit_count(exponent_val)) < 2) {
-      exponent_len = 2;
-    }
-    /* <number> and 'e' and '-' need extra 2 position */
-    info->field_width -= exponent_len + 4;
-
-    exponent_sign = exponent_val >= 0 ? '+' : '-';
-    exponent_val = exponent_val >= 0 ? exponent_val : -exponent_val;
-
-    if(!(info->flags & LEFT_JUSTIFY)) {
-      while(info->field_width-- > 0) {
-        *(*str)++ = aggregate;
-      }
+    sign = '\0';
+    if (number < 0) {
+        sign = '-';
+        info->field_width--;
+    } else if (info->flags & SHOW_SIGN) {
+        sign = '+';
+        info->field_width--;
+    } else if (info->flags & SPACE_INSTEAD_SIGN) {
+        sign = ' ';
+        info->field_width--;
     }
 
-    if(sign != '\0') {
-      *(*str)++ = sign;
+    if (info->flags & LEFT_JUSTIFY) {
+        info->flags &= ~ZERO_PADDING;
+    }
+    aggregate = (info->flags & ZERO_PADDING) ? '0' : ' ';
+
+    if (info->flags & (EXPONENT | FLOAT)) {
+        if (info->precision >= 0) {
+            info->field_width -= info->precision;
+        } else {
+            info->field_width -= 6;
+            info->precision = 6;
+        }
     }
 
-    if(number < 0) {
-      *(*str)++ = '0' - (unsigned int)number;
-    } else {
-      *(*str)++ = '0' + (signed int)number;
-    }
+    /* calculating exponent size */
+    if (info->flags & EXPONENT) {
+        exponent_val = 0;
+        exponent_len = 0;
+        while ((number > 0 ? (signed)number : -(signed)number) / 10 == 0) {
+            number *= 10;
+            --exponent_val;
+        }
+        while ((number > 0 ? (signed)number : -(signed)number) / 10 > 0) {
+            number /= 10;
+            ++exponent_val;
+        }
+        if ((exponent_len = get_digit_count(exponent_val)) < 2) {
+            exponent_len = 2;
+        }
+        /* <number> and 'e' and '-' need extra 2 position */
+        info->field_width -= exponent_len + 4;
 
-    if(info->precision != 0) {
-      *(*str)++ = '.';
-      info->field_width -= 1;
-    }
+        exponent_sign = exponent_val >= 0 ? '+' : '-';
+        exponent_val = exponent_val >= 0 ? exponent_val : -exponent_val;
 
-    number *= 10;
-    for(;info->precision > 0; info->precision--, number *= 10) {
-      if((int)number % 10 < 0) {
-        *(*str)++ = '0' + ((unsigned int)number % 10);
-      } else {
-        *(*str)++ = '0' + (signed int)number % 10;
-      }
-    }
+        if (!(info->flags & LEFT_JUSTIFY)) {
+            while (info->field_width-- > 0) {
+                *(*str)++ = aggregate;
+            }
+        }
 
-    *(*str)++ = 'e';
-    *(*str)++ = exponent_sign;
+        if (sign != '\0') {
+            *(*str)++ = sign;
+        }
 
-    for(i = 0; exponent_val > 0; exponent_val /= 10, ++i) {
-      tmp[i] = '0' + exponent_val % 10;
-    }
+        if (number < 0) {
+            *(*str)++ = '0' - (unsigned int)number;
+        } else {
+            *(*str)++ = '0' + (signed int)number;
+        }
 
-    if(exponent_val == 0) {
-      *(*str)++ = '0';
-      *(*str)++ = '0';
-    }
+        if (info->precision != 0) {
+            *(*str)++ = '.';
+            info->field_width -= 1;
+        }
 
-    if(exponent_val > 0 && exponent_val < 10) {
-      *(*str)++ = '0';
-    }
-    for(; i > 0; --i) {
-      *(*str)++ = tmp[i - 1];
-    }
+        number *= 10;
+        for (; info->precision > 0; info->precision--, number *= 10) {
+            if ((int)number % 10 < 0) {
+                *(*str)++ = '0' + ((unsigned int)number % 10);
+            } else {
+                *(*str)++ = '0' + (signed int)number % 10;
+            }
+        }
 
-    while(info->field_width-- > 0) {
-      *(*str)++ = aggregate;
+        *(*str)++ = 'e';
+        *(*str)++ = exponent_sign;
+
+        for (i = 0; exponent_val > 0; exponent_val /= 10, ++i) {
+            tmp[i] = '0' + exponent_val % 10;
+        }
+
+        if (exponent_val == 0) {
+            *(*str)++ = '0';
+            *(*str)++ = '0';
+        }
+
+        if (exponent_val > 0 && exponent_val < 10) {
+            *(*str)++ = '0';
+        }
+        for (; i > 0; --i) {
+            *(*str)++ = tmp[i - 1];
+        }
+
+        while (info->field_width-- > 0) {
+            *(*str)++ = aggregate;
+        }
     }
-  }
 }
