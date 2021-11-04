@@ -6,7 +6,7 @@
 int main(void) {
 
    // Исходный массив
-   char src[255]="Hello me";
+   char src[255]="Helo Mellow";
    char new_src[255]="llo";
  
 /*    // Заполняем массив символом ‘1’
