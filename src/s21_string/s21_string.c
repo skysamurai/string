@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h> //  dont forget to delete !!!
 
 int s21_wrapper_sprintf(char *str, char *format, ...) {
     va_list args;
@@ -253,22 +254,23 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 }
 
 const char *s21_strerror(int errnum) {
-    #ifdef Linux
     const char *err;
-    if ((errnum > 0) && (errnum < 134))
-        err = sys_errlist[errnum];
-    else
-        err = "Unknown error";
-    return err;
-    #endif
-    #ifdef MAC
-        const char *err;
-    if ((errnum > 0) && (errnum < 106))
-        err = sys_errlist[errnum];
-    else
-        err = "Unknown error";
-    return err;
-    #endif
+    int errmax = 133;
+#ifdef __APPLE__
+    errmax = 106;
+#endif
+    if ( (errnum > 0) && (errnum <= errmax)) {    
+            err = sys_errlist[errnum];
+        }
+        else if ( errnum == 0 ) {        
+            err = "Undefined error: 0";
+        }
+        else {
+            char errch[100];
+            sprintf(errch,"Unknown error: %d", errnum);
+            err = errch;
+        }
+return err;
 }
 
 char *s21_strcat(char *dest, const char *src) {
