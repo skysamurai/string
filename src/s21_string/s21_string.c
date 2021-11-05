@@ -1,5 +1,4 @@
 #include "s21_string.h"
-
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h> //  dont forget to delete !!!
@@ -219,15 +218,29 @@ int s21_strcmp(const char *str1, const char *str2) {
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
+    int flag = 1;
+    int ret = -2;
     s21_size_t i = 0;
-    int flag = 0;
-    while ((flag != -1) && (i != n) && ((str2[i] != '\0'))) {
-        if (str1[i] != str2[i])
+    // s21_size_t maxlen = 0;
+    // if (strlen(*str2) > strlen(*str1))
+    //     maxlen = strlen(*str2);
+    // else
+    //     maxlen = strlen(*str1);
+    // if (n > maxlen)
+    //     n = maxlen;
+    for (i = 0; i < n; i++) {
+        if ((str1[i] != "\0") && (str2[i] != "\0") && (str1[i] != str2[i]) && (flag)) {
+            if (str1[i] < str2[i])
+                ret = -1;
+            else
+                ret = 1;
             flag = -1;
-        else
-            ++i;
+        }
+
     }
-    return flag;
+    if (((str1[i] == "\0") && (str2[i] == "\0")) || (n < 1)) 
+        ret = 0;
+return ret;
 }
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
