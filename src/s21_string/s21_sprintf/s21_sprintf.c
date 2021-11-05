@@ -129,8 +129,8 @@ void put_octo_number_cursoring(char **str, struct format_info *info,
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
-void int_number_to_char(char **str, unsigned long number,
-    struct format_info *info) {
+void int_number_to_char(char **str, unsigned long long int number,
+                        struct format_info *info) {
     char aggregate;
     char sign;
     char tmp[64];
