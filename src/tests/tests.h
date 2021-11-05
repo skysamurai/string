@@ -12,4 +12,10 @@ TCase* CreateTrimCase();
 TCase* CreateStrtokCase();
 TCase* CreateSprintfCase();
 
+TCase* CreateStrchrCase();
+TCase* CreateStrcmpCase();
+TCase* CreateStrncmpCase();
+TCase* CreateStrcatCase();
+TCase* CreateStrncatCase();
+
 #endif  // SRC_TESTS_TESTS_H_
