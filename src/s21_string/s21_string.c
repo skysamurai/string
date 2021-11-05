@@ -25,10 +25,8 @@ void *s21_memchr(const void *str, int c, s21_size_t n) {
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
     int res = 0, n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2);
     s21_size_t i = 0;
-    if (n_str1 > n_str2)
-        res = 1;
-    if (n_str1 < n_str2)
-    res = -1;
+    if (n_str1 > n_str2) res = 1;
+    if (n_str1 < n_str2) res = -1;
     if (n_str1 == n_str2) {
         while ((res == 0) & (i < n)) {
             res = *((char *)str1 + i) - *((char *)str2 + i);
@@ -135,7 +133,7 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {
-    void* temp;
+    void *temp;
     if (trim_chars == S21_NULL) {
         temp = src;
     } else {
@@ -253,22 +251,22 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 }
 
 const char *s21_strerror(int errnum) {
-    #ifdef Linux
+#ifdef Linux
     const char *err;
     if ((errnum > 0) && (errnum < 134))
         err = sys_errlist[errnum];
     else
         err = "Unknown error";
     return err;
-    #endif
-    #ifdef MAC
-        const char *err;
+#endif
+#ifdef MAC
+    const char *err;
     if ((errnum > 0) && (errnum < 106))
         err = sys_errlist[errnum];
     else
         err = "Unknown error";
     return err;
-    #endif
+#endif
 }
 
 char *s21_strcat(char *dest, const char *src) {
@@ -282,29 +280,31 @@ char *s21_strcat(char *dest, const char *src) {
 }
 
 char *s21_strstr(const char *haystack, const char *needle) {
-    int i = 0, j = 0, n_haystack = s21_strlen(haystack), n_needle = s21_strlen(needle);
+    int i = 0, j = 0, n_haystack = s21_strlen(haystack),
+        n_needle = s21_strlen(needle);
     while ((j < n_needle) && (i < n_haystack)) {
         j = 0;
         while (needle[j] != haystack[i]) {
             i++;
         }
         int k = i;
-        while ((needle[j] == haystack[k]) && (k < n_haystack) && (j < n_needle)) {
+        while ((needle[j] == haystack[k]) && (k < n_haystack) &&
+               (j < n_needle)) {
             j++;
             k++;
         }
-        i++; 
+        i++;
     }
     return (char *)haystack + i;
 }
 
-
-  char *s21_strncat(char *dest, const char *src, s21_size_t n){
-       char *a = dest;
-       s21_size_t i = 0;
-    for (; *dest != '\0' ; dest++) {}
-    for (i=0; i<= n; i++) {
-    *(dest + i) = *(src + i);
+char *s21_strncat(char *dest, const char *src, s21_size_t n) {
+    char *a = dest;
+    s21_size_t i = 0;
+    for (; *dest != '\0'; dest++) {
+    }
+    for (i = 0; i <= n; i++) {
+        *(dest + i) = *(src + i);
     }
     return a;
-  }
+}

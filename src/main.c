@@ -88,6 +88,7 @@ int main(int argc, char **argv) {
     int i;
     char s[MAX_NUMBER_STRING_SIZE];
     double d[] = {16.9,
+                  6.9,
                   42.0,
                   1234567.89012345,
                   0.000000000000018,
@@ -95,8 +96,8 @@ int main(int argc, char **argv) {
                   -888888888888888.8888888,
                   111111111111111111111111.2222222222,
                   0.085};
-    for (i = 0; i < 8; i++) {
-        printf("--------------------------------\n%d:\nprintf: %.14e\n", i + 1,
+    for (i = 0; i < 9; i++) {
+        printf("--------------------------------\n%lf:\nprintf: %.14e\n", d[i],
                d[i]);
 
         char s21str[400];
