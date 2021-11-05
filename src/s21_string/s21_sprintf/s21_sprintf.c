@@ -1,6 +1,7 @@
 #include "s21_sprintf.h"
 #include "../s21_string.h"
 #include "math.h"
+#include "stdint.h"
 
 int s21_sprintf(char *str, const char *format, va_list args) {
     struct format_info info;
@@ -49,13 +50,10 @@ int s21_sprintf(char *str, const char *format, va_list args) {
                 info.flags |= EXPONENT;
                 real_number_to_char(&s_cursor, va_arg(args, double), &info);
             } else if (*f_cursor == 'E') {
-
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
-
             }
-            if (*f_cursor == 'f') {
-                f_cursor++;
-            }
+            if (*f_cursor == 'f') {}
+            f_cursor++;
         }
     }
     return s_cursor - str;
@@ -68,8 +66,6 @@ void write_count_recorded_char(char element_count, struct format_info *info,
         *((short *)number) = (short)(element_count);
     } else if (info->qualifier == LONG) {
         *((long *)number) = (long)(element_count);
-    } else if (info->qualifier == LONG_DOUBLE) {
-        *((long double *)number) = (long double)(element_count);
     }
 }
 

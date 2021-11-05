@@ -2,10 +2,12 @@
 
 void parse_format(const char **format, struct format_info *info, va_list args) {
     info->number_system = 10;
-    parse_format_flag(format, info);
-    parse_field_width(format, info, args);
-    parse_precision(format, info, args);
-    parse_qualifier(format, info);
+    // while(**format != '\0' && !is_specifer(**format)) {
+        parse_format_flag(format, info);
+        parse_field_width(format, info, args);
+        parse_precision(format, info, args);
+        parse_qualifier(format, info);
+    // }
 }
 
 void parse_format_flag(const char **format, struct format_info *info) {
@@ -64,10 +66,7 @@ void parse_qualifier(const char **format, struct format_info *info) {
     if (**format == 'h') {
         info->qualifier = SHORT;
         (*format) += 1;
-    } else if (**format == 'l') {
-        info->qualifier = LONG;
-        (*format) += 1;
-    } else if (**format == 'L') {
+    } else if (**format == 'l' || **format == 'L') {
         info->qualifier = LONG;
         (*format) += 1;
     }
@@ -75,6 +74,16 @@ void parse_qualifier(const char **format, struct format_info *info) {
 
 int is_digit(char chr) {
     return (chr >= '0') && (chr <= '9');
+}
+
+int is_specifer(char chr) {
+    int result;
+    if (chr == 'L' || chr == 'l' || chr == 'h' || chr == '%') {
+        result = 0;
+    } else if (chr > 'A' && chr < 'Z' || chr > 'a' && chr < 'z') {
+        result = 1;
+    }
+    return result;
 }
 
 int get_digit_count(int number) {
