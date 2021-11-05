@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string.h"
+#include "../s21_string/s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -50,7 +50,7 @@ START_TEST(arg2NULLTest) {  // must return SIGSEGV
 }
 END_TEST
 
-TCase* CreatestrncmpCase() {
+TCase* CreateStrncatCase() {
     TCase* strncmpCase = tcase_create("strncmpCase");
 
     tcase_add_test(strncmpCase, normalEqualTest);

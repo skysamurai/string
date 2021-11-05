@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string.h"
+#include "../s21_string/s21_string.h"
 #include "tests.h"
 
 START_TEST(normalTest) {
@@ -52,7 +52,7 @@ START_TEST(argsNULLTest) {  // must create SIGSEGV
 }
 END_TEST
 
-TCase *CreatestrchrCase() {
+TCase *CreateStrchrCase() {
     TCase *strchrCase = tcase_create("StrchrCase");
 
     tcase_add_test(strchrCase, normalTest);

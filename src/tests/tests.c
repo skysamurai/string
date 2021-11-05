@@ -13,7 +13,6 @@ int main(void) {
     TCase *strpbrkCase = CreateStrpbrkCase();
     suite_add_tcase(s1, strpbrkCase);
 
-
     TCase *strrchrCase = CreateStrrchrCase();
     suite_add_tcase(s1, strrchrCase);
 
@@ -35,19 +34,16 @@ int main(void) {
     TCase *sprintfCase = CreateSprintfCase();
     suite_add_tcase(s1, sprintfCase);
 
-    TCase *strcspnCase = CreateStrcmpCase();
-    suite_add_tcase(s1, strcmpCase);
-
-    TCase *memchrCase = CreateStrncmpCase();
+    TCase *strncmpCase = CreateStrncmpCase();
     suite_add_tcase(s1, strncmpCase);
 
-    TCase *trimCase = CreateStrcatCase();
+    TCase *strcatCase = CreateStrcatCase();
     suite_add_tcase(s1, strcatCase);
 
-    TCase *strtokCase = CreateStrncatCase();
+    TCase *strncatCase = CreateStrncatCase();
     suite_add_tcase(s1, strncatCase);
 
-    TCase *sprintfCase = CreateStrchrCase();
+    TCase *strchrCase = CreateStrchrCase();
     suite_add_tcase(s1, strchrCase);
 
     srunner_run_all(sr, CK_ENV);
