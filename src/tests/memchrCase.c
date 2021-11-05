@@ -18,6 +18,19 @@ START_TEST(normalTest) {
 }
 END_TEST
 
+START_TEST(normalNoSuchCharTest) {
+    char str[] = "This is a sample string";
+    char ch = 'k';
+    char *origOutput;
+    char *s21Output;
+
+    origOutput = memchr(str, ch, strlen(str));
+    s21Output = s21_memchr(str, ch, strlen(str));
+
+    ck_assert(origOutput == s21Output);
+}
+END_TEST
+
 START_TEST(arg1EmptyTest) {
     char ch = 's';
     char *origOutput;
@@ -101,6 +114,7 @@ TCase *CreateMemchrCase() {
     TCase *memchrCase = tcase_create("memchr case");
 
     tcase_add_test(memchrCase, normalTest);
+    tcase_add_test(memchrCase, normalNoSuchCharTest);
     tcase_add_test(memchrCase, arg1EmptyTest);
     tcase_add_test(memchrCase, arg1NULLTest);
     tcase_add_test(memchrCase, arg2NegativeTest);
