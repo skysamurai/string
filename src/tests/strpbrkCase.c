@@ -39,6 +39,12 @@ START_TEST(arg1EmptyTest) {
 }
 END_TEST
 
+START_TEST(arg1NULLTest) {  // must create SIGSEGV
+    char str[] = "This is a sample string";
+    s21_strpbrk(S21_NULL, str);
+}
+END_TEST
+
 START_TEST(arg2EmptyTest) {
     char keys[] = "aeiou";
     char* origOutput;
@@ -49,24 +55,18 @@ START_TEST(arg2EmptyTest) {
 }
 END_TEST
 
+START_TEST(arg2NULLTest) {  // must create SIGSEGV
+    char str[] = "This is a sample string";
+    s21_strpbrk(str, S21_NULL);
+}
+END_TEST
+
 START_TEST(argsEmptyTest) {
     char* origOutput;
     char* s21Output;
     origOutput = strpbrk("", "");
     s21Output = s21_strpbrk("", "");
     ck_assert(origOutput == s21Output);
-}
-END_TEST
-
-START_TEST(arg1NULLTest) {  // must create SIGSEGV
-    char str[] = "This is a sample string";
-    s21_strpbrk(S21_NULL, str);
-}
-END_TEST
-
-START_TEST(arg2NULLTest) {  // must create SIGSEGV
-    char str[] = "This is a sample string";
-    s21_strpbrk(str, S21_NULL);
 }
 END_TEST
 

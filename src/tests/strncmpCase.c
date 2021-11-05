@@ -35,6 +35,36 @@ START_TEST(normalMoreTest) {
 }
 END_TEST
 
+START_TEST(arg1EmptyTest) {
+    int origResult = strncmp("", "aaa", 3);
+    int s21Result = s21_strncmp("", "aaa", 3);
+
+    ck_assert_msg(s21Result == origResult,
+                  "fail for strncmp(\"\", \"aaa\", 3). orig:%d,  s21:%d",
+                  origResult, s21Result);
+}
+END_TEST
+
+START_TEST(arg1NULLTest) {  // must return SIGSEGV
+    s21_strncmp(S21_NULL, "aaa", 3);
+}
+END_TEST
+
+START_TEST(arg2EmptyTest) {
+    int origResult = strncmp("aaa", "", 3);
+    int s21Result = s21_strncmp("aaa", "", 3);
+
+    ck_assert_msg(s21Result == origResult,
+                  "fail for strncmp(\"aaa\", \"\", 3). orig:%d,  s21:%d",
+                  origResult, s21Result);
+}
+END_TEST
+
+START_TEST(arg2NULLTest) {  // must return SIGSEGV
+    s21_strncmp("aaa", S21_NULL, 3);
+}
+END_TEST
+
 START_TEST(arg3TooMuchTest) {
     int origResult = strncmp("aba", "aaa", 333);
     int s21Result = s21_strncmp("aba", "aaa", 333);
@@ -52,36 +82,6 @@ START_TEST(arg3ZeroTest) {
     ck_assert_msg(s21Result == origResult,
                   "fail for strncmp(\"baa\", \"aaa\", 0). orig:%d,  s21:%d",
                   origResult, s21Result);
-}
-END_TEST
-
-START_TEST(arg1EmptyTest) {
-    int origResult = strncmp("", "aaa", 3);
-    int s21Result = s21_strncmp("", "aaa", 3);
-
-    ck_assert_msg(s21Result == origResult,
-                  "fail for strncmp(\"\", \"aaa\", 3). orig:%d,  s21:%d",
-                  origResult, s21Result);
-}
-END_TEST
-
-START_TEST(arg2EmptyTest) {
-    int origResult = strncmp("aaa", "", 3);
-    int s21Result = s21_strncmp("aaa", "", 3);
-
-    ck_assert_msg(s21Result == origResult,
-                  "fail for strncmp(\"aaa\", \"\", 3). orig:%d,  s21:%d",
-                  origResult, s21Result);
-}
-END_TEST
-
-START_TEST(arg1NULLTest) {  // must return SIGSEGV
-    s21_strncmp(S21_NULL, "aaa", 3);
-}
-END_TEST
-
-START_TEST(arg2NULLTest) {  // must return SIGSEGV
-    s21_strncmp("aaa", S21_NULL, 3);
 }
 END_TEST
 

@@ -13,6 +13,7 @@ START_TEST(normalTest) {
 
     origOutput = memchr(str, ch, strlen(str));
     s21Output = s21_memchr(str, ch, strlen(str));
+
     ck_assert(origOutput == s21Output);
 }
 END_TEST
@@ -24,6 +25,7 @@ START_TEST(arg1EmptyTest) {
 
     origOutput = memchr("", ch, strlen(""));
     s21Output = s21_memchr("", ch, strlen(""));
+
     ck_assert(origOutput == s21Output);
 }
 END_TEST
@@ -35,8 +37,7 @@ START_TEST(arg1NULLTest) {  // must NOT create segfault
     char *s21Output;
 
     origOutput = memchr(nullStr, ch, 0);
-
-    s21Output = s21_memchr(S21_NULL, ch, 0);
+    s21Output = s21_memchr(nullStr, ch, 0);
 
     ck_assert(origOutput == s21Output);
 }
