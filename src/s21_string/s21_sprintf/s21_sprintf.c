@@ -54,16 +54,15 @@ int s21_sprintf(char *str, const char *format, va_list args) {
 
             }
             if (*f_cursor == 'f') {
-
+                f_cursor++;
             }
-            f_cursor++;
         }
     }
     return s_cursor - str;
 }
 
 void write_count_recorded_char(char element_count, struct format_info *info,
-                               va_list args) {
+    va_list args) {
     void *number = va_arg(args, void *);
     if (info->qualifier == SHORT) {
         *((short *)number) = (short)(element_count);
@@ -105,47 +104,47 @@ void put_pointer_cursoring(char **str, struct format_info *info, va_list args) {
 }
 
 void put_hex_number_cursoring(char **str, struct format_info *info,
-                              va_list args) {
+    va_list args) {
     info->number_system = 16;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
 void put_dec_number_cursoring(char **str, struct format_info *info,
-                              va_list args) {
+    va_list args) {
     info->number_system = 10;
     info->flags |= SIGNED;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
 void put_udec_number_cursoring(char **str, struct format_info *info,
-                               va_list args) {
+    va_list args) {
     info->number_system = 10;
     info->flags &= ~SIGNED;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
 void put_octo_number_cursoring(char **str, struct format_info *info,
-                               va_list args) {
+    va_list args) {
     info->number_system = 8;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
 void int_number_to_char(char **str, unsigned long number,
-                        struct format_info *info) {
+    struct format_info *info) {
     char aggregate;
     char sign;
     char tmp[64];
     const char *digits_template;
     int i = sizeof(short int);
 
-    if(info->flags & CAPITALIZE) {
+    if (info->flags & CAPITALIZE) {
         digits_template = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     } else {
         digits_template = "0123456789abcdefghijklmnopqrstuvwxyz";
     }
 
     /* left alignment has a higher priority than zero padding */
-    if(info->flags & LEFT_JUSTIFY) {
+    if (info->flags & LEFT_JUSTIFY) {
         info->flags &= ~ZERO_PADDING;
     }
 
@@ -180,7 +179,7 @@ void int_number_to_char(char **str, unsigned long number,
 
     /* put the number int the buffer */
     i = 0;
-    if(info->number_system & SIGNED) {
+    if (info->number_system & SIGNED) {
         if (number == 0) {
             tmp[i++] = '0';
         } else {
@@ -238,131 +237,131 @@ void int_number_to_char(char **str, unsigned long number,
         *(*str)++ = tmp[i];
     }
 
-    while (info->field_width-- > 0) *(*str)++ = ' ';
+    while (info->field_width-- > 0) {
+        *(*str)++ = ' ';
+    }
 }
 
 void real_number_to_char(char **str, double number, struct format_info *info) {
-  int digit;
-  int i;
-  char exponent_sign;
-  int exponent_len;
-  int exponent_val;
-  char aggregate;
-  char sign;
-  char tmp[64] = {'\0'};
+    int digit;
+    int i;
+    char exponent_sign;
+    int exponent_len;
+    int exponent_val;
+    char aggregate;
+    char sign;
+    char tmp[64] = { '\0' };
 
-  sign = '\0';
-  if(number < 0) {
-    sign = '-';
-    info->field_width--;
-  } else if(info->flags & SHOW_SIGN) {
-    sign = '+';
-    info->field_width--;
-  } else if(info->flags & SPACE_INSTEAD_SIGN) {
-    sign = ' ';
-    info->field_width--;
-  }
-
-  if(info->flags & LEFT_JUSTIFY) {
-    info->flags &= ~ZERO_PADDING;
-  }
-  aggregate = (info->flags & ZERO_PADDING) ? '0' : ' ';
-
-  if(info->flags & (EXPONENT | FLOAT)) {
-    if(info->precision >= 0) {
-      info->field_width -= info->precision;
-    } else {
-      info->field_width -= 6;
-      info->precision = 6;
+    sign = '\0';
+    if (number < 0) {
+        sign = '-';
+        info->field_width--;
+    } else if (info->flags & SHOW_SIGN) {
+        sign = '+';
+        info->field_width--;
+    } else if (info->flags & SPACE_INSTEAD_SIGN) {
+        sign = ' ';
+        info->field_width--;
     }
-  }
 
-  /* calculating exponent size */
-  if(info->flags & EXPONENT) {
-    exponent_val = 0;
-    exponent_len = 0;
+    if (info->flags & LEFT_JUSTIFY) {
+        info->flags &= ~ZERO_PADDING;
+    }
+    aggregate = (info->flags & ZERO_PADDING) ? '0' : ' ';
 
-    if(number == 0.0) {
-        number = 0;
+    if (info->flags & (EXPONENT | FLOAT)) {
+        if (info->precision >= 0) {
+            info->field_width -= info->precision;
+        } else {
+            info->field_width -= 6;
+            info->precision = 6;
+        }
+    }
+
+    /* calculating exponent size */
+    if (info->flags & EXPONENT) {
         exponent_val = 0;
-    } else {
-        while (number >= 1.0) {
-            number /= 10.0;
-            ++exponent_val;
-        }
-        while (number < 0.1) {
+        exponent_len = 0;
+
+        if (number == 0.0) {
+            number = 0;
+            exponent_val = 0;
+        } else {
+            while (number >= 1.0) {
+                number /= 10.0;
+                ++exponent_val;
+            }
+            while (number < 0.1) {
+                number *= 10.0;
+                --exponent_val;
+            }
+            exponent_val--;
             number *= 10.0;
-            --exponent_val;
         }
-        exponent_val--;
-        number *= 10.0;
-    }
 
-    if((exponent_len = get_digit_count(exponent_val)) < 2) {
-      exponent_len = 2;
-    }
-    /* additional positions for service symbols */
-    info->field_width -= exponent_len + 4;
+        if ((exponent_len = get_digit_count(exponent_val)) < 2) {
+            exponent_len = 2;
+        }
+        /* additional positions for service symbols */
+        info->field_width -= exponent_len + 4;
 
-    exponent_sign = exponent_val >= 0 ? '+' : '-';
-    exponent_val = exponent_val >= 0 ? exponent_val : -exponent_val;
+        exponent_sign = exponent_val >= 0 ? '+' : '-';
+        exponent_val = exponent_val >= 0 ? exponent_val : -exponent_val;
 
-    if(sign != '\0' && (info->flags &  ZERO_PADDING)) {
-      *(*str)++ = sign;
-    }
+        if (sign != '\0' && (info->flags & ZERO_PADDING)) {
+            *(*str)++ = sign;
+        }
 
-    if(!(info->flags & LEFT_JUSTIFY)) {
-      while(info->field_width-- > 0) {
-        *(*str)++ = aggregate;
-      }
-    }
+        if (!(info->flags & LEFT_JUSTIFY)) {
+            while (info->field_width-- > 0) {
+                *(*str)++ = aggregate;
+            }
+        }
 
-    if(sign != '\0' && !(info->flags & ZERO_PADDING)) {
-      *(*str)++ = sign;
-    }
+        if (sign != '\0' && !(info->flags & ZERO_PADDING)) {
+            *(*str)++ = sign;
+        }
 
-    if(number < 0) {
-      *(*str)++ = '0' - (unsigned int)number;
-    } else {
-      *(*str)++ = '0' + (signed int)number;
-    }
+        if (number < 0) {
+            *(*str)++ = '0' - (unsigned int)number;
+        } else {
+            *(*str)++ = '0' + (signed int)number;
+        }
 
-    if(info->precision != 0) {
-      *(*str)++ = '.';
-      info->field_width -= 1;
-    }
+        if (info->precision != 0) {
+            *(*str)++ = '.';
+            info->field_width -= 1;
+        }
 
-    for(;info->precision > 0; info->precision--, number *= 10) {
-      if((int)number % 10 < 0) {
-        *(*str)++ = '0' + ((unsigned int)number % 10);
-      } else {
-        *(*str)++ = '0' + (signed int)number % 10;
-      }
-    }
+        for (; info->precision > 0; info->precision--, number *= 10) {
+            if ((int)number % 10 < 0) {
+                *(*str)++ = '0' + ((unsigned int)number % 10);
+            } else {
+                *(*str)++ = '0' + (signed int)number % 10;
+            }
+        }
 
+        *(*str)++ = 'e';
+        *(*str)++ = exponent_sign;
 
-
-    *(*str)++ = 'e';
-    *(*str)++ = exponent_sign;
-
-    if(exponent_val == 0) {
-      *(*str)++ = '0';
-      *(*str)++ = '0';
-    } else {
-        if(exponent_val < 9) {
+        if (exponent_val == 0) {
             *(*str)++ = '0';
+            *(*str)++ = '0';
+        } else {
+            if (exponent_val < 9) {
+                *(*str)++ = '0';
+            }
+            for (i = 0; exponent_val > 0; ++i) {
+                tmp[i] = '0' + exponent_val % 10;
+                exponent_val /= 10;
+            }
+            while (i > 0) {
+                *(*str)++ = tmp[(i--) - 1];
+            }
         }
-        for(i = 0; exponent_val > 0; ++i) {
-            tmp[i] = '0' + exponent_val % 10;
-            exponent_val /= 10;
-        }
-        while(i > 0) {
-            *(*str)++ = tmp[(i--) - 1];
-        }
-    }
 
-    while(info->field_width-- > 0) {
-      *(*str)++ = aggregate;
+        while (info->field_width-- > 0) {
+            *(*str)++ = aggregate;
+        }
     }
-  }
 }

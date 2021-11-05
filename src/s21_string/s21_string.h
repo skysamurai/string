@@ -1,5 +1,5 @@
-#ifndef SRC_S21_STRING_H_
-#define SRC_S21_STRING_H_
+#ifndef SRC_S21_STRING_S21_STRING_H_
+#define SRC_S21_STRING_S21_STRING_H_
 
 #ifndef S21_SIZE_T
 #define S21_SIZE_T
@@ -39,4 +39,4 @@ const char *s21_strerror(int errnum);
 
 char *s21_strcat(char *dest, const char *src);
 
-#endif  // SRC_S21_STRING_H_
+#endif  // SRC_S21_STRING_S21_STRING_H_
