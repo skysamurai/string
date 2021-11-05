@@ -137,7 +137,7 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 void *s21_trim(const char *src, const char *trim_chars) {
     void *temp;
     if (trim_chars == S21_NULL) {
-        temp = src;
+        temp = (char *)src;
     } else {
         int i = 0, j = s21_strlen(src);
         char tp[2] = { *(char *)(src + i), '\0' };
@@ -269,6 +269,7 @@ const char *s21_strerror(int errnum) {
         err = "Unknown error";
     return err;
 #endif
+    return S21_NULL;
 }
 
 char *s21_strcat(char *dest, const char *src) {
