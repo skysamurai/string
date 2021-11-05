@@ -17,12 +17,12 @@
 #define EXPONENT (1U << 7U)   /* output in exponential form */
 #define FLOAT (1U << 8U)      /* float type */
 #define SHORTEST_FLOAT
-/* number size format */
+/* qualifier specifier */
+#define NONE_SPEC ' '
 #define LONG 'l'
 #define SHORT 'h'
-#define DOUBLE 'L'
-#define LONG_LONG 'w'
-#define LONG_DOUBLE 'q'
+#define DOUBLE 'd'
+#define LONG_DOUBLE 'L'
 
 #ifndef S21_NULL
 #define S21_NULL (void *)0
@@ -44,8 +44,10 @@ struct format_info {
 };
 
 int s21_sprintf(char *str, const char *format, va_list args);
+
 void int_number_to_char(char **str, unsigned long long int number,
                         struct format_info *info);
+
 void real_number_to_char(char **str, double number, struct format_info *info);
 
 /* specifiers parser */

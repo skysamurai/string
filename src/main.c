@@ -82,7 +82,6 @@ char *dtoa(char *s, double n) {
         *(c) = '\0';
     }
     return s;
-}
 
 int main(int argc, char **argv) {
     int i;
