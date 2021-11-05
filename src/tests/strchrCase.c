@@ -32,7 +32,7 @@ START_TEST(arg1NULLTest) {  // must create SIGSEGV
     char ch = 's';
     char *origOutput;
 
-    origOutput = strchr(S21_NULL, ch);
+    origOutput = s21_strchr(S21_NULL, ch);
 }
 
 START_TEST(arg2NULLTest) {  // must create SIGSEGV
