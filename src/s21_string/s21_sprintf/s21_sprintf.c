@@ -1,6 +1,8 @@
 #include "s21_sprintf.h"
+
+#include <math.h>
+
 #include "../s21_string.h"
-#include "math.h"
 
 int s21_sprintf(char *str, const char *format, va_list args) {
     struct format_info info;
@@ -49,9 +51,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
                 info.flags |= EXPONENT;
                 real_number_to_char(&s_cursor, va_arg(args, double), &info);
             } else if (*f_cursor == 'E') {
-
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
-
             }
             if (*f_cursor == 'f') {
                 f_cursor++;
@@ -62,7 +62,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
 }
 
 void write_count_recorded_char(char element_count, struct format_info *info,
-    va_list args) {
+                               va_list args) {
     void *number = va_arg(args, void *);
     if (info->qualifier == SHORT) {
         *((short *)number) = (short)(element_count);
@@ -104,27 +104,27 @@ void put_pointer_cursoring(char **str, struct format_info *info, va_list args) {
 }
 
 void put_hex_number_cursoring(char **str, struct format_info *info,
-    va_list args) {
+                              va_list args) {
     info->number_system = 16;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
 void put_dec_number_cursoring(char **str, struct format_info *info,
-    va_list args) {
+                              va_list args) {
     info->number_system = 10;
     info->flags |= SIGNED;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
 void put_udec_number_cursoring(char **str, struct format_info *info,
-    va_list args) {
+                               va_list args) {
     info->number_system = 10;
     info->flags &= ~SIGNED;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
 void put_octo_number_cursoring(char **str, struct format_info *info,
-    va_list args) {
+                               va_list args) {
     info->number_system = 8;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
@@ -193,7 +193,8 @@ void int_number_to_char(char **str, unsigned long long int number,
             tmp[i++] = '0';
         } else {
             while ((int)number != 0) {
-                tmp[i++] = digits_template[-(int)(signed long long)number % info->number_system];
+                tmp[i++] = digits_template[-(int)(signed long long)number %
+                                           info->number_system];
                 number = -(int)(signed long long)number / info->number_system;
             }
         }
@@ -242,129 +243,73 @@ void int_number_to_char(char **str, unsigned long long int number,
     }
 }
 
+double absf(double num) { return num > 0 ? num : -num; }
+int abs(int num) { return num > 0 ? num : -num; }
+
 void real_number_to_char(char **str, double number, struct format_info *info) {
-    int digit;
+    double integral;
+    double fractional;
+    int exponent = 0;
 
-    int i;
-    char exponent_sign;
-    int exponent_len;
-    int exponent_val;
-    char aggregate;
-    char sign;
+    double numberBackup = number;
+    // разделение целой и дробной части
+    fractional = modf(number, &integral);
+    // целая и дробная часть до всего
+    printf("int:\t\t%100.100f\n", integral);
+    printf("frac:\t\t%100.100f\n", fractional);
+    // для операция ниже, в принципе можно использовать absf выше
+    if (integral < 0) integral *= -1;
 
-    char tmp[64] = { '\0' };
-
-    sign = '\0';
-    if (number < 0) {
-        sign = '-';
-        info->field_width--;
-    } else if (info->flags & SHOW_SIGN) {
-        sign = '+';
-        info->field_width--;
-    } else if (info->flags & SPACE_INSTEAD_SIGN) {
-        sign = ' ';
-        info->field_width--;
-    }
-
-    if (info->flags & LEFT_JUSTIFY) {
-        info->flags &= ~ZERO_PADDING;
-    }
-    aggregate = (info->flags & ZERO_PADDING) ? '0' : ' ';
-
-    if (info->flags & (EXPONENT | FLOAT)) {
-        if (info->precision >= 0) {
-            info->field_width -= info->precision;
-        } else {
-            info->field_width -= 6;
-            info->precision = 6;
+    // приводит numberCopy к инту и умножает его, пока его целая часть не станет
+    // подходящей, парралельная считая экспоненту
+    double numberCopy = number;
+    if (integral >= 10) {
+        while ((int)numberCopy >= 10 || (int)numberCopy <= -10) {
+            exponent++;
+            numberCopy /= 10.0;
+        }
+    } else if (integral == 0) {
+        while ((int)numberCopy == 0) {
+            exponent--;
+            numberCopy *= 10.0;
         }
     }
-
-    /* calculating exponent size */
-    if (info->flags & EXPONENT) {
-        exponent_val = 0;
-        exponent_len = 0;
-
-        if (number == 0.0) {
-            number = 0;
-            exponent_val = 0;
-        } else {
-            while (number >= 1.0) {
-                number /= 10.0;
-                ++exponent_val;
-            }
-            while (number < 0.1) {
-                number *= 10.0;
-                --exponent_val;
-            }
-            exponent_val--;
+    // то же самое что и с экспонентой, но чуть другим способом, пока хз как
+    // красивее сделать. Вот тут точность теряется от спама modf и
+    // умножения/деленя на 10, что с этим делать тоже пока хз
+    if (integral >= 10)
+        while ((int)integral >= 10) {
+            // printf("--shift to left...\n");
+            number /= 10.0;
+            fractional = modf(number, &integral);
+        }
+    else if ((int)integral == 0) {
+        while ((int)integral == 0) {
+            // printf("--shift to right...\n");
             number *= 10.0;
-        }
-
-        if ((exponent_len = get_digit_count(exponent_val)) < 2) {
-            exponent_len = 2;
-        }
-        /* additional positions for service symbols */
-        info->field_width -= exponent_len + 4;
-
-        exponent_sign = exponent_val >= 0 ? '+' : '-';
-        exponent_val = exponent_val >= 0 ? exponent_val : -exponent_val;
-
-        if (sign != '\0' && (info->flags & ZERO_PADDING)) {
-            *(*str)++ = sign;
-        }
-
-        if (!(info->flags & LEFT_JUSTIFY)) {
-            while (info->field_width-- > 0) {
-                *(*str)++ = aggregate;
-            }
-        }
-
-        if (sign != '\0' && !(info->flags & ZERO_PADDING)) {
-            *(*str)++ = sign;
-        }
-
-        if (number < 0) {
-            *(*str)++ = '0' - (unsigned int)number;
-        } else {
-            *(*str)++ = '0' + (signed int)number;
-        }
-
-        if (info->precision != 0) {
-            *(*str)++ = '.';
-            info->field_width -= 1;
-        }
-
-        for (; info->precision > 0; info->precision--, number *= 10) {
-            if ((int)number % 10 < 0) {
-                *(*str)++ = '0' + ((unsigned int)number % 10);
-            } else {
-                *(*str)++ = '0' + (signed int)number % 10;
-            }
-        }
-
-        *(*str)++ = 'e';
-        *(*str)++ = exponent_sign;
-
-        if (exponent_val == 0) {
-            *(*str)++ = '0';
-            *(*str)++ = '0';
-        } else {
-            if (exponent_val < 9) {
-                *(*str)++ = '0';
-            }
-            for (i = 0; exponent_val > 0; ++i) {
-                tmp[i] = '0' + exponent_val % 10;
-                exponent_val /= 10;
-            }
-            while (i > 0) {
-                *(*str)++ = tmp[(i--) - 1];
-            }
-
-        }
-
-        while (info->field_width-- > 0) {
-            *(*str)++ = aggregate;
+            fractional = modf(number, &integral);
         }
     }
+    //Обновялем целую и дробную часть, я хз что там навреху
+    fractional = modf(numberBackup, &integral);
+
+    char outputPrecision[200] = {'\0'};
+    for (int i = 0; i < 200 - 1; i++) {
+        unsigned boba = (abs((int)(fractional * 10)));
+        outputPrecision[i] = (boba) + '0';
+        fractional *= 10;
+        modf(fractional, &integral);
+        fractional -= integral;
+    }
+    outputPrecision[199] = '\0';
+    printf("fracS\t\t0.%.100s?\n", outputPrecision);
+
+    // long boba = *(long *)&number;
+
+    // TODO: вообще проблема перевода дабла в строку не решена, но
+    // форматирование самого числа пока оно в double трудностей не представляет
+    printf("AFTER CHANGE:\n");
+    // printf("int: %100.100f\n", integral);
+    // printf("frac: %100.100f\n", fractional);
+    printf("exp: %d\n", exponent);
 }
