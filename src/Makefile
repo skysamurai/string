@@ -1,7 +1,9 @@
-CC = clang
+CC = gcc
 e_flags = -Wall -Wextra -Werror -g3
-h_path = -I${HOME}/homebrew/include -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
-check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
+# h_path = -I${HOME}/homebrew/include -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
+# check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
+h_path = -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
+# check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
 target = a.o
 
 all: programm tests
