@@ -291,8 +291,9 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
         }
     }
     //Обновялем целую и дробную часть, я хз что там навреху
-    fractional = modf(numberBackup, &integral);
-    int tmp_exp = exponent;
+    number = numberBackup;
+    if (exponent < 0) number += 1.0;
+    fractional = modf(number, &integral);
 
     char outputPrecision[200] = {'\0'};
 
