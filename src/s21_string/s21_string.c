@@ -229,7 +229,7 @@ int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
     // if (n > maxlen)
     //     n = maxlen;
     for (i = 0; i < n; i++) {
-        if ((str1[i] != "\0") && (str2[i] != "\0") && (str1[i] != str2[i]) && (flag)) {
+        if ((str1[i] != '\0') && (str2[i] != '\0') && (str1[i] != str2[i]) && (flag)) {
             if (str1[i] < str2[i])
                 ret = -1;
             else
@@ -238,7 +238,7 @@ int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
         }
 
     }
-    if (((str1[i] == "\0") && (str2[i] == "\0")) || (n < 1)) 
+    if (((str1[i] == '\0') && (str2[i] == '\0')) || (n < 1)) 
         ret = 0;
 return ret;
 }
