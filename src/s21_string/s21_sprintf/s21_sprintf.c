@@ -292,14 +292,16 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
     }
     //Обновялем целую и дробную часть, я хз что там навреху
     fractional = modf(numberBackup, &integral);
+    int tmp_exp = exponent;
 
     char outputPrecision[200] = {'\0'};
+
     for (int i = 0; i < 200 - 1; i++) {
         unsigned boba = (abs((int)(fractional * 10)));
         outputPrecision[i] = (boba) + '0';
         fractional *= 10;
         modf(fractional, &integral);
-        fractional -= integral;
+        fractional -= (double)integral;
     }
     outputPrecision[199] = '\0';
     printf("fracS\t\t0.%.100s?\n", outputPrecision);
