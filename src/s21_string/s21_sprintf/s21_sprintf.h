@@ -22,7 +22,6 @@
 #define LONG 'l'
 #define SHORT 'h'
 #define DOUBLE 'd'
-#define LONG_DOUBLE 'L'
 
 #ifndef S21_NULL
 #define S21_NULL (void *)0
@@ -64,6 +63,7 @@ void write_count_recorded_char(char element_count, struct format_info *info,
 /* support functions */
 int is_digit(char chr);
 int is_hexdec_digit(char chr);
+int is_specifer(char chr);
 int atoi_cursoring(const char **cursor);
 int get_digit_count(int number);
 void getSEM(unsigned int *sign, unsigned int *exponent,
