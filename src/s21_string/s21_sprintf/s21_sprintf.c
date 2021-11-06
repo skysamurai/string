@@ -7,15 +7,15 @@ int s21_sprintf(char *str, const char *format, va_list args) {
     struct format_info info;
     char *percent_pointer;
 
-    char *s_cursor = str; /* string cursor */
+    char *s_cursor = str;
     const char *f_cursor = format;
 
     while (f_cursor != S21_NULL) {
         percent_pointer = strpbrk(f_cursor, "%");
         if (percent_pointer != S21_NULL) {
-            memcpy(s_cursor, f_cursor, percent_pointer - f_cursor + 1);
+            memcpy(s_cursor, f_cursor, sizeof(char) * (percent_pointer - f_cursor));
             s_cursor += percent_pointer - f_cursor;
-            f_cursor += s_cursor - str;
+            f_cursor += s_cursor - str + 1;
         } else {
             memcpy(s_cursor, f_cursor, strlen(f_cursor));
             s_cursor += strlen(f_cursor);
@@ -23,7 +23,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
             f_cursor = S21_NULL;
         }
 
-        if (*s_cursor != '\0') {
+        if (f_cursor != S21_NULL && *f_cursor != '\0') {
             parse_format(&f_cursor, &info, args);
             if (*f_cursor == 'c') {
                 put_char_cursoring(&s_cursor, &info, args);
@@ -52,7 +52,7 @@ int s21_sprintf(char *str, const char *format, va_list args) {
             } else if (*f_cursor == 'E') {
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
             }
-            if (*f_cursor == 'f') {}
+            else if (*f_cursor == 'f') {}
             f_cursor++;
         }
     }

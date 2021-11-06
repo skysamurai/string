@@ -2,29 +2,33 @@
 
 void parse_format(const char **format, struct format_info *info, va_list args) {
     info->number_system = 10;
-    // while(**format != '\0' && !is_specifer(**format)) {
+    while(**format != '\0' && !is_specifer(**format)) {
         parse_format_flag(format, info);
         parse_field_width(format, info, args);
         parse_precision(format, info, args);
         parse_qualifier(format, info);
-    // }
+    }
 }
 
 void parse_format_flag(const char **format, struct format_info *info) {
     int is_found = 1;
     info->flags = 0;
-    while (**format && is_found) {
-        ++(*format);
+    while (**format != '\0' && is_found) {
         if (**format == '-') {
             info->flags |= LEFT_JUSTIFY;
+            ++(*format);
         } else if (**format == '+') {
             info->flags |= SHOW_SIGN;
+            ++(*format);
         } else if (**format == ' ') {
             info->flags |= SPACE_INSTEAD_SIGN;
+            ++(*format);
         } else if (**format == '#') {
             info->flags |= NUMBER_SYSTEM;
+            ++(*format);
         } else if (**format == '0') {
             info->flags |= ZERO_PADDING;
+            ++(*format);
         } else {
             is_found = 0;
         }
@@ -77,7 +81,7 @@ int is_digit(char chr) {
 }
 
 int is_specifer(char chr) {
-    int result;
+    int result = 0;
     if (chr == 'L' || chr == 'l' || chr == 'h' || chr == '%') {
         result = 0;
     } else if (chr > 'A' && chr < 'Z' || chr > 'a' && chr < 'z') {
