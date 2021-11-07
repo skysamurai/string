@@ -62,12 +62,13 @@ void *s21_memset(void *str, int c, s21_size_t n) {
 }
 
 char *s21_strchr(const char *str, int c) {
-    int i = 0;
-    while ((*(str + i) != '\0') & ((*(str + i) != c))) {
-        i++;
-    }
-    return (char *)str + i;
-}
+     char *flag = NULL;
+     for (; str != '\0'; str++)
+    if (str == c){
+    flag = (char *) str; }
+
+return flag;
+
 
 s21_size_t s21_strlen(const char *str) { return (s21_strchr(str, 0) - str); }
 
