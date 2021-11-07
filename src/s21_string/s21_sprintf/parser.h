@@ -22,19 +22,19 @@
 #define SHORT 'h'
 #define DOUBLE 'd'
 
-struct format_info {
+typedef struct format_info_t {
     unsigned flags;
     int field_width;
     int precision;
     int qualifier;
     int number_system;
-};
+} format_info;
 
-void parse_format(const char **format, struct format_info *info, va_list args);
-void p_flag(const char **format, struct format_info *info);
-void p_width(const char **format, struct format_info *info, va_list args);
-void p_precision(const char **format, struct format_info *info, va_list args);
-void p_qualifier(const char **format, struct format_info *info);
+void parse_format(const char **format, format_info *info, va_list args);
+void p_flag(const char **format, format_info *info);
+void p_width(const char **format, format_info *info, va_list args);
+void p_precision(const char **format, format_info *info, va_list args);
+void p_qualifier(const char **format, format_info *info);
 
 int is_digit(char chr);
 int is_hexdec_digit(char chr);

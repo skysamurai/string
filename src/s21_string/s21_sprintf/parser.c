@@ -1,6 +1,6 @@
-#include "s21_sprintf.h"
+#include "parser.h"
 
-void parse_format(const char **format, struct format_info *info, va_list args) {
+void parse_format(const char **format, format_info *info, va_list args) {
     info->number_system = 10;
     p_flag(format, info);
     p_width(format, info, args);
@@ -8,7 +8,7 @@ void parse_format(const char **format, struct format_info *info, va_list args) {
     p_qualifier(format, info);
 }
 
-void p_flag(const char **format, struct format_info *info) {
+void p_flag(const char **format, format_info *info) {
     int is_found = 0;
     info->flags = 0;
     while (**format != '\0' && !is_found) {
@@ -33,7 +33,7 @@ void p_flag(const char **format, struct format_info *info) {
     }
 }
 
-void p_width(const char **format, struct format_info *info, va_list args) {
+void p_width(const char **format, format_info *info, va_list args) {
     info->field_width = -1;
     if (is_digit(**format)) {
         info->field_width = atoi_cursoring(format);
@@ -47,7 +47,7 @@ void p_width(const char **format, struct format_info *info, va_list args) {
     }
 }
 
-void p_precision(const char **format, struct format_info *info, va_list args) {
+void p_precision(const char **format, format_info *info, va_list args) {
     info->precision = -1;
     if (**format == '.') {
         ++(*format);
@@ -63,7 +63,7 @@ void p_precision(const char **format, struct format_info *info, va_list args) {
     }
 }
 
-void p_qualifier(const char **format, struct format_info *info) {
+void p_qualifier(const char **format, format_info *info) {
     info->qualifier = -1;
     if (**format == 'h') {
         info->qualifier = SHORT;

@@ -2,7 +2,7 @@
 #include "../s21_string.h"
 
 int s21_sprintf_(char *str, const char *format, va_list args) {
-    struct format_info f_info;
+    format_info f_info;
     char *percent_pointer;
 
     char *s_cursor = str;  /* string cursor */
@@ -56,24 +56,24 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
     return s_cursor - str;
 }
 
-void write_count_recorded_char(char element_count, struct format_info *info,
+void write_count_recorded_char(char record_count, format_info *info,
     va_list args) {
     void *number = va_arg(args, void *);
     if (info->qualifier == SHORT) {
-        *((short *)number) = (short)(element_count);
+        *((short *)number) = (short)(record_count);
     } else if (info->qualifier == LONG) {
-        *((long *)number) = (long)(element_count);
+        *((long *)number) = (long)(record_count);
     }
 }
 
-void put_char_cursoring(char **str, struct format_info *info, va_list args) {
+void put_char_cursoring(char **str, format_info *info, va_list args) {
     if (!(info->flags & LEFT_JUSTIFY))
         while (--info->field_width > 0) *(*str)++ = ' ';
     *(*str)++ = va_arg(args, int);
     while (--info->field_width > 0) *(*str)++ = ' ';
 }
 
-void put_string_cursoring(char **str, struct format_info *info, va_list args) {
+void put_string_cursoring(char **str, format_info *info, va_list args) {
     const char *buf_string;
     int string_len;
 
@@ -89,41 +89,41 @@ void put_string_cursoring(char **str, struct format_info *info, va_list args) {
     while (string_len < info->field_width--) *(*str)++ = ' ';
 }
 
-void put_pointer_cursoring(char **str, struct format_info *info, va_list args) {
+void put_pointer_cursoring(char **str, format_info *info, va_list args) {
     info->number_system = 16;
     info->flags |= NUMBER_SYSTEM;
     info->flags |= SIGNED;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
-void put_hex_number_cursoring(char **str, struct format_info *info,
+void put_hex_number_cursoring(char **str, format_info *info,
     va_list args) {
     info->number_system = 16;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
-void put_dec_number_cursoring(char **str, struct format_info *info,
+void put_dec_number_cursoring(char **str, format_info *info,
     va_list args) {
     info->number_system = 10;
     info->flags |= SIGNED;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
-void put_udec_number_cursoring(char **str, struct format_info *info,
+void put_udec_number_cursoring(char **str, format_info *info,
     va_list args) {
     info->number_system = 10;
     info->flags &= ~SIGNED;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
-void put_octo_number_cursoring(char **str, struct format_info *info,
+void put_octo_number_cursoring(char **str, format_info *info,
     va_list args) {
     info->number_system = 8;
     int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
 }
 
 void int_number_to_char(char **str, unsigned long long int number,
-    struct format_info *info) {
+    format_info *info) {
     char aggregate;
     char sign;
     char tmp[64];
@@ -235,7 +235,7 @@ void int_number_to_char(char **str, unsigned long long int number,
     }
 }
 
-void real_number_to_char(char **str, double number, struct format_info *info) {
+void real_number_to_char(char **str, double number, format_info *info) {
     int digit;
 
     int i;
