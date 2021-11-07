@@ -6,19 +6,19 @@
 #include "./s21_string/s21_string.h"
 
 int main(void) {
-    char spec[] = "%08.5d%5d%ln";
+    char spec[] = "a%-5d%ln";
 
     char stra[255] = {'\0'};
     int a = 4;
 
-    s21_sprintf(stra, spec, a, a, &a);
+    s21_sprintf(stra, spec, a, &a);
     printf("s21: |%d|%s|\n", a, stra);
 
 
     char strb[255] = {'\0'};
     int b = 4;
 
-        sprintf(strb, spec, b, b, &b);
+        sprintf(strb, spec, b, &b);
     printf("std: |%d|%s|", b, strb);
 
     if (errno) {
