@@ -3,7 +3,7 @@
 
 #ifndef S21_SIZE_T
 #define S21_SIZE_T
-typedef unsigned int s21_size_t;
+typedef unsigned long s21_size_t;
 #endif  // S21_SIZE_T
 #ifndef S21_NULL
 #define S21_NULL ((void *)0)
@@ -11,7 +11,7 @@ typedef unsigned int s21_size_t;
 
 #include "./s21_sprintf/s21_sprintf.h"
 
-int s21_wrapper_sprintf(char *str, char *format, ...);
+int s21_sprintf(char *str, char *format, ...);
 char *s21_strtok(char *str, const char *delim);
 
 void *s21_memchr(const void *str, int c, s21_size_t n);

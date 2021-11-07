@@ -1,17 +1,29 @@
 #include "./s21_string/s21_sprintf/s21_sprintf.h"
-#include "string.h"
+#include <string.h>
+#include <error.h>
+#include <errno.h>
+#include <stdio.h>
 #include "./s21_string/s21_string.h"
 
 int main(void) {
-    char str[255];
-    char spec[] = "privet, anton, kak tvoi %5d";
-    long a = 3;
+    char spec[] = "a%-5d%ln";
 
-    sprintf(str, spec, a);
-    printf("|%s|\n", str);
+    char stra[255] = {'\0'};
+    int a = 4;
 
-    s21_wrapper_sprintf(str, spec, a);
-    printf("|%s|", str);
+    s21_sprintf(stra, spec, a, &a);
+    printf("s21: |%d|%s|\n", a, stra);
+
+
+    char strb[255] = {'\0'};
+    int b = 4;
+
+        sprintf(strb, spec, b, &b);
+    printf("std: |%d|%s|", b, strb);
+
+    if (errno) {
+        printf("%s", strerror(errno));
+    }
 
     return 0;
 }
