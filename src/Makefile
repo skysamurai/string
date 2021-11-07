@@ -16,6 +16,7 @@ s21_string.o:
 
 s21_string.a: s21_string.o
 	ar rcs libs21_string.a *.o
+	rm -rf *.o*
 
 
 programm: s21_string.a
