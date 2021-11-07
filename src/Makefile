@@ -1,6 +1,6 @@
 CC = gcc
 e_flags = -Wall -Wextra -Werror
-# c_flags = -g3
+c_flags = -g3
 h_path = -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
 #check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck 										#MAC
 check_flags = -lcheck_pic -pthread -lrt -lm -lsubunit		#LINUX
@@ -24,7 +24,7 @@ programm: s21_string.a
 
 
 test:
-	$(CC) ./tests/*.c -L. -ls21_string $(check_flags) -o $(target) -I${HOME}/homebrew/include
+	 $(CC) ./tests/*.c -L. -ls21_string $(check_flags) -o $(target)
 
 clean:
 	rm -rf $(clean_files)
