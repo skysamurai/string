@@ -1,6 +1,6 @@
 #ifndef SRC_S21_PARSER_
 #define SRC_S21_PARSER_
-#include "stdarg.h"
+#include <stdarg.h>
 
 /* flags */
 #define LEFT_JUSTIFY (1U << 0U)       /* '-' left alignment */
@@ -17,7 +17,7 @@
 #define SHORTEST_FLOAT
 
 /* qualifier specifier */
-#define NONE_SPEC ' '
+#define NONE ' '
 #define LONG 'l'
 #define SHORT 'h'
 #define DOUBLE 'd'

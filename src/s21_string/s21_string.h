@@ -3,7 +3,7 @@
 
 #ifndef S21_SIZE_T
 #define S21_SIZE_T
-typedef unsigned int s21_size_t;
+typedef unsigned long s21_size_t;
 #endif  // S21_SIZE_T
 #ifndef S21_NULL
 #define S21_NULL ((void *)0)

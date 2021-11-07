@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include "parser.h"
 
 void parse_format(const char **format, format_info *info, va_list args) {
@@ -64,7 +65,7 @@ void p_precision(const char **format, format_info *info, va_list args) {
 }
 
 void p_qualifier(const char **format, format_info *info) {
-    info->qualifier = -1;
+    info->qualifier = NONE;
     if (**format == 'h') {
         info->qualifier = SHORT;
         (*format) += 1;

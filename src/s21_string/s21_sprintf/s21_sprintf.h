@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "parser.h"
+#include "../s21_string.h"
 
 #ifndef S21_NULL
 #define S21_NULL (void *)0
@@ -19,7 +20,7 @@ void int_number_to_char(char **str, unsigned long long int number,
 void real_number_to_char(char **str, double number, format_info *info);
 
 /* specifiers parser */
-void write_count_recorded_char(char record_count, format_info *info,
+void write_count_recorded_char(s21_size_t record_count, format_info *info,
                                va_list args);
 
 /* cursoring means that function increment char pointer */

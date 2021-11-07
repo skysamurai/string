@@ -1,3 +1,4 @@
+#include "parser.h"
 #include "s21_sprintf.h"
 #include "../s21_string.h"
 
@@ -9,11 +10,11 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
     const char *f_cursor = format;  /*format cursor */
 
     while (f_cursor != S21_NULL) {
-        percent_pointer = s21_strpbrk(f_cursor, "%");
+        percent_pointer = strchr(f_cursor, '%');  /* stdlib, wait for s21 */
         if (percent_pointer != S21_NULL) {
             s21_memcpy(s_cursor, f_cursor, sizeof(char) * (percent_pointer - f_cursor));
             s_cursor += percent_pointer - f_cursor;
-            f_cursor += s_cursor - str + 1;
+            f_cursor += percent_pointer - f_cursor + 1;
         } else {
             s21_memcpy(s_cursor, f_cursor, s21_strlen(f_cursor));
             s_cursor += s21_strlen(f_cursor);
@@ -56,10 +57,18 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
     return s_cursor - str;
 }
 
-void write_count_recorded_char(char record_count, format_info *info,
+/* for some reason, the standard
+ * function on ubuntu does not handle
+ * the 'l' width flag when my function
+ * handles this flag. As a result,
+ * the number of recorded bits
+ * is not counted */
+void write_count_recorded_char(s21_size_t record_count, format_info *info,
     va_list args) {
     void *number = va_arg(args, void *);
-    if (info->qualifier == SHORT) {
+    if (info->qualifier == NONE) {
+        *((int *)number) = (int)record_count;
+    } else if (info->qualifier == SHORT) {
         *((short *)number) = (short)(record_count);
     } else if (info->qualifier == LONG) {
         *((long *)number) = (long)(record_count);
@@ -128,7 +137,7 @@ void int_number_to_char(char **str, unsigned long long int number,
     char sign;
     char tmp[64];
     const char *digits_template;
-    int i = sizeof(short int);
+    int i;
 
     if (info->flags & CAPITALIZE) {
         digits_template = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -148,7 +157,7 @@ void int_number_to_char(char **str, unsigned long long int number,
     if (info->flags & SIGNED) {
         if ((signed long)number < 0) {
             sign = '-';
-            number = -(signed long long)number;
+            number = -(signed long)number;
             info->field_width--;
         } else if (info->flags & SHOW_SIGN) {
             sign = '+';
@@ -172,7 +181,7 @@ void int_number_to_char(char **str, unsigned long long int number,
 
     /* put the number int the buffer */
     i = 0;
-    if (info->number_system & SIGNED) {
+    if (info->flags & SIGNED) {
         if (number == 0) {
             tmp[i++] = '0';
         } else {
