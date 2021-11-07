@@ -5,6 +5,7 @@ h_path = -I${HOME}/homebrew/include -I./tests/* -I./s21_string -I./s21_string/s2
 #check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck 										#MAC
 check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck_pic -pthread -lrt -lm -lsubunit		#LINUX
 target = a.o
+clean_files = *.o* *.a
 
 all: clean programm tests
 
@@ -26,7 +27,9 @@ test:
 
 
 clean:
-	rm -rf *.o* *.a
+	rm -rf $(clean_files)
+	rm -rf ./s21_string/$(clean_files)
+	rm -rf ./s21_string/s21_sprintf/$(clean_files)
 
 
 cls:
