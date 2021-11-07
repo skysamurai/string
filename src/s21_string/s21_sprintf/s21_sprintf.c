@@ -1,58 +1,55 @@
 #include "s21_sprintf.h"
 #include "../s21_string.h"
-#include "math.h"
-#include "stdint.h"
 
-int s21_sprintf(char *str, const char *format, va_list args) {
-    struct format_info info;
+int s21_sprintf_(char *str, const char *format, va_list args) {
+    struct format_info f_info;
     char *percent_pointer;
 
-    char *s_cursor = str;
-    const char *f_cursor = format;
+    char *s_cursor = str;  /* string cursor */
+    const char *f_cursor = format;  /*format cursor */
 
     while (f_cursor != S21_NULL) {
-        percent_pointer = strpbrk(f_cursor, "%");
+        percent_pointer = s21_strpbrk(f_cursor, "%");
         if (percent_pointer != S21_NULL) {
-            memcpy(s_cursor, f_cursor, sizeof(char) * (percent_pointer - f_cursor));
+            s21_memcpy(s_cursor, f_cursor, sizeof(char) * (percent_pointer - f_cursor));
             s_cursor += percent_pointer - f_cursor;
             f_cursor += s_cursor - str + 1;
         } else {
-            memcpy(s_cursor, f_cursor, strlen(f_cursor));
-            s_cursor += strlen(f_cursor);
+            s21_memcpy(s_cursor, f_cursor, s21_strlen(f_cursor));
+            s_cursor += s21_strlen(f_cursor);
             *s_cursor = '\0';
             f_cursor = S21_NULL;
         }
 
         if (f_cursor != S21_NULL && *f_cursor != '\0') {
-            parse_format(&f_cursor, &info, args);
+            parse_format(&f_cursor, &f_info, args);
             if (*f_cursor == 'c') {
-                put_char_cursoring(&s_cursor, &info, args);
+                put_char_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 's') {
-                put_string_cursoring(&s_cursor, &info, args);
+                put_string_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'p') {
-                put_pointer_cursoring(&s_cursor, &info, args);
+                put_pointer_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'n') {
-                write_count_recorded_char(s_cursor - str, &info, args);
+                write_count_recorded_char(s_cursor - str, &f_info, args);
             } else if (*f_cursor == '%') {
                 *s_cursor++ = '%';
             } else if (*f_cursor == 'o') {
-                put_octo_number_cursoring(&s_cursor, &info, args);
+                put_octo_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'X') {
-                info.flags |= CAPITALIZE;
-                put_hex_number_cursoring(&s_cursor, &info, args);
+                f_info.flags |= CAPITALIZE;
+                put_hex_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'x') {
-                put_hex_number_cursoring(&s_cursor, &info, args);
+                put_hex_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'd' || *f_cursor == 'i') {
-                put_dec_number_cursoring(&s_cursor, &info, args);
+                put_dec_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'u') {
-                put_udec_number_cursoring(&s_cursor, &info, args);
+                put_udec_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'e') {
-                info.flags |= EXPONENT;
-                real_number_to_char(&s_cursor, va_arg(args, double), &info);
+                f_info.flags |= EXPONENT;
+                real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
             } else if (*f_cursor == 'E') {
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
-            }
-            else if (*f_cursor == 'f') {}
+            }             else if (*f_cursor == 'f') {}
             f_cursor++;
         }
     }
@@ -126,7 +123,7 @@ void put_octo_number_cursoring(char **str, struct format_info *info,
 }
 
 void int_number_to_char(char **str, unsigned long long int number,
-                        struct format_info *info) {
+    struct format_info *info) {
     char aggregate;
     char sign;
     char tmp[64];
@@ -297,7 +294,7 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
             number *= 10.0;
         }
 
-        if ((exponent_len = get_digit_count(exponent_val)) < 2) {
+        if ((exponent_len = get_dec_digit_count(exponent_val)) < 2) {
             exponent_len = 2;
         }
         /* additional positions for service symbols */

@@ -2,18 +2,16 @@
 
 void parse_format(const char **format, struct format_info *info, va_list args) {
     info->number_system = 10;
-    while(**format != '\0' && !is_specifer(**format)) {
-        parse_format_flag(format, info);
-        parse_field_width(format, info, args);
-        parse_precision(format, info, args);
-        parse_qualifier(format, info);
-    }
+    p_flag(format, info);
+    p_width(format, info, args);
+    p_precision(format, info, args);
+    p_qualifier(format, info);
 }
 
-void parse_format_flag(const char **format, struct format_info *info) {
-    int is_found = 1;
+void p_flag(const char **format, struct format_info *info) {
+    int is_found = 0;
     info->flags = 0;
-    while (**format != '\0' && is_found) {
+    while (**format != '\0' && !is_found) {
         if (**format == '-') {
             info->flags |= LEFT_JUSTIFY;
             ++(*format);
@@ -30,12 +28,12 @@ void parse_format_flag(const char **format, struct format_info *info) {
             info->flags |= ZERO_PADDING;
             ++(*format);
         } else {
-            is_found = 0;
+            is_found = 1;
         }
     }
 }
 
-void parse_field_width(const char **format, struct format_info *info, va_list args) {
+void p_width(const char **format, struct format_info *info, va_list args) {
     info->field_width = -1;
     if (is_digit(**format)) {
         info->field_width = atoi_cursoring(format);
@@ -49,7 +47,7 @@ void parse_field_width(const char **format, struct format_info *info, va_list ar
     }
 }
 
-void parse_precision(const char **format, struct format_info *info, va_list args) {
+void p_precision(const char **format, struct format_info *info, va_list args) {
     info->precision = -1;
     if (**format == '.') {
         ++(*format);
@@ -65,7 +63,7 @@ void parse_precision(const char **format, struct format_info *info, va_list args
     }
 }
 
-void parse_qualifier(const char **format, struct format_info *info) {
+void p_qualifier(const char **format, struct format_info *info) {
     info->qualifier = -1;
     if (**format == 'h') {
         info->qualifier = SHORT;
@@ -80,7 +78,7 @@ int is_digit(char chr) {
     return (chr >= '0') && (chr <= '9');
 }
 
-int is_specifer(char chr) {
+/*int is_specifer(char chr) {
     int result = 0;
     if (chr == 'L' || chr == 'l' || chr == 'h' || chr == '%') {
         result = 0;
@@ -88,9 +86,9 @@ int is_specifer(char chr) {
         result = 1;
     }
     return result;
-}
+}*/
 
-int get_digit_count(int number) {
+int get_dec_digit_count(int number) {
     int len = 0;
     while (number % 10) {
         number /= 10;
@@ -109,11 +107,4 @@ int atoi_cursoring(const char **cursor) {
     for (i = 0; is_digit(chr = **cursor); ++ * cursor)
         i = i * 10 + chr - '0';
     return i;
-}
-
-void getSEM(unsigned int *sign, unsigned int *exponent, unsigned long long *mantiss, double number) {
-    unsigned long long *pnumber = (unsigned long long *) & number;
-    *mantiss = *pnumber & 0xFFFFFFFFFFFFF; /* fifty two '1' */
-    *exponent = (*pnumber >> 52) & 0x3FF;
-    *sign = (*pnumber >> (63)) & 1;
 }
