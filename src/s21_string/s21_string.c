@@ -2,9 +2,6 @@
 #include <errno.h>
 #include <stdlib.h>
 
-#include <stdio.h>
-#include <string.h> //  dont forget to delete !!!
-
 size_t s21_strspn(const char *str1, const char *str2) {
     int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2);
     size_t res_len = 0, temp_len = 0;
