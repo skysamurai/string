@@ -2,8 +2,8 @@ CC = gcc
 e_flags = -Wall -Wextra -Werror
 c_flags = -g3
 h_path = -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
-#check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck 										#MAC
-check_flags = -lcheck_pic -pthread -lrt -lm -lsubunit		#LINUX
+#check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck#MAC
+check_flags = -lcheck_pic -pthread -lrt -lm -lsubunit#LINUX
 target = a.o
 clean_files = *.o* *.a
 
