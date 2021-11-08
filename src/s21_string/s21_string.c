@@ -1,13 +1,13 @@
 #include "s21_string.h"
-
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h> //  dont forget to delete !!!
 
-int s21_wrapper_sprintf(char *str, char *format, ...) {
+int s21_sprintf(char *str, char *format, ...) {
     va_list args;
     int changes_count;
     va_start(args, format);
-    changes_count = s21_sprintf(str, format, args);
+    changes_count = s21_sprintf_(str, format, args);
     va_end(args);
     return changes_count;
 }
@@ -25,8 +25,10 @@ void *s21_memchr(const void *str, int c, s21_size_t n) {
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
     int res = 0, n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2);
     s21_size_t i = 0;
-    if (n_str1 > n_str2) res = 1;
-    if (n_str1 < n_str2) res = -1;
+    if (n_str1 > n_str2)
+        res = 1;
+    if (n_str1 < n_str2)
+        res = -1;
     if (n_str1 == n_str2) {
         while ((res == 0) & (i < n)) {
             res = *((char *)str1 + i) - *((char *)str2 + i);
@@ -112,7 +114,7 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
         s21_memcpy(temp, (char *)src, start_index);
         s21_memcpy((char *)(temp + start_index), (char *)str, n_str);
         s21_memcpy(((char *)temp + start_index + n_str),
-                   ((char *)src + start_index), n_src - start_index);
+            ((char *)src + start_index), n_src - start_index);
     }
     return temp;
 }
@@ -135,10 +137,10 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 void *s21_trim(const char *src, const char *trim_chars) {
     void *temp;
     if (trim_chars == S21_NULL) {
-        temp = src;
+        temp = (char *)src;
     } else {
         int i = 0, j = s21_strlen(src);
-        char tp[2] = {*(char *)(src + i), '\0'};
+        char tp[2] = { *(char *)(src + i), '\0' };
         while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
             i++;
             tp[0] = *(char *)(src + i);
@@ -204,27 +206,30 @@ char *s21_strtok(char *str, const char *delim) {
 }
 
 int s21_strcmp(const char *str1, const char *str2) {
-    int i = 0;
-    int flag = 0;
-    while ((flag != -1) && (str1[i] != '\0') && ((str2[i] != '\0'))) {
-        if (str1[i] != str2[i])
-            flag = -1;
-        else
-            ++i;
+    int ret = 0;
+    size_t i = 0;
+    size_t n = strlen(str1);
+    if (s21_strlen(str2) > n)
+        n = s21_strlen(str2);
+     while ((str1[i] == str2[i]) && (n)) {
+        ++i;
+        --n;
     }
-    return flag;
+    if (n != 0)
+        ret = str1[i] - str2[i]; 
+return ret;
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
+    int ret = 0;
     s21_size_t i = 0;
-    int flag = 0;
-    while ((flag != -1) && (i != n) && ((str2[i] != '\0'))) {
-        if (str1[i] != str2[i])
-            flag = -1;
-        else
-            ++i;
+    while ((str1[i] == str2[i]) && (n)) {
+        ++i;
+        --n;
     }
-    return flag;
+    if (n != 0)
+        ret = str1[i] - str2[i];
+return ret;
 }
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
@@ -251,22 +256,23 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 }
 
 const char *s21_strerror(int errnum) {
-#ifdef Linux
     const char *err;
-    if ((errnum > 0) && (errnum < 134))
-        err = sys_errlist[errnum];
-    else
-        err = "Unknown error";
-    return err;
+    int errmax = 133;
+#ifdef __APPLE__
+    errmax = 106;
 #endif
-#ifdef MAC
-    const char *err;
-    if ((errnum > 0) && (errnum < 106))
-        err = sys_errlist[errnum];
-    else
-        err = "Unknown error";
-    return err;
-#endif
+    if ( (errnum > 0) && (errnum <= errmax)) {    
+            err = sys_errlist[errnum];
+        }
+        else if ( errnum == 0 ) {        
+            err = "Undefined error: 0";
+        }
+        else {
+            char errch[100];
+            sprintf(errch,"Unknown error: %d", errnum);   // change sprintf to s21_sprintf !!!
+            err = errch;
+        }
+return err;
 }
 
 char *s21_strcat(char *dest, const char *src) {
@@ -280,16 +286,14 @@ char *s21_strcat(char *dest, const char *src) {
 }
 
 char *s21_strstr(const char *haystack, const char *needle) {
-    int i = 0, j = 0, n_haystack = s21_strlen(haystack),
-        n_needle = s21_strlen(needle);
+    int i = 0, j = 0, n_haystack = s21_strlen(haystack), n_needle = s21_strlen(needle);
     while ((j < n_needle) && (i < n_haystack)) {
         j = 0;
         while (needle[j] != haystack[i]) {
             i++;
         }
         int k = i;
-        while ((needle[j] == haystack[k]) && (k < n_haystack) &&
-               (j < n_needle)) {
+        while ((needle[j] == haystack[k]) && (k < n_haystack) && (j < n_needle)) {
             j++;
             k++;
         }
@@ -298,11 +302,11 @@ char *s21_strstr(const char *haystack, const char *needle) {
     return (char *)haystack + i;
 }
 
+
 char *s21_strncat(char *dest, const char *src, s21_size_t n) {
     char *a = dest;
     s21_size_t i = 0;
-    for (; *dest != '\0'; dest++) {
-    }
+    for (; *dest != '\0'; dest++) {}
     for (i = 0; i <= n; i++) {
         *(dest + i) = *(src + i);
     }

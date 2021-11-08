@@ -34,6 +34,7 @@ START_TEST(arg1NULLTest) {  // must create SIGSEGV
 
     origOutput = s21_strchr(S21_NULL, ch);
 }
+END_TEST
 
 START_TEST(arg2NULLTest) {  // must create SIGSEGV
     char str[] = "This is a sample string";
