@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 int main(void) {
-    char spec[] = "%-+10.5lo";
+/*     char spec[] = "%-+10.5lo";
     unsigned long int a = 0;
     a -= 1;
 
@@ -20,7 +20,12 @@ int main(void) {
     long int b = -50;
 
         sprintf(strb, spec, a);
-    printf("std: |%s|", strb);
+    printf("std: |%s|", strb); */
+
+    int len;
+
+  len = s21_strspn("это строка из примера", "акортэ с");
+  printf("%d", len);
 
     return 0;
 }

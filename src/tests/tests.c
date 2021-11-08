@@ -1,6 +1,5 @@
 #include "tests.h"
 
-#include <check.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
