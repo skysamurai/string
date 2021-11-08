@@ -1,29 +1,26 @@
 #include "./s21_string/s21_sprintf/s21_sprintf.h"
 #include <string.h>
-#include <error.h>
-#include <errno.h>
 #include <stdio.h>
 #include "./s21_string/s21_string.h"
+#include <stdlib.h>
 
 int main(void) {
-    char spec[] = "a%-5d%ln";
+    char spec[] = "%-+10.5lo";
+    unsigned long int a = 0;
+    a -= 1;
+
 
     char stra[255] = {'\0'};
-    int a = 4;
 
-    s21_sprintf(stra, spec, a, &a);
-    printf("s21: |%d|%s|\n", a, stra);
+    s21_sprintf(stra, spec, a);
+    printf("s21: |%s|\n", stra);
 
 
     char strb[255] = {'\0'};
-    int b = 4;
+    long int b = -50;
 
-        sprintf(strb, spec, b, &b);
-    printf("std: |%d|%s|", b, strb);
-
-    if (errno) {
-        printf("%s", strerror(errno));
-    }
+        sprintf(strb, spec, a);
+    printf("std: |%s|", strb);
 
     return 0;
 }

@@ -42,10 +42,12 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
             } else if (*f_cursor == 'x') {
                 put_hex_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'd' || *f_cursor == 'i') {
+                f_info.flags |= SIGNED;
                 put_dec_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'u') {
                 put_udec_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'e') {
+                f_info.flags |= SIGNED;
                 f_info.flags |= EXPONENT;
                 real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
             } else if (*f_cursor == 'E') {
@@ -102,43 +104,49 @@ void put_pointer_cursoring(char **str, format_info *info, va_list args) {
     info->number_system = 16;
     info->flags |= NUMBER_SYSTEM;
     info->flags |= SIGNED;
-    int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
+    int_number_to_char(str, (long)va_arg(args, void *), info);
 }
 
 void put_hex_number_cursoring(char **str, format_info *info,
     va_list args) {
     info->number_system = 16;
-    int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
+    info->flags &= ~SIGNED;
+    info->flags |= UNSIGNED;
+    int_number_to_char(str, (long)va_arg(args, void *), info);
 }
 
 void put_dec_number_cursoring(char **str, format_info *info,
     va_list args) {
     info->number_system = 10;
     info->flags |= SIGNED;
-    int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
+    int_number_to_char(str, (long)va_arg(args, void *), info);
 }
 
 void put_udec_number_cursoring(char **str, format_info *info,
     va_list args) {
     info->number_system = 10;
     info->flags &= ~SIGNED;
-    int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
+    info->flags |= UNSIGNED;
+    int_number_to_char(str, (long)va_arg(args, void *), info);
 }
 
 void put_octo_number_cursoring(char **str, format_info *info,
     va_list args) {
+    info->flags &= ~SIGNED;
+    info->flags |= UNSIGNED;
     info->number_system = 8;
-    int_number_to_char(str, (unsigned long long)va_arg(args, void *), info);
+    int_number_to_char(str, (long)va_arg(args, void *), info);
 }
 
-void int_number_to_char(char **str, unsigned long long int number,
+void int_number_to_char(char **str, unsigned long number,
     format_info *info) {
     char aggregate;
     char sign;
-    char tmp[64];
+    char tmp[32];
     const char *digits_template;
     int i;
 
+    /* select the character output case */
     if (info->flags & CAPITALIZE) {
         digits_template = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     } else {
@@ -150,15 +158,34 @@ void int_number_to_char(char **str, unsigned long long int number,
         info->flags &= ~ZERO_PADDING;
     }
 
-    aggregate = (info->flags & ZERO_PADDING) ? '0' : ' ';
+    if (info->flags & ZERO_PADDING) {
+        aggregate = '0';
+    } else {
+        aggregate = ' ';
+    }
 
-    /* get the sign of a number */
+    /* get the sign of a number 
+     * sign priority
+     * ' ' > '+'
+     * ' ' > '-'
+     * If the number has a - sign,
+     * then the minus sign is output in
+     * any case, except for unsigned numbers.
+     */
     sign = '\0';
     if (info->flags & SIGNED) {
-        if ((signed long)number < 0) {
+        if (info->qualifier == SHORT && ((short)number) < 0) {
+            number = -(short)number;
             sign = '-';
-            number = -(signed long)number;
             info->field_width--;
+        } else if (info->qualifier == NONE && ((int)number) < 0) {
+            sign = '-';
+            info->field_width--;
+            number = -(int)number;
+        } else if (info->qualifier == LONG && ((long)number) < 0) {
+            sign = '-';
+            info->field_width--;
+            number = -(long)number;
         } else if (info->flags & SHOW_SIGN) {
             sign = '+';
             info->field_width--;
@@ -166,11 +193,19 @@ void int_number_to_char(char **str, unsigned long long int number,
             sign = ' ';
             info->field_width--;
         }
+    } else {
+        if (info->qualifier == SHORT) {
+            number = (unsigned short)number;
+        } else if (info->qualifier == NONE) {
+            number = (unsigned int)number;
+        } else if (info->qualifier == LONG) {
+            number = (unsigned long)number;
+        }
     }
 
     /* In the 16 number system
     two characters are assigned to "0x",
-    in 8 number system to 0 */
+    in 8 number system to '0' */
     if (info->flags & NUMBER_SYSTEM) {
         if (info->number_system == 16) {
             info->field_width -= 2;
@@ -181,23 +216,12 @@ void int_number_to_char(char **str, unsigned long long int number,
 
     /* put the number int the buffer */
     i = 0;
-    if (info->flags & SIGNED) {
-        if (number == 0) {
-            tmp[i++] = '0';
-        } else {
-            while (number != 0) {
-                tmp[i++] = digits_template[number % info->number_system];
-                number = number / info->number_system;
-            }
-        }
+    if (number == 0) {
+        tmp[i++] = '0';
     } else {
-        if (number == 0) {
-            tmp[i++] = '0';
-        } else {
-            while ((int)number != 0) {
-                tmp[i++] = digits_template[-(int)(signed long long)number % info->number_system];
-                number = -(int)(signed long long)number / info->number_system;
-            }
+        while (number != 0) {
+            tmp[i++] = digits_template[number % info->number_system];
+            number = number / info->number_system;
         }
     }
 

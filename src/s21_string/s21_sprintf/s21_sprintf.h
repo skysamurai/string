@@ -14,7 +14,7 @@
 
 int s21_sprintf_(char *str, const char *format, va_list args);
 
-void int_number_to_char(char **str, unsigned long long int number,
+void int_number_to_char(char **str, unsigned long number,
                         format_info *info);
 
 void real_number_to_char(char **str, double number, format_info *info);
