@@ -320,10 +320,8 @@ void real_number_to_char(char **str, double number, format_info *info) {
     }
 }
 
-void real_number_to_char(char **str, double number, struct format_info *info) {
-    double integral;
-    double fractional;
-    int exponent = 0;
+/*void real_number_to_char(char **str, double number, struct format_info *info)
+{ double integral; double fractional; int exponent = 0;
 
     double numberBackup = number;
     // разделение целой и дробной части
@@ -390,3 +388,4 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
     // printf("frac: %100.100f\n", fractional);
     printf("exp: %d\n", exponent);
 }
+*/
