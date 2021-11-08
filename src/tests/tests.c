@@ -21,6 +21,9 @@ int main(void) {
 
     TCase *strcspnCase = CreateStrcspnCase();
     suite_add_tcase(s1, strcspnCase);
+    
+    TCase *strcmpCase = CreateStrcmpCase();
+    suite_add_tcase(s1, strcmpCase);
 
     TCase *memchrCase = CreateMemchrCase();
     suite_add_tcase(s1, memchrCase);

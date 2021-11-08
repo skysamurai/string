@@ -206,28 +206,29 @@ char *s21_strtok(char *str, const char *delim) {
 }
 
 int s21_strcmp(const char *str1, const char *str2) {
-    int i = 0;
-    int flag = 0;
-    while ((flag != -1) && (str1[i] != '\0') && ((str2[i] != '\0'))) {
-        if (str1[i] != str2[i])
-            flag = -1;
-        else
-            ++i;
+    int ret = 0;
+    size_t i = 0;
+    size_t n = strlen(str1);
+    if (s21_strlen(str2) > n)
+        n = s21_strlen(str2);
+     while ((str1[i] == str2[i]) && (n)) {
+        ++i;
+        --n;
     }
-    return flag;
+    if (n != 0)
+        ret = str1[i] - str2[i]; 
+return ret;
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-    int ret = -2;
+    int ret = 0;
     s21_size_t i = 0;
     while ((str1[i] == str2[i]) && (n)) {
         ++i;
         --n;
     }
-    if (n == 0)
-        ret = 0;
-    else 
-        ret = str1[i] - str2[i];   
+    if (n != 0)
+        ret = str1[i] - str2[i];
 return ret;
 }
 
@@ -268,7 +269,7 @@ const char *s21_strerror(int errnum) {
         }
         else {
             char errch[100];
-            sprintf(errch,"Unknown error: %d", errnum);
+            sprintf(errch,"Unknown error: %d", errnum);   // change sprintf to s21_sprintf !!!
             err = errch;
         }
 return err;
