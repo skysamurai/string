@@ -52,6 +52,10 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
                 f_info.flags |= EXPONENT;
                 real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
             } else if (*f_cursor == 'E') {
+                f_info.flags |= CAPITALIZE;
+                f_info.flags |= SIGNED;
+                f_info.flags |= EXPONENT;
+                real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
             }             else if (*f_cursor == 'f') {}
             f_cursor++;
