@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "parser.h"
 #include "s21_sprintf.h"
 #include "s21_string.h"
@@ -154,7 +155,7 @@ void int_number_to_char(char **str, unsigned long number,
     }
 
     /* left alignment has a higher priority than zero padding */
-    if (info->flags & LEFT_JUSTIFY) {
+    if (info->flags & LEFT_JUSTIFY || info->precision > 0) {
         info->flags &= ~ZERO_PADDING;
     }
 
@@ -386,7 +387,6 @@ void real_number_to_char(char **str, double number, format_info *info) {
             while (i > 0) {
                 *(*str)++ = tmp[(i--) - 1];
             }
-
         }
 
         while (info->field_width-- > 0) {
