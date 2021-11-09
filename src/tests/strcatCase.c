@@ -70,7 +70,6 @@ START_TEST(arg2NULLTest) {  // must create SIGSEGV
 }
 END_TEST
 
-END_TEST
 START_TEST(argsNULLTest) {  // must create SIGSEGV
     s21_strcat(S21_NULL, S21_NULL);
 }

@@ -62,10 +62,11 @@ START_TEST(arg2NULLTest) {  // must create SIGSEGV
 END_TEST
 
 START_TEST(argsEmptyTest) {
+    const char* a = "";
     char* origOutput;
     char* s21Output;
-    origOutput = strpbrk("", "");
-    s21Output = s21_strpbrk("", "");
+    origOutput = strpbrk("a", "a");
+    s21Output = s21_strpbrk("a", "a");
     ck_assert(origOutput == s21Output);
 }
 END_TEST

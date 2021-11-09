@@ -9,7 +9,7 @@ START_TEST(bgreydonTest) {
     char origStr[100] = "";
     char s21Str[100] = "";
 
-    s21_wrapper_sprintf(s21Str, "|%d word|", 300);
+    s21_sprintf(s21Str, "|%d word|", 300);
     sprintf(origStr, "|%d word|", 300);
 
     ck_assert(strcmp(s21Str, origStr) == 0);

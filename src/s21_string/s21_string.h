@@ -3,7 +3,7 @@
 
 #ifndef S21_SIZE_T
 #define S21_SIZE_T
-typedef unsigned int s21_size_t;
+typedef unsigned long s21_size_t;
 #endif  // S21_SIZE_T
 #ifndef S21_NULL
 #define S21_NULL ((void *)0)
@@ -11,7 +11,7 @@ typedef unsigned int s21_size_t;
 
 #include "./s21_sprintf/s21_sprintf.h"
 
-int s21_wrapper_sprintf(char *str, char *format, ...);
+int s21_sprintf(char *str, char *format, ...);
 char *s21_strtok(char *str, const char *delim);
 
 void *s21_memchr(const void *str, int c, s21_size_t n);
@@ -26,6 +26,7 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index);
 void *s21_trim(const char *src, const char *trim_chars);
 char *s21_strcpy(char *dest, const char *src);
 char *s21_strstr(const char *haystack, const char *needle);
+s21_size_t s21_strspn(const char *str1, const char *str2);
 
 char *s21_strpbrk(const char *str1, const char *str2);
 
@@ -34,10 +35,9 @@ char *s21_strcat(char *dest, const char *src);
 char *s21_strncat(char *dest, const char *src, s21_size_t n);
 char *s21_strchr(const char *str, int c);
 int s21_strcmp(const char *str1, const char *str2);
-int s21_strncmp(const char *str1, const char *str2, s21_size_t n);
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n); // !!!
 
 int s21_strcmp(const char *str1, const char *str2);
-int s21_strncmp(const char *str1, const char *str2, s21_size_t n);
 char *s21_strncpy(char *dest, const char *src, s21_size_t n);
 s21_size_t s21_strcspn(const char *str1, const char *str2);
 const char *s21_strerror(int errnum);
