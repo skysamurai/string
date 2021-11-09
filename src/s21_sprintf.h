@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "parser.h"
-#include "../s21_string.h"
+#include "s21_string.h"
 
 #ifndef S21_NULL
 #define S21_NULL (void *)0
