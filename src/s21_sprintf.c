@@ -108,7 +108,8 @@ void put_string_cursoring(char **str, format_info *info, va_list args) {
 void put_pointer_cursoring(char **str, format_info *info, va_list args) {
     info->number_system = 16;
     info->flags |= NUMBER_SYSTEM;
-    info->flags |= SIGNED;
+    info->flags |= UNSIGNED;
+    info->qualifier = LONG;
     int_number_to_char(str, (long)va_arg(args, void *), info);
 }
 
@@ -205,6 +206,10 @@ void int_number_to_char(char **str, unsigned long number,
             number = (unsigned int)number;
         } else if (info->qualifier == LONG) {
             number = (unsigned long)number;
+        }
+        if (info->flags & SHOW_SIGN) {
+            sign = '+';
+            info->field_width--;
         }
     }
 
