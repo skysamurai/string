@@ -8,7 +8,7 @@
 // For printf
 #include <stdio.h>
 //#include <stdlib.h>
-#include "s21_string/s21_string.h"
+#include "s21_string.h"
 
 static double PRECISION = 0.00000000000001;
 static int MAX_NUMBER_STRING_SIZE = 3;
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
         printf("\n\t\t%100.100lf:\nprintf:\t\t%.100e\n", d[i], d[i]);
 
         char s21str[400];
-        s21_wrapper_sprintf(s21str, "s21   : %.100e", d[i]);
-        printf("%s \n", s21str);
+        s21_sprintf(s21str, "s21   : %.100e", d[i]);
+        printf("\t%s \n", s21str);
     }
 }
