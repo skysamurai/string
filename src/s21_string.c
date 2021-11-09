@@ -1,7 +1,22 @@
 #include "s21_string.h"
 #include <errno.h>
 #include <stdlib.h>
-#include <string.h> //  dont forget to delete !!!
+
+size_t s21_strspn(const char *str1, const char *str2) {
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2);
+    size_t res_len = 0, temp_len = 0;
+    for (int i = 0; i < n_str1; i++) {
+        if (s21_strchr(str2, (str1 + i)[0]) != NULL) {
+            temp_len++;
+        } else {
+            if (temp_len > res_len) {
+                res_len = temp_len;
+            }
+            temp_len = 0;
+        }
+    }
+    return res_len;
+}
 
 int s21_sprintf(char *str, char *format, ...) {
     va_list args;
@@ -62,11 +77,15 @@ void *s21_memset(void *str, int c, s21_size_t n) {
 }
 
 char *s21_strchr(const char *str, int c) {
+    char* res = S21_NULL;
     int i = 0;
-    while ((*(str + i) != '\0') & ((*(str + i) != c))) {
+    while (((str + i)[0] != c) && (((str + i)[0]) != '\0')){
         i++;
     }
-    return (char *)str + i;
+    if ((str + i)[0] == c){
+        res = (char*)(str + i); 
+    }
+    return res;
 }
 
 s21_size_t s21_strlen(const char *str) { return (s21_strchr(str, 0) - str); }
@@ -188,7 +207,7 @@ char *s21_strtok(char *str, const char *delim) {
             result = start_token;
         }
 
-        end_token = start_token + (strpbrk(start_token, delim) - start_token);
+        end_token = start_token + (s21_strpbrk(start_token, delim) - start_token);
         if (end_token != S21_NULL) {
             *end_token = '\0';
             last_point = end_token + 1;
