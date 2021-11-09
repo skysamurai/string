@@ -1,6 +1,7 @@
 #include "s21_sprintf.h"
 
 #include <math.h>
+//#include <stdlib.h>
 
 #include "../s21_string.h"
 
@@ -246,6 +247,101 @@ void int_number_to_char(char **str, unsigned long long int number,
 double absf(double num) { return num > 0 ? num : -num; }
 int abs(int num) { return num > 0 ? num : -num; }
 
+#define	NDIG		350
+char* cvt(double arg, int ndigits, int *decptp, int *signp, int eflag)
+{
+	register int decpt;
+	double fi, fj;
+	register char *p, *p1;
+	static char buf[NDIG] = { 0 };
+	double modf();
+
+	if (ndigits < 0)
+		ndigits = 0;
+	if (ndigits >= NDIG-1)
+		ndigits = NDIG-2;
+
+	decpt = 0;
+	*signp = 0;
+	p = &buf[0];
+
+	if (arg == 0) {
+		*decptp = 0;
+		while (p < &buf[ndigits])
+			*p++ = '0';
+		*p = '\0';
+		return(buf);
+	} else if (arg < 0) {
+		*signp = 1;
+		arg = -arg;
+	}
+
+	arg = modf(arg, &fi);
+	p1 = &buf[NDIG];
+
+	/*
+	 * Do integer part
+	 */
+	*decptp = decpt;
+
+	/*
+	 * do fraction part
+	 * p pts to where fraction should be concatenated
+	 * p1 is how far conversion must go to
+	 */
+	p1 = &buf[ndigits];
+	if (eflag==0) {
+		/* fcvt must provide ndigits after decimal pt */
+		p1 += decpt;
+		/* if decpt was negative, we might done for fcvt */
+		if (p1 < &buf[0]) {
+			buf[0] = '\0';
+			return(buf);
+		}
+	}
+	while (p <= p1 && p < &buf[NDIG]) {
+		arg *= 10;
+		arg = modf(arg, &fj);
+		*p++ = (int)fj + '0';
+	}
+	/*
+	 * if we converted all the way to the end of the
+	 * buf, don't mess with rounding since there's nothing
+	 * significant out here anyway
+	 */
+	if (p1 >= &buf[NDIG]) {
+		buf[NDIG-1] = '\0';
+		return(buf);
+	}
+	/*
+	 * round by adding 5 to last digit and propagating
+	 * carries
+	 */
+	p = p1;
+	*p1 += 5;
+	while (*p1 > '9') {
+		*p1 = '0';
+		if (p1 > buf)
+			++*--p1;
+		else {
+			*p1 = '1';
+			(*decptp)++;
+			if (eflag == 0) {
+				if (p > buf)
+					*p = '0';
+				p++;
+			}
+		}
+	}
+	*p = '\0';
+	return(buf);
+}
+
+fcvt(double arg, int ndigits, int *decptp, int *signp)
+{
+	return(cvt(arg, ndigits, decptp, signp, 0));
+}
+
 void real_number_to_char(char **str, double number, struct format_info *info) {
     double integral;
     double fractional;
@@ -292,23 +388,14 @@ void real_number_to_char(char **str, double number, struct format_info *info) {
     }
     //Обновялем целую и дробную часть, я хз что там навреху
     number = numberBackup;
-    if (exponent < 0) number += 1.0;
     fractional = modf(number, &integral);
 
-    char outputPrecision[200] = {'\0'};
+    char *outputPrecision;
+    int sign;
+    outputPrecision = fcvt(number,30, &exponent, &sign);
 
-    for (int i = 0; i < 200 - 1; i++) {
-        unsigned boba = (abs((int)(fractional * 10)));
-        outputPrecision[i] = (boba) + '0';
-        fractional *= 10;
-        modf(fractional, &integral);
-        fractional -= (double)integral;
-    }
-    outputPrecision[199] = '\0';
-    printf("fracS\t\t0.%.100s?\n", outputPrecision);
-
-    // long boba = *(long *)&number;
-
+    printf("fracS\t\t0.%s?\n", outputPrecision);
+    printf("num\t\t%.100lf\n", number);
     // TODO: вообще проблема перевода дабла в строку не решена, но
     // форматирование самого числа пока оно в double трудностей не представляет
     printf("AFTER CHANGE:\n");
