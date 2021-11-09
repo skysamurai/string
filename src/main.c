@@ -1,11 +1,11 @@
-#include "./s21_string/s21_sprintf/s21_sprintf.h"
+#include "s21_sprintf.h"
 #include <string.h>
 #include <stdio.h>
-#include "./s21_string/s21_string.h"
+#include "s21_string.h"
 #include <stdlib.h>
 
 int main(void) {
-    char spec[] = "%-+10.5lo";
+    char spec[] = "%e";
     unsigned long int a = 0;
     a -= 1;
 
