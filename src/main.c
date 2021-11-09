@@ -1,8 +1,9 @@
 #include "s21_sprintf.h"
+#include "s21_string.h"
+
+#include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "s21_string.h"
-#include <stdlib.h>
 
 int main(void) {
     char spec[] = "%-+10.5lo";
@@ -21,8 +22,6 @@ int main(void) {
 
         sprintf(strb, spec, 50, 3, a);
     printf("std: |%s|", strb);
-        sprintf(strb, spec, a);
-    printf("std: |%s|", strb); */
 
     return 0;
 }

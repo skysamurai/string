@@ -3,8 +3,14 @@ ERROR_FLAGS = -Wall -Wextra -Werror
 DEBUG_FLAGS = -g3
 OPTIM_FLAGS = -O0
 h_path = -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
-#CHECK_FLAGS = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck#MAC
-CHECK_FLAGS = -lcheck_pic -pthread -lrt -lm -lsubunit#LINUX
+
+
+OS := $(shell uname -o)
+ifeq ($(OS),Darwin)
+	CHECK_FLAGS = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
+else ifeq($(OS), GNU/Linux)
+	CHECK_FLAGS = -lcheck_pic -pthread -lrt -lm -lsubunit
+endif
 
 
 TARGET = main
