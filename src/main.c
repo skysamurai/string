@@ -6,6 +6,7 @@
 
 int main(void) {
     char spec[] = "%+0#*.*hX";
+/*     char spec[] = "%-+10.5lo";
     unsigned long int a = 0;
     a = -1;
 
@@ -21,6 +22,13 @@ int main(void) {
 
         sprintf(strb, spec, 50, 3, a);
     printf("std: |%s|", strb);
+        sprintf(strb, spec, a);
+    printf("std: |%s|", strb); */
+
+    int len;
+
+  len = s21_strspn("это строка из примера", "акортэ с");
+  printf("%d", len);
 
     return 0;
 }
