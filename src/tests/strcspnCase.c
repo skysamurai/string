@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string/s21_string.h"
+#include "s21_string.h"
 #include "tests.h"
 
 // TODO
@@ -10,7 +10,7 @@ START_TEST(normalTest) {
     char str[] = "fcba73";
     char keys[] = "1234567890";
     int i;
-    i = strcspn (str,keys);
+    i = strcspn(str,keys);
     int s21_i;
     s21_i = s21_strcspn (str,keys);
     ck_assert(i == s21_i);

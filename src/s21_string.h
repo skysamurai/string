@@ -9,7 +9,7 @@ typedef unsigned long s21_size_t;
 #define S21_NULL ((void *)0)
 #endif  // S21_NULL
 
-#include "./s21_sprintf/s21_sprintf.h"
+#include "s21_sprintf.h"
 
 int s21_sprintf(char *str, char *format, ...);
 char *s21_strtok(char *str, const char *delim);
@@ -26,6 +26,7 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index);
 void *s21_trim(const char *src, const char *trim_chars);
 char *s21_strcpy(char *dest, const char *src);
 char *s21_strstr(const char *haystack, const char *needle);
+s21_size_t s21_strspn(const char *str1, const char *str2);
 
 char *s21_strpbrk(const char *str1, const char *str2);
 
