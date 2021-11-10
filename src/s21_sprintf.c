@@ -56,6 +56,10 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
                 f_info.flags |= EXPONENT;
                 real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
             } else if (*f_cursor == 'E') {
+                f_info.flags |= CAPITALIZE;
+                f_info.flags |= SIGNED;
+                f_info.flags |= EXPONENT;
+                real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
             } else if (*f_cursor == 'f') {
             }
@@ -109,7 +113,8 @@ void put_string_cursoring(char **str, format_info *info, va_list args) {
 void put_pointer_cursoring(char **str, format_info *info, va_list args) {
     info->number_system = 16;
     info->flags |= NUMBER_SYSTEM;
-    info->flags |= SIGNED;
+    info->flags |= UNSIGNED;
+    info->qualifier = LONG;
     int_number_to_char(str, (long)va_arg(args, void *), info);
 }
 
@@ -155,7 +160,7 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
     }
 
     /* left alignment has a higher priority than zero padding */
-    if (info->flags & LEFT_JUSTIFY) {
+    if (info->flags & LEFT_JUSTIFY || info->precision > 0) {
         info->flags &= ~ZERO_PADDING;
     }
 
@@ -201,6 +206,10 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
             number = (unsigned int)number;
         } else if (info->qualifier == LONG) {
             number = (unsigned long)number;
+        }
+        if (info->flags & SHOW_SIGN) {
+            sign = '+';
+            info->field_width--;
         }
     }
 
