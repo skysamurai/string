@@ -1,13 +1,7 @@
-/*
-   Double to ASCII Conversion without sprintf.
-   Roughly equivalent to: sprintf(s, "%.14g", n);
-*/
-
 #include <math.h>
-#include <string.h>
-// For printf
 #include <stdio.h>
-//#include <stdlib.h>
+#include <string.h>
+
 #include "s21_string.h"
 
 static double PRECISION = 0.00000000000001;
@@ -27,10 +21,10 @@ int main(int argc, char **argv) {
                   16.9};
 
     for (i = 0; i < 10; i++) {
-        printf("\n\t\t%100.100lf:\nprintf:\t\t%.100e\n", d[i], d[i]);
+        printf("printf:\t%.100e\n", d[i], d[i]);
 
         char s21str[400];
-        s21_sprintf(s21str, "s21   : %.100e", d[i]);
-        printf("\t%s \n", s21str);
+        s21_sprintf(s21str, "a\na s21:\t%.100e B\n\n\n\n\n\nС \nС", d[i]);
+        printf("%s \n\n", s21str);
     }
 }
