@@ -85,9 +85,7 @@ START_TEST(arg3ZeroTest) {
 }
 END_TEST
 
-START_TEST(arg3NULLTest) {  // must return SIGSEGV
-    int* nullint = S21_NULL;
-
+START_TEST(arg3NULLTest) {
     s21_strcmp("aaa", "baa");
 }
 END_TEST
@@ -105,7 +103,7 @@ TCase* CreateStrcmpCase() {
 
     tcase_add_test_raise_signal(strcmpCase, arg1NULLTest, SIGSEGV);
     tcase_add_test_raise_signal(strcmpCase, arg2NULLTest, SIGSEGV);
-    tcase_add_test_raise_signal(strcmpCase, arg3NULLTest, SIGSEGV);
+    tcase_add_test(strcmpCase, arg3NULLTest);
 
     return strcmpCase;
 }

@@ -225,7 +225,7 @@ char *s21_strtok(char *str, const char *delim) {
 }
 
 int s21_strcmp(const char *str1, const char *str2) {
-    int ret = 0;
+/*     int ret = 0;
     size_t i = 0;
     size_t n = strlen(str1);
     if (s21_strlen(str2) > n)
@@ -235,20 +235,48 @@ int s21_strcmp(const char *str1, const char *str2) {
         --n;
     }
     if (n != 0)
-        ret = str1[i] - str2[i]; 
-return ret;
+        ret = str1[i] - str2[i];  */
+    int res;
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
+    if (n_str1 > n_str2)
+        res = 1;
+    if (n_str1 < n_str2)
+        res = -1;
+    if (n_str1 == n_str2) {
+            while ((str1[i] == str2[i]) && (n_str1)) {
+            ++i;
+            --n_str1;
+        }
+        if (n_str1 != 0)
+            res = str1[i] - str2[i];
+    }
+    return res;
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-    int ret = 0;
+/*     int ret = 0;
     s21_size_t i = 0;
     while ((str1[i] == str2[i]) && (n)) {
         ++i;
         --n;
     }
     if (n != 0)
-        ret = str1[i] - str2[i];
-return ret;
+        ret = str1[i] - str2[i]; */
+    int res;
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
+    if (n_str1 > n_str2)
+        res = 1;
+    if (n_str1 < n_str2)
+        res = -1;
+    if (n_str1 == n_str2) {
+            while ((str1[i] == str2[i]) && (n) && (i < n_str1)) {
+            ++i;
+            --n;
+        }
+        if (n != 0)
+            res = str1[i] - str2[i];
+    }
+return res;
 }
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
