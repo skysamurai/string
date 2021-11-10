@@ -271,7 +271,6 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
 
 void real_number_to_char(char **str, double number, format_info *info) {
     char *actualStr = *str;
-
     int exponent;
     int exponentSign;
     int sign;
@@ -308,7 +307,6 @@ void real_number_to_char(char **str, double number, format_info *info) {
     *(*str)++ = exponentSign == 0 ? '+' : '-';
     if (exponent < 10) *(*str)++ = '0';
     if (exponent == 0) *(*str)++ = '0';
-
     char exponentStr[128] = {0};
     i = 126;
     while (exponent != 0) {
@@ -316,7 +314,7 @@ void real_number_to_char(char **str, double number, format_info *info) {
         exponent /= 10;
     }
     i++;
-    while (i <= 127) {
+    while (i <= 126) {
         *(*str)++ = exponentStr[i];
         i++;
     }

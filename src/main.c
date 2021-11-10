@@ -23,8 +23,17 @@ int main(int argc, char **argv) {
     for (i = 0; i < 10; i++) {
         printf("printf:\t%.100e\n", d[i], d[i]);
 
-        char s21str[400];
-        s21_sprintf(s21str, "a\na s21:\t%.100e B\n\n\n\n\n\nС \nС", d[i]);
+        char s21str[4000] = {0};
+        s21_sprintf(s21str, "s21:\t%.100e", d[i]);
         printf("%s \n\n", s21str);
+
+        /*printf("alt:\n");
+        for (int i = 0; i < 4000; i++) {
+            if (s21str[i] != '\0')
+                printf("%c", s21str[i]);
+            else
+                printf("HERE");
+        }
+        printf("\nalt end\n");*/
     }
 }
