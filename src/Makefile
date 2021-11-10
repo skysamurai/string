@@ -3,15 +3,23 @@ ERROR_FLAGS = -Wall -Wextra -Werror
 DEBUG_FLAGS = -g3
 OPTIM_FLAGS = -O0
 h_path = -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
-#CHECK_FLAGS = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck#MAC
-CHECK_FLAGS = -lcheck_pic -pthread -lrt -lm -lsubunit#LINUX
+
+
+OS := $(shell uname -o)
+ifeq ($(OS),Darwin)
+	CHECK_FLAGS = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
+else ifeq ($(OS), GNU/Linux)
+	CHECK_FLAGS = -lcheck_pic -pthread -lrt -lm -lsubunit
+endif
 
 
 TARGET = main
 
-
-LIB_SOURCES = parser.c s21_sprintf.c s21_string.c
+# Libs for build static library
+LIB_SOURCES = parser.c s21_sprintf.c s21_string.c cvt.c
+# Generate object name for c files
 LIB_OBJECTS = $(patsubst %.c,%.o,$(LIB_SOURCES))
+# Generate name for dependence files
 D_LIB_SOURCES = $(patsubst %.c,%.d,$(LIB_SOURCES))
 
 TEST_SOURCES = $(shell find tests/ -type f -name "*.c" )
@@ -20,13 +28,14 @@ D_TEST_SOURCES = $(patsubst %.c,%.d,$(TEST_SOURCES))
 
 all: s21_string.a test
 
-%.o: %.c
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -c $< -o $@ -MD
-include $(wildcart $(D_LIB_SOURCES))
+-include $(wildcart $(D_LIB_SOURCES))
+-include $(wildcart $(D_TEST_SOURCES))
 
-tests/%.o: tests/%.c
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -c $< -o $@ -MD -I$(CURDIR)
-include $(wildcart $(D_TEST_SOURCES))
+%.o: %.c %.d
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
+
+tests/%.o: tests/%.c tests/tests.h
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@ -I$(CURDIR)
 
 libs21_string.a: $(LIB_OBJECTS)
 	ar rc libs21_string.a $^
@@ -35,9 +44,7 @@ libs21_string.a: $(LIB_OBJECTS)
 s21_string.a: libs21_string.a
 
 test: s21_string.a $(TEST_OBJECTS)
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS) -MD
-
-tst: test
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
 
 clean:
 	find . -type f -name "*.o" -delete
