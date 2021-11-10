@@ -1,5 +1,5 @@
 CC = clang
-ERROR_FLAGS = -Wall -Wextra -Werror
+ERROR_FLAGS = -Wall -Wextra
 DEBUG_FLAGS = -g3
 OPTIM_FLAGS = -O0
 h_path = -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
@@ -16,7 +16,7 @@ endif
 TARGET = main
 
 # Libs for build static library
-LIB_SOURCES = parser.c s21_sprintf.c s21_string.c cvt.c
+LIB_SOURCES = parser.c s21_sprintf.c s21_string.c
 # Generate object name for c files
 LIB_OBJECTS = $(patsubst %.c,%.o,$(LIB_SOURCES))
 # Generate name for dependence files
@@ -32,10 +32,10 @@ all: s21_string.a test
 -include $(wildcart $(D_TEST_SOURCES))
 
 %.o: %.c %.d
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) -MD -c $< -o $@
 
 tests/%.o: tests/%.c tests/tests.h
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@ -I$(CURDIR)
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) -MD -c $< -o $@ -I$(CURDIR)
 
 libs21_string.a: $(LIB_OBJECTS)
 	ar rc libs21_string.a $^
@@ -44,7 +44,7 @@ libs21_string.a: $(LIB_OBJECTS)
 s21_string.a: libs21_string.a
 
 test: s21_string.a $(TEST_OBJECTS)
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
 
 clean:
 	find . -type f -name "*.o" -delete
@@ -62,7 +62,7 @@ re: fclean all
 
 # our target`s zone
 $(TARGET): s21_string.a
-	$(CC) $(DEBUG_FLAGS) $(OPTIM_FLAGS) $@.c -L. -ls21_string -o $(TARGET)
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) $@.c -L. -ls21_string -o $(TARGET)
 
 f_prog: $(TARGET)
 	./$(TARGET)

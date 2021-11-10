@@ -79,21 +79,12 @@ int is_digit(char chr) {
     return (chr >= '0') && (chr <= '9');
 }
 
-/*int is_specifer(char chr) {
-    int result = 0;
-    if (chr == 'L' || chr == 'l' || chr == 'h' || chr == '%') {
-        result = 0;
-    } else if (chr > 'A' && chr < 'Z' || chr > 'a' && chr < 'z') {
-        result = 1;
-    }
-    return result;
-}*/
-
 int get_dec_digit_count(int number) {
+    number = number >= 0 ? number : -number;
     int len = 0;
-    while (number % 10) {
-        number /= 10;
+    while (number) {
         len++;
+        number /= 10;
     }
     return len;
 }

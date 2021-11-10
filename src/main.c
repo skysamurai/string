@@ -6,22 +6,18 @@
 #include <stdio.h>
 
 int main(void) {
-    char spec[] = "%n";
-    unsigned long int a = 0;
-    a = -1;
+    char spec[] = "% #+-e$\nn string";
+    double a = 0.2e-100;
 
 
     char stra[255] = {'\0'};
-
-    a = s21_sprintf(stra, spec, 0);
-    printf("s21: |%d|%s|\n", stra);
+    s21_sprintf(stra, spec, a);
+    printf("s21: |%s|\n", stra);
 
 
     char strb[255] = {'\0'};
-    long int b = -50;
-
-        sprintf(strb, spec, 0);
-    printf("std: |%d|%s|\n", strb);
+        sprintf(strb, spec, a);
+    printf("std: |%s|\n", strb);
 
     return 0;
 }
