@@ -16,7 +16,7 @@ endif
 TARGET = main
 
 # Libs for build static library
-LIB_SOURCES = parser.c s21_sprintf.c s21_string.c cvt.c
+LIB_SOURCES = parser.c s21_sprintf.c s21_string.c
 # Generate object name for c files
 LIB_OBJECTS = $(patsubst %.c,%.o,$(LIB_SOURCES))
 # Generate name for dependence files
