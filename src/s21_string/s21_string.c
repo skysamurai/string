@@ -98,9 +98,14 @@ void *s21_to_lower(const char *str) {
 }
 
 char *s21_strcpy(char *dest, const char *src) {
-    s21_size_t n = s21_strlen(src);
-    s21_memcpy(dest, src, n);
-    return dest;
+    // s21_size_t n = s21_strlen(src);
+    // s21_memcpy(dest, src, n);
+    s21_size_t i = 0;
+    while (src[i] != 0) {
+        dest[i] = src[i];
+        ++i;
+    }
+return dest;
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {

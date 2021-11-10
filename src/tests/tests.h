@@ -6,7 +6,6 @@
 TCase* CreateStrpbrkCase();
 TCase* CreateStrrchrCase();
 TCase* CreateMemcmpCase();
-TCase* CreateStrcspnCase();
 TCase* CreateMemchrCase();
 TCase* CreateTrimCase();
 TCase* CreateStrtokCase();
@@ -14,6 +13,8 @@ TCase* CreateSprintfCase();
 TCase* CreateStrchrCase();
 TCase* CreateStrcmpCase();
 TCase* CreateStrncmpCase();
+TCase* CreateStrcspnCase();
+TCase* CreateStrcpyCase();
 TCase* CreateStrcatCase();
 TCase* CreateStrncatCase();
 
