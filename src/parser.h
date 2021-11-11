@@ -11,10 +11,10 @@
 
 /* sprintf string format */
 #define SIGNED (1U << 5U)             /* signed number */
-#define CAPITALIZE (1U << 6U)         /* output in capital letters */
-#define EXPONENT (1U << 7U)           /* output in exponential form */
-#define FLOAT (1U << 8U)              /* float type */
-#define SHORTEST_FLOAT
+#define UNSIGNED (1U << 6U)           /* unsigned number */
+#define CAPITALIZE (1U << 7U)         /* output in capital letters */
+#define EXPONENT (1U << 8U)           /* output in exponential form */
+#define FLOAT (1U << 9U)              /* float type */
 
 /* qualifier specifier */
 #define NONE ' '

@@ -69,3 +69,5 @@ src/.vscode/c_cpp_properties.json
 src/.vscode/launch.json
 .editorconfig
 main.c
+src/main.c
+materials/linters/cpplint.py

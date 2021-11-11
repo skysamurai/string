@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string/s21_string.h"
+#include "../s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest_1_40) {
@@ -21,8 +21,8 @@ START_TEST(ZeroTest) {
     int errnum = 0;
     const char* origResult = strerror(errnum);
     const char* s21Result = s21_strerror(errnum);
-    printf(">>>sreerror %d>>>>%s\n", errnum, origResult);
-    printf(">>>s21error %d>>>>%s\n", errnum, s21Result);
+    // printf(">>>sreerror %d>>>>%s\n", errnum, origResult);
+    // printf(">>>s21error %d>>>>%s\n", errnum, s21Result);
     ck_assert_msg(s21Result == origResult,
                 "fail for strerror№ %d. orig:%s,  s21:%s", errnum,
                 origResult, s21Result);

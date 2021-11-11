@@ -1,7 +1,19 @@
 #include "s21_string.h"
 #include <errno.h>
 #include <stdlib.h>
-#include <string.h> //  dont forget to delete !!!
+
+size_t s21_strspn(const char *str1, const char *str2) {
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), flag = 1;
+    size_t res_len = 0;
+    for (int i = 0; i < n_str1 && flag; i++) {
+        if (s21_strchr(str2, (str1 + i)[0]) != NULL) {
+            res_len++;
+        } else {
+            flag = 0;
+        }
+    }
+    return res_len;
+}
 
 int s21_sprintf(char *str, char *format, ...) {
     va_list args;
@@ -62,11 +74,15 @@ void *s21_memset(void *str, int c, s21_size_t n) {
 }
 
 char *s21_strchr(const char *str, int c) {
+    char* res = S21_NULL;
     int i = 0;
-    while ((*(str + i) != '\0') & ((*(str + i) != c))) {
+    while (((str + i)[0] != c) && (((str + i)[0]) != '\0')){
         i++;
     }
-    return (char *)str + i;
+    if ((str + i)[0] == c){
+        res = (char*)(str + i); 
+    }
+    return res;
 }
 
 s21_size_t s21_strlen(const char *str) { return (s21_strchr(str, 0) - str); }
@@ -178,7 +194,7 @@ char *s21_strtok(char *str, const char *delim) {
     start_token = last_point;
 
     if (start_token != S21_NULL) {
-        start_token += strspn(start_token, delim); /* clear delim from start */
+        start_token += s21_strspn(start_token, delim); /* clear delim from start */
         end_token = start_token;
 
         if (*start_token == '\0') {
@@ -188,7 +204,7 @@ char *s21_strtok(char *str, const char *delim) {
             result = start_token;
         }
 
-        end_token = start_token + (strpbrk(start_token, delim) - start_token);
+        end_token = start_token + (s21_strpbrk(start_token, delim) - start_token);
         if (end_token != S21_NULL) {
             *end_token = '\0';
             last_point = end_token + 1;
@@ -206,30 +222,35 @@ char *s21_strtok(char *str, const char *delim) {
 }
 
 int s21_strcmp(const char *str1, const char *str2) {
-    int ret = 0;
-    size_t i = 0;
-    size_t n = s21_strlen(str1);
-    if (s21_strlen(str2) > n)
-        n = s21_strlen(str2);
-     while ((str1[i] == str2[i]) && (n)) {
-        ++i;
-        --n;
+    int res = 0;
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
+    if (n_str1 > n_str2)
+        res = 1;
+    if (n_str1 < n_str2)
+        res = -1;
+    if (n_str1 == n_str2) {
+            while ((str1[i] == str2[i]) && (n_str1)) {
+            ++i;
+            --n_str1;
+        }
+        if (n_str1 != 0)
+            res = str1[i] - str2[i];
     }
-    if (n != 0)
-        ret = str1[i] - str2[i]; 
-return ret;
+    return res;
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-    int ret = 0;
-    s21_size_t i = 0;
-    while ((str1[i] == str2[i]) && (n)) {
-        ++i;
-        --n;
+    int res = 0;
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
+    if (n_str1 == n_str2) {
+            while ((str1[i] == str2[i]) && (n) && (i < n_str1)) {
+            ++i;
+            --n;
+        }
     }
     if (n != 0)
-        ret = str1[i] - str2[i];
-return ret;
+            res = str1[i] - str2[i];
+return res;
 }
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
@@ -289,6 +310,7 @@ char *s21_strcat(char *dest, const char *src) {
 }
 
 char *s21_strstr(const char *haystack, const char *needle) {
+    char* res = S21_NULL;
     int i = 0, j = 0, n_haystack = s21_strlen(haystack), n_needle = s21_strlen(needle);
     while ((j < n_needle) && (i < n_haystack)) {
         j = 0;
@@ -302,15 +324,20 @@ char *s21_strstr(const char *haystack, const char *needle) {
         }
         i++;
     }
-    return (char *)haystack + i;
+    if (i != 0)
+        res = (char *)haystack + i - 1;
+    if (n_needle == 0)
+        res = (char* )haystack;
+    return res;
 }
 
 
 char *s21_strncat(char *dest, const char *src, s21_size_t n) {
     char *a = dest;
     s21_size_t i = 0;
+    int n_dest = s21_strlen(dest), n_src = s21_strlen(src);
     for (; *dest != '\0'; dest++) {}
-    for (i = 0; i <= n; i++) {
+    for (i = 0; i < n && i < (n_src + n_dest); i++) {
         *(dest + i) = *(src + i);
     }
     return a;

@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string/s21_string.h"
+#include "s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -65,6 +65,31 @@ START_TEST(arg2NULLTest) {  // must return SIGSEGV
 }
 END_TEST
 
+START_TEST(arg3TooMuchTest) {
+    int origResult = strcmp("aba", "aaa");
+    int s21Result = s21_strcmp("aba", "aaa");
+
+    ck_assert_msg(s21Result == origResult,
+                  "fail for strcmp(\"aba\", \"aaa\"). orig:%d,  s21:%d",
+                  origResult, s21Result);
+}
+END_TEST
+
+START_TEST(arg3ZeroTest) {
+    int origResult = strcmp("baa", "aaa");
+    int s21Result = s21_strcmp("baa", "aaa");
+
+    ck_assert_msg(s21Result == origResult,
+                  "fail for strcmp(\"baa\", \"aaa\", 0). orig:%d,  s21:%d",
+                  origResult, s21Result);
+}
+END_TEST
+
+START_TEST(arg3NULLTest) {
+    s21_strcmp("aaa", "baa");
+}
+END_TEST
+
 TCase* CreateStrcmpCase() {
     TCase* strcmpCase = tcase_create("strcmpCase");
 
@@ -76,6 +101,7 @@ TCase* CreateStrcmpCase() {
 
     tcase_add_test_raise_signal(strcmpCase, arg1NULLTest, SIGSEGV);
     tcase_add_test_raise_signal(strcmpCase, arg2NULLTest, SIGSEGV);
+    tcase_add_test(strcmpCase, arg3NULLTest);
 
     return strcmpCase;
 }
