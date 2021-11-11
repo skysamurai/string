@@ -6,64 +6,59 @@
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
-    char* origResult;
-    char* s21Result;
-    const char* str2[4];
-    str2[4] = "hello";
-    origResult = strcpy("aaa", str2);
-    s21Result  = s21_strcpy("aaa", str2);
-
-    // ck_assert_msg(s21Result == origResult,
-    //               "fail for strcpy(\"aaa\", \"aaa\"). orig:%p,  s21:%p",
-    //               origResult, s21Result);
-    printf(">>>>>>strcpy>>>>%p", origResult);
-    printf(">>>>>>strcpy>>>>%p", s21Result);
-    ck_assert(s21Result == origResult);
+    char str1[100] = "aaa";
+    char* origResult = strcpy(str1, "aaa");
+    char* s21Result = s21_strcpy(str1, "aaa");
+    ck_assert_msg(s21Result == origResult,
+                  "fail for strcpy(\"aaa\", \"aaa\"). orig:%s,  s21:%s",
+                  origResult, s21Result);
 }
 END_TEST
 
 START_TEST(normalLessTest) {
-    char* origResult = strcpy("aaa", "aba");
-    char* s21Result = s21_strcpy("aaa", "aba");
-
+    char str1[100] = "abcde";
+    char* origResult = strcpy(str1, "012");
+    char* s21Result = s21_strcpy(str1, "012");
     ck_assert_msg(s21Result == origResult,
-                  "fail for strcpy(\"aaa\", \"aba\"). orig:%d,  s21:%d",
+                  "fail for strcpy(\"abcde\", \"012\"). orig:%s,  s21:%s",
                   origResult, s21Result);
 }
 END_TEST
 
 START_TEST(normalMoreTest) {
-    char* origResult = strcpy("aba", "aaa");
-    char* s21Result = s21_strcpy("aba", "aaa");
-
+    char str1[100] = "abc";
+    char* origResult = strcpy(str1, "01234");
+    char* s21Result = s21_strcpy(str1, "01234");
     ck_assert_msg(s21Result == origResult,
-                  "fail for strcpy(\"aba\", \"aaa\"). orig:%d,  s21:%d",
+                  "fail for strcpy(\"abc\", \"01234\"). orig:%s,  s21:%s",
                   origResult, s21Result);
 }
 END_TEST
 
 START_TEST(arg1EmptyTest) {
-    char* origResult = strcpy("1234", "aaa"); ///  !!!!!!!!!!!
-    char* s21Result = s21_strcpy("1234", "aaa");
+    char str1[100] = "\0";
+    char* origResult = strcpy(str1, "01234");
+    char* s21Result = s21_strcpy(str1, "01234");
+    ck_assert_msg(s21Result == origResult,
+                    "fail for strcpy(\"0\", \"01234\"). orig:%s,  s21:%s",
+                    origResult, s21Result);
+    }
+END_TEST
 
-    ck_assert_msg(*s21Result == *origResult,
-                  "fail for strcpy(\"\", \"aaa\"). orig:%d,  s21:%d",
+START_TEST(arg2EmptyTest) {
+    char str1[100] = "abc";
+    char* origResult = strcpy(str1, "");
+    char* s21Result = s21_strcpy(str1, "");
+    ck_assert_msg(s21Result == origResult,
+                  "fail for strcpy(\"abc\", \"\"). orig:%s,  s21:%s",
                   origResult, s21Result);
+    printf(">>>>>>origin>>>>%s\n", origResult);
+    printf(">>>>>>s21_my>>>>%s\n", s21Result);
 }
 END_TEST
 
 START_TEST(arg1NULLTest) {  // must return SIGSEGV
     s21_strcpy(S21_NULL, "aaa");
-}
-END_TEST
-
-START_TEST(arg2EmptyTest) {
-    char* origResult = strcpy("aaa", "");
-    char* s21Result = s21_strcpy("aaa", "");
-
-    ck_assert_msg(s21Result == origResult,
-                  "fail for strcpy(\"aaa\", \"\"). orig:%d,  s21:%d",
-                  origResult, s21Result);
 }
 END_TEST
 
