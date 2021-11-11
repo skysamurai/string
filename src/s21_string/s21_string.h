@@ -38,7 +38,7 @@ int s21_strcmp(const char *str1, const char *str2); // V
 char *s21_strcpy(char *dest, const char *src);  // V
 char *s21_strncpy(char *dest, const char *src, s21_size_t n); // V
 s21_size_t s21_strcspn(const char *str1, const char *str2); // V
-const char *s21_strerror(int errnum); 
+const char *s21_strerror(int errnum); // ...
 s21_size_t s21_strlen(const char *str); // V
 
 char *s21_strcat(char *dest, const char *src);

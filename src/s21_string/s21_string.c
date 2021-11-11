@@ -258,16 +258,19 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 const char *s21_strerror(int errnum) {
     const char *err;
     int errmax = 133;
+    char errZero[100] = "Success";
 #ifdef __APPLE__
     errmax = 106;
+    err0[100] = "Undefined error: 0";
 #endif
     if ( (errnum > 0) && (errnum <= errmax)) {    
             err = sys_errlist[errnum];
         }
         else if ( errnum == 0 ) {        
-            err = "Undefined error: 0";
+            err = "Success";
+            printf("err=%s\n",err);
         }
-        else {
+        else if ((errnum > errmax) || (errnum < 0)){
             char errch[100];
             sprintf(errch,"Unknown error: %d", errnum);   // change sprintf to s21_sprintf !!!
             err = errch;

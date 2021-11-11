@@ -58,8 +58,9 @@ TCase* CreateStrlenCase() {
     tcase_add_test(strlenCase, normalMoreTest);
     tcase_add_test(strlenCase, arg1EmptyTest);
 
+
     tcase_add_test_raise_signal(strlenCase, arg1NULLTest, SIGSEGV);
-    return strlenCase;
+return strlenCase;
 }
 
 // arg Null
