@@ -5,9 +5,10 @@
 #include <string.h>
 #include <stdio.h>
 
+
 int main(void) {
-    char spec[] = "% #+-e$\nn string";
-    double a = 0.2e-100;
+    char spec[] = "% #+-15e$\nn string";
+    double a = 1;
 
 
     char stra[255] = {'\0'};

@@ -318,18 +318,15 @@ void real_number_to_char(char **str, double number, format_info *info) {
      * else user`s 0 prcision*/
     if (info->precision > 0) {
         info->field_width -= info->precision;
-        /* 1 sign required for "." */
-        info->field_width -= 1;
     } else if (info->precision == -1) {
         info->precision = 6;
         info->field_width -= info->precision;
-         /* 1 sign required for "." */
-        info->field_width -= 1;
     } else {
         info->precision = 0;
         info->field_width -= info->precision;
     }
-
+    /* 1 sign required for "." */
+    info->field_width -= 1;
 
     /* the process calculating exponent */
     exponent = 0;
@@ -407,9 +404,7 @@ void real_number_to_char(char **str, double number, format_info *info) {
     }
 
     /* if not zero precision, then output "." */
-    if (info->precision != 0) {
-        *(*str)++ = '.';
-    }
+    *(*str)++ = '.';
 
     /* mantiss output */
     for (; info->precision > 0; --info->precision, number *= 10) {
