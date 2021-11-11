@@ -287,7 +287,7 @@ void real_number_to_char(char **str, double number, format_info *info) {
     char *out;
     // TODO: maximum precision number? compiler/system dependency?
     // own fcvt implementation?
-    out = fcvt(number, INT16_MAX, &exponent, &sign);
+    out = fcvt(number, INT_MAX, &exponent, &sign);
 
     if (exponent >= 0)
         exponentSign = 0;
