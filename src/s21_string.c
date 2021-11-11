@@ -225,7 +225,7 @@ char *s21_strtok(char *str, const char *delim) {
 }
 
 int s21_strcmp(const char *str1, const char *str2) {
-    int res;
+    int res = 0;
     int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
     if (n_str1 > n_str2)
         res = 1;
@@ -243,20 +243,16 @@ int s21_strcmp(const char *str1, const char *str2) {
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-    int res;
+    int res = 0;
     int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
-    if (n_str1 > n_str2)
-        res = 1;
-    if (n_str1 < n_str2)
-        res = -1;
     if (n_str1 == n_str2) {
             while ((str1[i] == str2[i]) && (n) && (i < n_str1)) {
             ++i;
             --n;
         }
-        if (n != 0)
-            res = str1[i] - str2[i];
     }
+    if (n != 0)
+            res = str1[i] - str2[i];
 return res;
 }
 

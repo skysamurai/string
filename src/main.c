@@ -7,7 +7,7 @@
 static double PRECISION = 0.00000000000001;
 static int MAX_NUMBER_STRING_SIZE = 3;
 int main(int argc, char **argv) {
-    int i;
+/*     int i;
     char s[MAX_NUMBER_STRING_SIZE];
     double d[] = {323.786e-303,
                   -123.456789,
@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
         char s21str[4000] = {0};
         s21_sprintf(s21str, "s21:\t%.100e", d[i]);
-        printf("%s \n\n", s21str);
+        printf("%s \n\n", s21str); */
 
         /*printf("alt:\n");
         for (int i = 0; i < 4000; i++) {
@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
                 printf("HERE");
         }
         printf("\nalt end\n");*/
-    }
+    // }
+
+printf("%d\n%d\n", memcmp("", "aaa", 3), s21_memcmp("", "aaa", 3));
     return 0;
 }
