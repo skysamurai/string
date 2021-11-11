@@ -52,8 +52,6 @@ START_TEST(arg2EmptyTest) {
     ck_assert_msg(s21Result == origResult,
                   "fail for strcpy(\"abc\", \"\"). orig:%s,  s21:%s",
                   origResult, s21Result);
-    printf(">>>>>>origin>>>>%s\n", origResult);
-    printf(">>>>>>s21_my>>>>%s\n", s21Result);
 }
 END_TEST
 
@@ -79,7 +77,7 @@ TCase* CreateStrcpyCase() {
     tcase_add_test_raise_signal(strcpyCase, arg1NULLTest, SIGSEGV);
     tcase_add_test_raise_signal(strcpyCase, arg2NULLTest, SIGSEGV);
 
-    return strcpyCase;
+return strcpyCase;
 }
 
 // arg Null
