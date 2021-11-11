@@ -36,4 +36,5 @@ int main(int argc, char **argv) {
         }
         printf("\nalt end\n");*/
     }
+    return 0;
 }
