@@ -6,63 +6,108 @@
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
-    ck_assert(s21_strncmp("aaa", "aaa", 3) == strncmp("aaa", "aaa", 3));
+    char s21_dest[100] = "privet";
+    char s21_src[100] = "aeiou";
+    char dest[100] = "privet";
+    char src[100] = "aeiou";
+
+    strncat(dest, src, 5);
+    s21_strncat(s21_dest, s21_src, 5);
+    ck_assert(strcmp(dest, s21_dest) == 0);
 }
 END_TEST
 
 START_TEST(normalLessTest) {
-    ck_assert(s21_strncmp("aaa", "aba", 3) == strncmp("aaa", "aba", 3));
+    char s21_dest[100] = "privet";
+    char s21_src[100] = "aeiou";
+    char dest[100] = "privet";
+    char src[100] = "aeiou";
+    
+    strncat(dest, src, 4);
+    s21_strncat(s21_dest, s21_src, 4);
+    ck_assert(strcmp(dest, s21_dest) == 0);
+    
+    
 }
 END_TEST
 
 START_TEST(normalMoreTest) {
-    ck_assert(s21_strncmp("aba", "aaa", 3) == strncmp("aba", "aaa", 3));
+    char s21_dest[100] = "privet";
+    char s21_src[100] = "aeiou";
+    char dest[100] = "privet";
+    char src[100] = "aeiou";
+    
+    strncat(dest, src, 6);
+    s21_strncat(s21_dest, s21_src, 6);
+    ck_assert(strcmp(dest, s21_dest) == 0);
 }
 END_TEST
 
 START_TEST(arg3TooMuchTest) {
-    ck_assert(s21_strncmp("aba", "aaa", 333) == strncmp("aba", "aaa", 333));
+    char s21_dest[100] = "privet";
+    char s21_src[100] = "aeiou";
+    char dest[100] = "privet";
+    char src[100] = "aeiou";
+
+    strncat(dest, src, 200);
+    s21_strncat(s21_dest, s21_src, 200);
+    ck_assert(strcmp(dest, s21_dest) == 0);
 }
 END_TEST
 
 START_TEST(arg3ZeroTest) {
-    ck_assert(s21_strncmp("baa", "aaa", 0) == strncmp("baa", "aaa", 0));
+    char s21_dest[100] = "privet";
+    char s21_src[100] = "aeiou";
+    char dest[100] = "privet";
+    char src[100] = "aeiou";
+
+    strncat(dest, src, 0);
+    s21_strncat(s21_dest, s21_src, 0);
+    ck_assert(strcmp(dest, s21_dest) == 0);
 }
 END_TEST
 
 START_TEST(arg1EmptyTest) {
-    ck_assert(s21_strncmp("", "aaa", 3) == strncmp("", "aaa", 3));
+    char s21_src[100] = "aeiou";
+    strncat("", s21_src, 6);
+    s21_strncat("", s21_src, 6);
 }
 END_TEST
 
 START_TEST(arg2EmptyTest) {
-    ck_assert(s21_strncmp("aaa", "", 3) == strncmp("aaa", "", 3));
+    char s21_dest[100] = "privet";
+    char dest[100] = "privet";
+    strncat(dest, "", 5);
+    s21_strncat(s21_dest, "", 5);
+    ck_assert(strcmp(dest, s21_dest) == 0);
 }
 END_TEST
 
-START_TEST(arg1NULLTest) {  // must return SIGSEGV
-    s21_strncmp(S21_NULL, "aaa", 3);
+START_TEST(arg1NULLTest) {
+    char s21_src[100] = "aeiou";
+    s21_strncat(S21_NULL, s21_src, 5);
 }
 END_TEST
 
-START_TEST(arg2NULLTest) {  // must return SIGSEGV
-    s21_strncmp("aaa", S21_NULL, 3);
+START_TEST(arg2NULLTest) {
+    char s21_dest[100] = "privet";
+    s21_strncat(s21_dest, S21_NULL, 5);
 }
 END_TEST
 
 TCase* CreateStrncatCase() {
-    TCase* strncmpCase = tcase_create("strncmpCase");
+    TCase* strncatCase = tcase_create("strncat case");
 
-    tcase_add_test(strncmpCase, normalEqualTest);
-    tcase_add_test(strncmpCase, normalLessTest);
-    tcase_add_test(strncmpCase, normalMoreTest);
-    tcase_add_test(strncmpCase, arg3TooMuchTest);
-    tcase_add_test(strncmpCase, arg3ZeroTest);
-    tcase_add_test(strncmpCase, arg1EmptyTest);
-    tcase_add_test(strncmpCase, arg2EmptyTest);
+    tcase_add_test(strncatCase, normalEqualTest);
+    tcase_add_test(strncatCase, normalLessTest);
+    tcase_add_test(strncatCase, normalMoreTest);
+    tcase_add_test(strncatCase, arg3TooMuchTest);
+    tcase_add_test(strncatCase, arg3ZeroTest);
+    tcase_add_test_raise_signal(strncatCase, arg1EmptyTest, SIGSEGV);
+    tcase_add_test(strncatCase, arg2EmptyTest);
 
-    tcase_add_test_raise_signal(strncmpCase, arg1NULLTest, SIGSEGV);
-    tcase_add_test_raise_signal(strncmpCase, arg2NULLTest, SIGSEGV);
+    tcase_add_test_raise_signal(strncatCase, arg1NULLTest, SIGSEGV);
+    tcase_add_test_raise_signal(strncatCase, arg2NULLTest, SIGSEGV);
 
-    return strncmpCase;
+    return strncatCase;
 }
