@@ -44,10 +44,9 @@ int main(void) {
         suite_add_tcase(s1, strcatCase);
     */
 
-    /* TODO: Seldon rewrite
+    /* TODO: Seldon rewrite */
        TCase *strncatCase = CreateStrncatCase();
        suite_add_tcase(s1, strncatCase);
-    */
 
     TCase *strchrCase = CreateStrchrCase();
     suite_add_tcase(s1, strchrCase);

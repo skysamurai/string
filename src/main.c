@@ -28,13 +28,5 @@ int main(void) {
     len = s21_strspn("это строка из примера", "акортэ с");
     printf("%d", len); */
 
-    char str1[] = "dgdfgs";
-    char* str2 = S21_NULL;
-    char *istr, *s21_istr;
-    istr = strstr(str1,str2);
-    //s21_istr = s21_strstr(str1,str2);
-    
-    printf("%s\n%s\n", istr, s21_istr);
-
     return 0;
 }
