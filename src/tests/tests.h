@@ -16,5 +16,7 @@ TCase* CreateStrcmpCase();
 TCase* CreateStrncmpCase();
 TCase* CreateStrcatCase();
 TCase* CreateStrncatCase();
+TCase* CreateStrstrCase();
+TCase* CreateStrspnCase();
 
 #endif  // SRC_TESTS_TESTS_H_
