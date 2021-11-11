@@ -3,16 +3,13 @@
 #include <stdlib.h>
 
 size_t s21_strspn(const char *str1, const char *str2) {
-    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2);
-    size_t res_len = 0, temp_len = 0;
-    for (int i = 0; i < n_str1; i++) {
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), flag = 1;
+    size_t res_len = 0;
+    for (int i = 0; i < n_str1 && flag; i++) {
         if (s21_strchr(str2, (str1 + i)[0]) != NULL) {
-            temp_len++;
+            res_len++;
         } else {
-            if (temp_len > res_len) {
-                res_len = temp_len;
-            }
-            temp_len = 0;
+            flag = 0;
         }
     }
     return res_len;
