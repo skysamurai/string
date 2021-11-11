@@ -197,7 +197,7 @@ char *s21_strtok(char *str, const char *delim) {
     start_token = last_point;
 
     if (start_token != S21_NULL) {
-        start_token += strspn(start_token, delim); /* clear delim from start */
+        start_token += s21_strspn(start_token, delim); /* clear delim from start */
         end_token = start_token;
 
         if (*start_token == '\0') {
@@ -225,17 +225,6 @@ char *s21_strtok(char *str, const char *delim) {
 }
 
 int s21_strcmp(const char *str1, const char *str2) {
-/*     int ret = 0;
-    size_t i = 0;
-    size_t n = strlen(str1);
-    if (s21_strlen(str2) > n)
-        n = s21_strlen(str2);
-     while ((str1[i] == str2[i]) && (n)) {
-        ++i;
-        --n;
-    }
-    if (n != 0)
-        ret = str1[i] - str2[i];  */
     int res;
     int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
     if (n_str1 > n_str2)
@@ -254,14 +243,6 @@ int s21_strcmp(const char *str1, const char *str2) {
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-/*     int ret = 0;
-    s21_size_t i = 0;
-    while ((str1[i] == str2[i]) && (n)) {
-        ++i;
-        --n;
-    }
-    if (n != 0)
-        ret = str1[i] - str2[i]; */
     int res;
     int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
     if (n_str1 > n_str2)
@@ -333,6 +314,7 @@ char *s21_strcat(char *dest, const char *src) {
 }
 
 char *s21_strstr(const char *haystack, const char *needle) {
+    char* res = S21_NULL;
     int i = 0, j = 0, n_haystack = s21_strlen(haystack), n_needle = s21_strlen(needle);
     while ((j < n_needle) && (i < n_haystack)) {
         j = 0;
@@ -346,7 +328,11 @@ char *s21_strstr(const char *haystack, const char *needle) {
         }
         i++;
     }
-    return (char *)haystack + i;
+    if (i != 0)
+        res = (char *)haystack + i - 1;
+    if (n_needle == 0)
+        res = (char* )haystack;
+    return res;
 }
 
 

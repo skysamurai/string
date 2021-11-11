@@ -52,6 +52,12 @@ int main(void) {
     TCase *strchrCase = CreateStrchrCase();
     suite_add_tcase(s1, strchrCase);
 
+    TCase* strspnCase = CreateStrspnCase();
+    suite_add_tcase(s1, strspnCase);
+
+    TCase *strstrCase = CreateStrstrCase();
+    suite_add_tcase(s1, strstrCase);
+
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);
     srunner_free(sr);
