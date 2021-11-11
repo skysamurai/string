@@ -76,8 +76,6 @@ START_TEST(arg3TooMuchTest) {
     ck_assert_msg(s21Result == origResult,
                   "fail for strncpy(\"aaa\", \"123\", 333). orig:%s,  s21:%s",
                   origResult, s21Result);
-    printf(">>>NCPYorigin>>>>%s\n", origResult);
-    printf(">>>NCPYs21_my>>>>%s\n", s21Result);
 }
 END_TEST
 

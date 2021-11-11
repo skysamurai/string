@@ -208,7 +208,7 @@ char *s21_strtok(char *str, const char *delim) {
 int s21_strcmp(const char *str1, const char *str2) {
     int ret = 0;
     size_t i = 0;
-    size_t n = strlen(str1);
+    size_t n = s21_strlen(str1);
     if (s21_strlen(str2) > n)
         n = s21_strlen(str2);
      while ((str1[i] == str2[i]) && (n)) {

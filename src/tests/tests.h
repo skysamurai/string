@@ -18,5 +18,6 @@ TCase* CreateStrcpyCase();
 TCase* CreateStrncpyCase();
 TCase* CreateStrcatCase();
 TCase* CreateStrncatCase();
+TCase* CreateStrlenCase();
 
 #endif  // SRC_TESTS_TESTS_H_

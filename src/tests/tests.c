@@ -46,6 +46,9 @@ int main(void) {
     TCase *strncpyCase = CreateStrncpyCase();
     suite_add_tcase(s1, strncpyCase);
 
+    TCase *strlenCase = CreateStrlenCase();
+    suite_add_tcase(s1, strlenCase);
+
 
     /* TODO: Seldon rewrite
         TCase *strcatCase = CreateStrcatCase();
