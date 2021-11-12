@@ -1,5 +1,5 @@
 CC = clang
-ERROR_FLAGS = -Wall -Wextra
+ERROR_FLAGS = -Wall -Wextra -Werror
 DEBUG_FLAGS = -g3
 OPTIM_FLAGS = -O0
 h_path = -I./tests/* -I./s21_string -I./s21_string/s21_sprintf

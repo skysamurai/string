@@ -7,8 +7,8 @@
 
 
 int main(void) {
-    char spec[] = "% #+-15e$\nn string";
-    double a = 1;
+    char spec[] = "%0+#10.5d$\nn string";
+    int a = 50;
 
 
     char stra[255] = {'\0'};
