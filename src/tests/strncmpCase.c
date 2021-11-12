@@ -39,7 +39,7 @@ START_TEST(arg1EmptyTest) {
     int origResult = strncmp("", "aaa", 3);
     int s21Result = s21_strncmp("", "aaa", 3);
 
-    ck_assert_msg(s21Result == origResult,
+    ck_assert_msg(s21Result < 0 && origResult < 0,
                   "fail for strncmp(\"\", \"aaa\", 3). orig:%d,  s21:%d",
                   origResult, s21Result);
 }
@@ -54,8 +54,8 @@ START_TEST(arg2EmptyTest) {
     int origResult = strncmp("aaa", "", 3);
     int s21Result = s21_strncmp("aaa", "", 3);
 
-    ck_assert_msg(s21Result == origResult,
-                  "fail for strncmp(\"aaa\", \"\", 3). orig:%d,  s21:%d",
+    ck_assert_msg(s21Result > 0 && origResult > 0,
+                  "fail for strncmp(\"\", \"aaa\", 3). orig:%d,  s21:%d",
                   origResult, s21Result);
 }
 END_TEST

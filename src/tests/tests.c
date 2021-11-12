@@ -33,9 +33,6 @@ int main(void) {
     TCase *strcmpCase = CreateStrncmpCase();
     suite_add_tcase(s1, strcmpCase);
 
-    TCase *strncmpCase = CreateStrncmpCase();
-    suite_add_tcase(s1, strncmpCase);
-
     TCase *strcspnCase = CreateStrcspnCase();
     suite_add_tcase(s1, strcspnCase);
 
@@ -47,7 +44,7 @@ int main(void) {
 
     TCase *strlenCase = CreateStrlenCase();
     suite_add_tcase(s1, strlenCase);
-    
+
     TCase *strerrorCase = CreateStrerrorCase();
     suite_add_tcase(s1, strerrorCase);
 
@@ -57,13 +54,13 @@ int main(void) {
     */
 
     /* TODO: Seldon rewrite */
-       TCase *strncatCase = CreateStrncatCase();
-       suite_add_tcase(s1, strncatCase);
+    TCase *strncatCase = CreateStrncatCase();
+    suite_add_tcase(s1, strncatCase);
 
     TCase *strchrCase = CreateStrchrCase();
     suite_add_tcase(s1, strchrCase);
 
-    TCase* strspnCase = CreateStrspnCase();
+    TCase *strspnCase = CreateStrspnCase();
     suite_add_tcase(s1, strspnCase);
 
     TCase *strstrCase = CreateStrstrCase();
