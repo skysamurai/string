@@ -254,9 +254,11 @@ int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
     s21_size_t i = 0;
-    while ((src[i] != "" ) && (i < n)) {
+    while (i < n) {
         dest[i] = src[i];
         ++i;
+        if (src[i] != 0) 
+            dest[i] = '\0';
     }
     return dest;
 }
@@ -281,16 +283,15 @@ const char *s21_strerror(int errnum) {
     char errZero[100] = "Success";
 #ifdef __APPLE__
     errmax = 106;
-    errZero[100] = "Undefined error: 0";
+    s21_strcpy(errZero, "Undefined error: 0");
 #endif
     if ((errnum > 0) && (errnum <= errmax)) {
         err = sys_errlist[errnum];
-    } else if (errnum == 0) {
+    } else if (errnum == 0) 
         err = "Success";
-        printf("err=%s\n", err);
-    } else if ((errnum > errmax) || (errnum < 0)) {
+      else if ((errnum > errmax) || (errnum < 0)) {
         char errch[100];
-        sprintf(errch, "Unknown error: %d",
+        sprintf(errch, "Unknown error %d",
                 errnum);  // change sprintf to s21_sprintf !!!
         err = errch;
     }
