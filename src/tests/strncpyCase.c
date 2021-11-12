@@ -61,7 +61,6 @@ START_TEST(arg2EmptyTest) {
     char str2[100] = "aaa";
     char*  origResult = strncpy(str1, "", 3);
     char*  s21Result = s21_strncpy(str2, "", 3);
-    printf("s21r = %s orig = %s\n",s21Result,origResult);
     ck_assert_msg(strcmp(s21Result,origResult) == 0,
                   "fail for strncpy(\"aaa\", \"\", 3). orig:%s,  s21:%s",
                   origResult, s21Result);

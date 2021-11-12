@@ -50,9 +50,11 @@ int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
 }
 
 void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
-    for (s21_size_t i = 0; i < n; i++) {
+    s21_size_t i;
+    for ( i= 0; i < n; i++) {
         *((char *)dest + i) = *((char *)src + i);
     }
+    *((char *)dest + i) = '\0';
     return dest;
 }
 
