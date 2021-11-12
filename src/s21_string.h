@@ -10,8 +10,10 @@ typedef unsigned long s21_size_t;
 #endif  // S21_NULL
 
 #include "s21_sprintf.h"
+#include "s21_sscanf.h"
 
 int s21_sprintf(char *str, char *format, ...);
+int s21_sscanf(char *str, char *format, ...);
 char *s21_strtok(char *str, const char *delim);
 
 void *s21_memchr(const void *str, int c, s21_size_t n);
@@ -35,7 +37,7 @@ char *s21_strcat(char *dest, const char *src);
 char *s21_strncat(char *dest, const char *src, s21_size_t n);
 char *s21_strchr(const char *str, int c);
 int s21_strcmp(const char *str1, const char *str2);
-int s21_strncmp(const char *str1, const char *str2, s21_size_t n); // !!!
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n);
 
 int s21_strcmp(const char *str1, const char *str2);
 char *s21_strncpy(char *dest, const char *src, s21_size_t n);

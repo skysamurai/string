@@ -158,7 +158,7 @@ void int_number_to_char(char **str, unsigned long number,
     const char *digits_template;
     int i;
 
-    // select the character output case 
+    // select the character output case
     if (info->flags & CAPITALIZE) {
         digits_template = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     } else {
@@ -176,7 +176,7 @@ void int_number_to_char(char **str, unsigned long number,
         aggregate = ' ';
     }
 
-    // get the number_sign of a number 
+    // get the number_sign of a number
     // number_sign priority
     // ' ' > '+'
     // ' ' > '-'
@@ -419,8 +419,14 @@ void real_number_to_char(char **str, double number, format_info *info) {
     }
 
     // exponent output
-    *(*str)++ = 'e';
+    if (info->flags & CAPITALIZE) {
+        *(*str)++ = 'E';
+    } else {
+        *(*str)++ = 'e';
+    }
+
     *(*str)++ = exponent_sign;
+
     if (exponent == 0) {
         *(*str)++ = '0';
         *(*str)++ = '0';

@@ -20,11 +20,20 @@ size_t s21_strspn(const char *str1, const char *str2) {
 
 int s21_sprintf(char *str, char *format, ...) {
     va_list args;
-    int changes_count;
+    int bytes_written;
     va_start(args, format);
-    changes_count = s21_sprintf_(str, format, args);
+    bytes_written = s21_sprintf_(str, format, args);
     va_end(args);
-    return changes_count;
+    return bytes_written;
+}
+
+int s21_sscanf(char *str, char *format, ...) {
+    va_list args;
+    int item_filled;
+    va_start(args, format);
+    item_filled = s21_sscanf_(str, format, args);
+    va_end(args);
+    return item_filled;
 }
 
 void *s21_memchr(const void *str, int c, s21_size_t n) {
