@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "s21_string.h"
+#include "../s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -22,12 +22,10 @@ START_TEST(normalLessTest) {
     char s21_src[100] = "aeiou";
     char dest[100] = "privet";
     char src[100] = "aeiou";
-    
+
     strncat(dest, src, 4);
     s21_strncat(s21_dest, s21_src, 4);
     ck_assert(strcmp(dest, s21_dest) == 0);
-    
-    
 }
 END_TEST
 
@@ -36,7 +34,7 @@ START_TEST(normalMoreTest) {
     char s21_src[100] = "aeiou";
     char dest[100] = "privet";
     char src[100] = "aeiou";
-    
+
     strncat(dest, src, 6);
     s21_strncat(s21_dest, s21_src, 6);
     ck_assert(strcmp(dest, s21_dest) == 0);
