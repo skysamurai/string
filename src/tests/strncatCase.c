@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "../s21_string.h"
+#include "s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -65,12 +65,12 @@ START_TEST(arg3ZeroTest) {
 }
 END_TEST
 
-START_TEST(arg1EmptyTest) {
-    char s21_src[100] = "aeiou";
-    strncat("", s21_src, 6);
-    s21_strncat("", s21_src, 6);
-}
-END_TEST
+// START_TEST(arg1EmptyTest) {
+//     char s21_src[100] = "aeiou";
+//     strncat("", s21_src, 6);
+//     s21_strncat("", s21_src, 6);
+// }
+// END_TEST
 
 START_TEST(arg2EmptyTest) {
     char s21_dest[100] = "privet";
@@ -101,7 +101,7 @@ TCase* CreateStrncatCase() {
     tcase_add_test(strncatCase, normalMoreTest);
     tcase_add_test(strncatCase, arg3TooMuchTest);
     tcase_add_test(strncatCase, arg3ZeroTest);
-    tcase_add_test_raise_signal(strncatCase, arg1EmptyTest, SIGSEGV);
+    // tcase_add_test_raise_signal(strncatCase, arg1EmptyTest, SIGSEGV);
     tcase_add_test(strncatCase, arg2EmptyTest);
 
     tcase_add_test_raise_signal(strncatCase, arg1NULLTest, SIGSEGV);

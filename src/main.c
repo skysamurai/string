@@ -38,13 +38,11 @@ int main(int argc, char **argv) {
     // }
 
 
-// Массив со строкой для поиска
-   char str [11]="0123456789";
-   // Набор символов, которые должны входить в искомый сегмент
-   char sym [10]="0001";
-  
-   // Определяем длину начального сегмента, содержащего символы “210”
-   printf ("Длина сегмента: %ld\n", strspn(str,sym));
+    char str1[100] = "aaa";
+    char*  origResult = strncpy(str1, "aaa", 3);
+    char*  s21Result = s21_strncpy(str1, "aaa", 3);
+
+    printf("%d\n%d\n", origResult, s21Result);
 
     return 0;
 }
