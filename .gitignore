@@ -71,3 +71,7 @@ src/.vscode/launch.json
 main.c
 src/main.c
 materials/linters/cpplint.py
+*.gcno
+*.gcda
+src/report/*
+*.info
