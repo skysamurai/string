@@ -3,16 +3,13 @@
 #include <stdlib.h>
 
 size_t s21_strspn(const char *str1, const char *str2) {
-    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2);
-    size_t res_len = 0, temp_len = 0;
-    for (int i = 0; i < n_str1; i++) {
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), flag = 1;
+    size_t res_len = 0;
+    for (int i = 0; i < n_str1 && flag; i++) {
         if (s21_strchr(str2, (str1 + i)[0]) != NULL) {
-            temp_len++;
+            res_len++;
         } else {
-            if (temp_len > res_len) {
-                res_len = temp_len;
-            }
-            temp_len = 0;
+            flag = 0;
         }
     }
     return res_len;
@@ -119,7 +116,7 @@ void *s21_to_lower(const char *str) {
 char *s21_strcpy(char *dest, const char *src) {
     s21_size_t n = s21_strlen(src);
     s21_memcpy(dest, src, n);
-    return dest;
+return dest;
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
@@ -225,7 +222,7 @@ char *s21_strtok(char *str, const char *delim) {
 }
 
 int s21_strcmp(const char *str1, const char *str2) {
-    int res;
+    int res = 0;
     int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
     if (n_str1 > n_str2)
         res = 1;
@@ -243,20 +240,16 @@ int s21_strcmp(const char *str1, const char *str2) {
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-    int res;
+    int res = 0;
     int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
-    if (n_str1 > n_str2)
-        res = 1;
-    if (n_str1 < n_str2)
-        res = -1;
     if (n_str1 == n_str2) {
             while ((str1[i] == str2[i]) && (n) && (i < n_str1)) {
             ++i;
             --n;
         }
-        if (n != 0)
-            res = str1[i] - str2[i];
     }
+    if (n != 0)
+            res = str1[i] - str2[i];
 return res;
 }
 
@@ -286,16 +279,19 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 const char *s21_strerror(int errnum) {
     const char *err;
     int errmax = 133;
+    char errZero[100] = "Success";
 #ifdef __APPLE__
     errmax = 106;
+    err0[100] = "Undefined error: 0";
 #endif
     if ( (errnum > 0) && (errnum <= errmax)) {    
             err = sys_errlist[errnum];
         }
         else if ( errnum == 0 ) {        
-            err = "Undefined error: 0";
+            err = "Success";
+            printf("err=%s\n",err);
         }
-        else {
+        else if ((errnum > errmax) || (errnum < 0)){
             char errch[100];
             sprintf(errch,"Unknown error: %d", errnum);   // change sprintf to s21_sprintf !!!
             err = errch;

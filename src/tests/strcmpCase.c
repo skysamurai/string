@@ -96,8 +96,6 @@ TCase* CreateStrcmpCase() {
     tcase_add_test(strcmpCase, normalEqualTest);
     tcase_add_test(strcmpCase, normalLessTest);
     tcase_add_test(strcmpCase, normalMoreTest);
-    tcase_add_test(strcmpCase, arg3TooMuchTest);
-    tcase_add_test(strcmpCase, arg3ZeroTest);
     tcase_add_test(strcmpCase, arg1EmptyTest);
     tcase_add_test(strcmpCase, arg2EmptyTest);
 
@@ -109,4 +107,3 @@ TCase* CreateStrcmpCase() {
 }
 
 // arg Null
-

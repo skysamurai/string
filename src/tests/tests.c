@@ -18,12 +18,6 @@ int main(void) {
     TCase *memcmpCase = CreateMemcmpCase();
     suite_add_tcase(s1, memcmpCase);
 
-    TCase *strcspnCase = CreateStrcspnCase();
-    suite_add_tcase(s1, strcspnCase);
-    
-    TCase *strcmpCase = CreateStrcmpCase();
-    suite_add_tcase(s1, strcmpCase);
-
     TCase *memchrCase = CreateMemchrCase();
     suite_add_tcase(s1, memchrCase);
 
@@ -36,8 +30,26 @@ int main(void) {
     TCase *sprintfCase = CreateSprintfCase();
     suite_add_tcase(s1, sprintfCase);
 
+    TCase *strcmpCase = CreateStrncmpCase();
+    suite_add_tcase(s1, strcmpCase);
+
     TCase *strncmpCase = CreateStrncmpCase();
     suite_add_tcase(s1, strncmpCase);
+
+    TCase *strcspnCase = CreateStrcspnCase();
+    suite_add_tcase(s1, strcspnCase);
+
+    TCase *strcpyCase = CreateStrcpyCase();
+    suite_add_tcase(s1, strcpyCase);
+
+    TCase *strncpyCase = CreateStrncpyCase();
+    suite_add_tcase(s1, strncpyCase);
+
+    TCase *strlenCase = CreateStrlenCase();
+    suite_add_tcase(s1, strlenCase);
+    
+    TCase *strerrorCase = CreateStrerrorCase();
+    suite_add_tcase(s1, strerrorCase);
 
     /* TODO: Seldon rewrite
         TCase *strcatCase = CreateStrcatCase();
