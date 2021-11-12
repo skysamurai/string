@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "s21_string.h"
+#include "../s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -85,9 +85,7 @@ START_TEST(arg3ZeroTest) {
 }
 END_TEST
 
-START_TEST(arg3NULLTest) {
-    s21_strcmp("aaa", "baa");
-}
+START_TEST(arg3NULLTest) { s21_strcmp("aaa", "baa"); }
 END_TEST
 
 TCase* CreateStrcmpCase() {

@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "s21_string.h"
+#include "../s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -21,7 +21,9 @@ START_TEST(normalMoreTest) {
 END_TEST
 
 START_TEST(arg3TooMuchTest) {
-    ck_assert(s21_memcmp("aba", "aaa", 333) > 0 ? 1 : 0 == memcmp("aba", "aaa", 333) > 0 ? 1 : 0);
+    ck_assert(s21_memcmp("aba", "aaa", 333) > 0    ? 1
+              : 0 == memcmp("aba", "aaa", 333) > 0 ? 1
+                                                   : 0);
 }
 END_TEST
 
@@ -31,12 +33,16 @@ START_TEST(arg3ZeroTest) {
 END_TEST
 
 START_TEST(arg1EmptyTest) {
-    ck_assert(s21_memcmp("", "aaa", 3) < 0 ? 1 : 0 == memcmp("", "aaa", 3) < 0 ? 1 : 0);
+    ck_assert(s21_memcmp("", "aaa", 3) < 0    ? 1
+              : 0 == memcmp("", "aaa", 3) < 0 ? 1
+                                              : 0);
 }
 END_TEST
 
 START_TEST(arg2EmptyTest) {
-    ck_assert(s21_memcmp("aaa", "", 3) > 0 ? 1 : 0 == memcmp("aaa", "", 3) > 0 ? 1 : 0);
+    ck_assert(s21_memcmp("aaa", "", 3) > 0    ? 1
+              : 0 == memcmp("aaa", "", 3) > 0 ? 1
+                                              : 0);
 }
 END_TEST
 
