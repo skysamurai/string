@@ -330,7 +330,7 @@ void real_number_to_char(char **str, void *number, format_info *info) {
     } else if (info->qualifier == NONE) {
         cnumber = ecvt(*((double *)number), info->precision + 1, &exponent, &number_sign);
     } else if (info->qualifier == SHORT) {
-        cnumber = fcvt(*((float *)number), info->precision + 1, &exponent, &number_sign);
+        cnumber = fcvt(*((float *)number), info->precision, &exponent, &number_sign);
     }
 
     // left alignment has a higher priority
@@ -369,17 +369,6 @@ void real_number_to_char(char **str, void *number, format_info *info) {
     // normalized part always takes 1 character
     info->field_width -= 1;
 
-    // The exponent always has a sign,
-    // so we don't have to equate it to zero
-    if (exponent > 0) {
-        exponent_sign = '+';
-        exponent -= 1;
-    } else {
-        exponent_sign = '-';
-        exponent = -exponent;
-        exponent += 1;
-    }
-
     // 1 sign is assigned to the exponent "e",
     // 1 sign is assigned to the exponent sign
     //  "+" or "-"
@@ -406,34 +395,43 @@ void real_number_to_char(char **str, void *number, format_info *info) {
         *(*str)++ = cnumber_sign;
     }
 
-    // output of a normalized number
-    *(*str)++ = *cnumber++;
-
-    // put dot after normalized number
-    if (info->flags & NUMBER_SYSTEM || info->precision != 0)
-        *(*str)++ = '.';
-
-    // mantiss output
-    if (info->qualifier == LONG) {
-        while((info->precision)-- > 0) {
-                *(*str)++ = *cnumber++;
-        }
-    } else if (info->qualifier == NONE) {
-        while((info->precision)-- > 0) {
-                *(*str)++ = *cnumber++;
-        }
-    } else if (info->qualifier == SHORT) {
-        while((info->precision)-- > 0) {
-                *(*str)++ = *cnumber++;
-        }
-    }
-
-    // exponent output
     if (info->qualifier != SHORT) {
+        // output of a normalized number
+        *(*str)++ = *cnumber++;
+
+        // put dot after normalized number
+        if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+            *(*str)++ = '.';
+
+        // mantiss output
+        if (info->qualifier == LONG) {
+            while((info->precision)-- > 0) {
+                    *(*str)++ = *cnumber++;
+            }
+        } else if (info->qualifier == NONE) {
+            while((info->precision)-- > 0) {
+                    *(*str)++ = *cnumber++;
+            }
+        } else if (info->qualifier == SHORT) {
+            while((info->precision)-- > 0) {
+                    *(*str)++ = *cnumber++;
+            }
+        }
         if (info->flags & CAPITALIZE) {
             *(*str)++ = 'E';
         } else {
             *(*str)++ = 'e';
+        }
+
+        // The exponent always has a sign,
+        // so we don't have to equate it to zero
+        if (exponent > 0) {
+            exponent_sign = '+';
+            exponent -= 1;
+        } else {
+            exponent_sign = '-';
+            exponent = -exponent;
+            exponent += 1;
         }
 
         *(*str)++ = exponent_sign;
@@ -453,7 +451,52 @@ void real_number_to_char(char **str, void *number, format_info *info) {
                 *(*str)++ = exponent_reverse[(i--) - 1];
             }
         }
+    } else {
+        if (exponent <= 0) {
+            *(*str)++ = '0';
+            if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+                *(*str)++ = '.';
+            while (exponent++ < 0) {
+                *(*str)++ = '0';
+            }
+        } else {
+            while (exponent-- > 0) {
+                *(*str)++ = *cnumber++;
+            }
+            if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+                *(*str)++ = '.';
+        }
+        while((info->precision)-- > 0) {
+            *(*str)++ = *cnumber++;
+        }
     }
+
+    // exponent output
+    // if (info->qualifier != SHORT) {
+    //     if (info->flags & CAPITALIZE) {
+    //         *(*str)++ = 'E';
+    //     } else {
+    //         *(*str)++ = 'e';
+    //     }
+
+    //     *(*str)++ = exponent_sign;
+
+    //     if (exponent == 0) {
+    //         *(*str)++ = '0';
+    //         *(*str)++ = '0';
+    //     } else {
+    //         if (exponent <= 9) {
+    //             *(*str)++ = '0';
+    //         }
+    //         for (i = 0; exponent > 0; ++i) {
+    //             exponent_reverse[i] = '0' + exponent % 10;
+    //             exponent /= 10;
+    //         }
+    //         while (i > 0) {
+    //             *(*str)++ = exponent_reverse[(i--) - 1];
+    //         }
+    //     }
+    // }
 
     // If there is a free width left, fill in with spaces
     while (info->field_width-- > 0) {
