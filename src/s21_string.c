@@ -4,7 +4,8 @@
 #include <stdlib.h>
 
 size_t s21_strspn(const char *str1, const char *str2) {
-    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), flag = 1;
+    int n_str1 = s21_strlen(str1);
+    int flag = 1;
     size_t res_len = 0;
     for (int i = 0; i < n_str1 && flag; i++) {
         if (s21_strchr(str2, (str1 + i)[0]) != NULL) {
@@ -302,6 +303,8 @@ const char *s21_strerror(int errnum) {
         sprintf(errch, "Unknown error: %d",
                 errnum);  // change sprintf to s21_sprintf !!!
         err = errch;
+    } else {
+        err = S21_NULL;
     }
     return err;
 }
@@ -341,7 +344,8 @@ char *s21_strstr(const char *haystack, const char *needle) {
 char *s21_strncat(char *dest, const char *src, s21_size_t n) {
     char *a = dest;
     s21_size_t i = 0;
-    int n_dest = s21_strlen(dest), n_src = s21_strlen(src);
+    s21_size_t n_dest = s21_strlen(dest);
+    s21_size_t n_src = s21_strlen(src);
     for (; *dest != '\0'; dest++) {
     }
     for (i = 0; i < n && i < (n_src + n_dest); i++) {
