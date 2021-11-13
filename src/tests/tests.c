@@ -9,6 +9,9 @@ int main(void) {
     SRunner *sr = srunner_create(s1);
     int nf;
 
+    TCase *tolowerCase = CreateTolowerCase();
+    suite_add_tcase(s1, tolowerCase);
+
     TCase *strpbrkCase = CreateStrpbrkCase();
     suite_add_tcase(s1, strpbrkCase);
 

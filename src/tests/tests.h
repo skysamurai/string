@@ -22,5 +22,6 @@ TCase* CreateStrlenCase();
 TCase* CreateStrerrorCase();
 TCase* CreateStrstrCase();
 TCase* CreateStrspnCase();
+TCase* CreateTolowerCase();
 
 #endif  // SRC_TESTS_TESTS_H_
