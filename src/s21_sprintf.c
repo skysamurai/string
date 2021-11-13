@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <limits.h>
 #include "parser.h"
 #include "s21_sprintf.h"
 #include "s21_string.h"
@@ -63,7 +64,11 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
                 f_info.flags |= EXPONENT;
                 real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
-            }             else if (*f_cursor == 'f') {}
+            } else if (*f_cursor == 'f') {
+                f_info.flags |= CAPITALIZE;
+                f_info.flags |= SIGNED;
+                f_info.flags |= EXPONENT;
+            }
             f_cursor++;
         }
     }
@@ -286,36 +291,15 @@ void int_number_to_char(char **str, unsigned long number,
 void real_number_to_char(char **str, double number, format_info *info) {
     int i;
 
-    char number_sign;
+    int number_sign;
+    char cnumber_sign;
 
     int exponent;
     char exponent_sign;
 
     char placeholder;
 
-    char mantis_reverse[64] = { 0 };
-
-
-    // left alignment has a higher priority
-    // than filling empty space with zeros
-
-    if (info->flags & LEFT_JUSTIFY) {
-        info->flags &= ~ZERO_PADDING;
-    }
-    placeholder = (info->flags & ZERO_PADDING) ? '0' : ' ';
-
-    number_sign = '\0';
-    if (number < 0.0) {
-        number_sign = '-';
-        info->field_width--;
-    } else if (info->flags & SHOW_SIGN) {
-        number_sign = '+';
-        info->field_width--;
-    } else if (info->flags & SPACE_INSTEAD_SIGN) {
-        number_sign = ' ';
-        info->field_width--;
-    }
-
+    char exponent_reverse[64] = { 0 };
 
     // it is needed to understand
     // the state of variables.
@@ -331,25 +315,31 @@ void real_number_to_char(char **str, double number, format_info *info) {
         info->precision = 0;
         info->field_width -= info->precision;
     }
+
+    char *cnumber = ecvt(number, info->precision + 1, &exponent, &number_sign);
+
+
+    // left alignment has a higher priority
+    // than filling empty space with zeros
+    if (info->flags & LEFT_JUSTIFY) {
+        info->flags &= ~ZERO_PADDING;
+    }
+    placeholder = (info->flags & ZERO_PADDING) ? '0' : ' ';
+
+    cnumber_sign = '\0';
+    if (number_sign != 0) {
+        cnumber_sign = '-';
+        info->field_width--;
+    } else if (info->flags & SHOW_SIGN) {
+        cnumber_sign = '+';
+        info->field_width--;
+    } else if (info->flags & SPACE_INSTEAD_SIGN) {
+        cnumber_sign = ' ';
+        info->field_width--;
+    }
+
     // 1 sign required for "."
     info->field_width -= 1;
-
-    // the process calculating exponent
-    exponent = 0;
-    if (number == 0.0) {
-        number = 0;
-    } else {
-        while (number >= 1.0) {
-            number /= 10.0;
-            ++exponent;
-        }
-        while (number < 0.1) {
-            number *= 10.0;
-            --exponent;
-        }
-        exponent--;
-        number *= 10.0;
-    }
 
     // The minimum exponent size is 2 digits,
     // the maximum is 3.
@@ -367,12 +357,15 @@ void real_number_to_char(char **str, double number, format_info *info) {
 
     // The exponent always has a sign,
     // so we don't have to equate it to zero
-    if (exponent >= 0) {
+    if (exponent > 0) {
         exponent_sign = '+';
+        exponent -= 1;
     } else {
         exponent_sign = '-';
         exponent = -exponent;
+        exponent += 1;
     }
+
     // 1 sign is assigned to the exponent "e",
     // 1 sign is assigned to the exponent sign
     //  "+" or "-"
@@ -380,8 +373,8 @@ void real_number_to_char(char **str, double number, format_info *info) {
 
     // if ZERO_PADDING (example: 000005e+5) and we have a sign,
     // first print the sign, then zeros (example: +000005e+5)
-    if (number_sign != '\0' && (info->flags & ZERO_PADDING)) {
-        *(*str)++ = number_sign;
+    if (cnumber_sign != '\0' && (info->flags & ZERO_PADDING)) {
+        *(*str)++ = cnumber_sign;
     }
 
     // if there is no left alignment, first prints the placeholder
@@ -395,27 +388,19 @@ void real_number_to_char(char **str, double number, format_info *info) {
 
     // if there is a sign and if there are no zeros,
     // then you can output the sign of the number
-    if (number_sign != '\0' && !(info->flags & ZERO_PADDING)) {
-        *(*str)++ = number_sign;
+    if (cnumber_sign != '\0' && !(info->flags & ZERO_PADDING)) {
+        *(*str)++ = cnumber_sign;
     }
 
     // output of a normalized number
-    if ((int)number < 0) {
-        *(*str)++ = '0' - (unsigned int)number;
-    } else {
-        *(*str)++ = '0' + (signed int)number;
-    }
+    *(*str)++ = *cnumber++;
 
     // put dot after normalized number
     *(*str)++ = '.';
 
     // mantiss output
     for (; info->precision > 0; --info->precision, number *= 10) {
-        if ((int)number % 10 < 0) {
-            *(*str)++ = '0' + ((unsigned int)number % 10);
-        } else {
-            *(*str)++ = '0' + (signed int)number % 10;
-        }
+        *(*str)++ = *cnumber++;
     }
 
     // exponent output
@@ -435,11 +420,11 @@ void real_number_to_char(char **str, double number, format_info *info) {
             *(*str)++ = '0';
         }
         for (i = 0; exponent > 0; ++i) {
-            mantis_reverse[i] = '0' + exponent % 10;
+            exponent_reverse[i] = '0' + exponent % 10;
             exponent /= 10;
         }
         while (i > 0) {
-            *(*str)++ = mantis_reverse[(i--) - 1];
+            *(*str)++ = exponent_reverse[(i--) - 1];
         }
     }
 

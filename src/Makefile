@@ -5,10 +5,10 @@ OPTIM_FLAGS = -O0
 h_path = -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
 
 
-OS := $(shell uname -o)
+OS := $(shell uname)
 ifeq ($(OS),Darwin)
 	CHECK_FLAGS = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
-else ifeq ($(OS), GNU/Linux)
+else ifeq ($(OS), Linux)
 	CHECK_FLAGS = -lcheck_pic -pthread -lrt -lm -lsubunit
 endif
 

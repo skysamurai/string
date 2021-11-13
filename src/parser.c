@@ -66,7 +66,7 @@ void p_precision(const char **format, format_info *info, va_list args) {
 
 void p_qualifier(const char **format, format_info *info) {
     info->qualifier = NONE;
-    if (**format == 'h') {
+    if (**format == 'h' || **format == 'f') {
         info->qualifier = SHORT;
         (*format) += 1;
     } else if (**format == 'l' || **format == 'L') {
