@@ -2,7 +2,7 @@
 
 #include <limits.h>
 #include <stdlib.h>
-#include <limits.h>
+
 #include "parser.h"
 #include "s21_string.h"
 
@@ -17,10 +17,11 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
         // if the percent symbol is found,
         // copy the string until percent symbol
         // otherwise,
-        // copy full string 
+        // copy full string
         percent_pos = strchr(f_cursor, '%');
         if (percent_pos != S21_NULL) {
-            s21_memcpy(s_cursor, f_cursor, sizeof(char) * (percent_pos - f_cursor));
+            s21_memcpy(s_cursor, f_cursor,
+                       sizeof(char) * (percent_pos - f_cursor));
             s_cursor += percent_pos - f_cursor;
             f_cursor += percent_pos - f_cursor + 1;
         } else {
@@ -31,7 +32,6 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
         }
 
         if (f_cursor != S21_NULL && *f_cursor != '\0') {
-
             parse_format(&f_cursor, &f_info, args);
 
             if (*f_cursor == 'c') {
@@ -289,7 +289,7 @@ void real_number_to_char(char **str, double number, format_info *info) {
 
     char placeholder;
 
-    char exponent_reverse[64] = { 0 };
+    char exponent_reverse[64] = {0};
 
     // it is needed to understand
     // the state of variables.
@@ -307,7 +307,6 @@ void real_number_to_char(char **str, double number, format_info *info) {
     }
 
     char *cnumber = ecvt(number, info->precision + 1, &exponent, &number_sign);
-
 
     // left alignment has a higher priority
     // than filling empty space with zeros
