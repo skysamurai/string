@@ -385,7 +385,8 @@ void real_number_to_char(char **str, double number, format_info *info) {
     *(*str)++ = *cnumber++;
 
     // put dot after normalized number
-    *(*str)++ = '.';
+    if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+        *(*str)++ = '.';
 
     // mantiss output
     for (; info->precision > 0; --info->precision, number *= 10) {
