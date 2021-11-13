@@ -70,7 +70,7 @@ src/.vscode/launch.json
 .editorconfig
 main.c
 main*
-test*
+test
 src/main.c
 materials/linters/cpplint.py
 *.gcno
