@@ -57,18 +57,22 @@ void p_precision(const char **format, format_info *info, va_list args) {
         } else if (**format == '*') {
             ++(*format);
             info->precision = va_arg(args, int);
-        }
-        if (info->precision < 0) {
-            info->precision = -1;
+            if (info->precision < 0) {
+                info->precision = -1;
+            }
+        } else {
+            info->precision = 0;
         }
     }
 }
 
 void p_qualifier(const char **format, format_info *info) {
     info->qualifier = NONE;
-    if (**format == 'h' || **format == 'f') {
+    if (**format == 'h') {
         info->qualifier = SHORT;
         (*format) += 1;
+    } else if (**format == 'f') {
+        info->qualifier = SHORT;
     } else if (**format == 'l' || **format == 'L') {
         info->qualifier = LONG;
         (*format) += 1;
