@@ -414,6 +414,8 @@ START_TEST(nSpecTest0) {
     sprintf(origStr, "word%n", &origCount);
 
     ck_assert(strcmp(s21Str, origStr) == 0);
+
+    ck_assert(origCount == s21Count);
 }
 END_TEST
 
