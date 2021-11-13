@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "s21_string.h"
+#include "../s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -81,17 +81,17 @@ START_TEST(arg2EmptyTest) {
 }
 END_TEST
 
-START_TEST(arg1NULLTest) {
-    char s21_src[100] = "aeiou";
-    s21_strncat(S21_NULL, s21_src, 5);
-}
-END_TEST
+// START_TEST(arg1NULLTest) {
+//     char s21_src[100] = "aeiou";
+//     s21_strncat(S21_NULL, s21_src, 5);
+// }
+// END_TEST
 
-START_TEST(arg2NULLTest) {
-    char s21_dest[100] = "privet";
-    s21_strncat(s21_dest, S21_NULL, 5);
-}
-END_TEST
+// START_TEST(arg2NULLTest) {
+//     char s21_dest[100] = "privet";
+//     s21_strncat(s21_dest, S21_NULL, 5);
+// }
+// END_TEST
 
 TCase* CreateStrncatCase() {
     TCase* strncatCase = tcase_create("strncat case");
@@ -104,8 +104,8 @@ TCase* CreateStrncatCase() {
     // tcase_add_test_raise_signal(strncatCase, arg1EmptyTest, SIGSEGV);
     tcase_add_test(strncatCase, arg2EmptyTest);
 
-    tcase_add_test_raise_signal(strncatCase, arg1NULLTest, SIGSEGV);
-    tcase_add_test_raise_signal(strncatCase, arg2NULLTest, SIGSEGV);
+    // tcase_add_test_raise_signal(strncatCase, arg1NULLTest, SIGSEGV);
+    // tcase_add_test_raise_signal(strncatCase, arg2NULLTest, SIGSEGV);
 
     return strncatCase;
 }
