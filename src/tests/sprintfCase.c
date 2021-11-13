@@ -191,6 +191,62 @@ START_TEST(eSpecTest1) {
 }
 END_TEST
 
+START_TEST(eSpecTest2) {
+    char formatStr[100] = "%#0.1e word";
+    int i;
+    double d[] = {323.786e-303,
+                  -123.456789,
+                  42.0,
+                  1234567.89012345,
+                  1.00000000000000018,
+                  555555.55555555555555555,
+                  -888888888888888.8888888,
+                  111111111111111111111111.2222222222,
+                  0.085,
+                  16.9};
+
+    for (i = 0; i < 10; i++) {
+        char s21Str[4000] = {0};
+        s21_sprintf(s21Str, formatStr, d[i]);
+
+        char origStr[4000] = {0};
+        sprintf(origStr, formatStr, d[i]);
+
+        ck_assert_msg(strcmp(s21Str, origStr) == 0,
+                      "test failed on i = %d, \ns21: |%s|, \norig: |%s|", i,
+                      s21Str, origStr);
+    }
+}
+END_TEST
+
+START_TEST(eSpecTest3) {
+    char formatStr[100] = "%.*e word";
+    int i;
+    double d[] = {323.786e-303,
+                  -123.456789,
+                  42.0,
+                  1234567.89012345,
+                  1.00000000000000018,
+                  555555.55555555555555555,
+                  -888888888888888.8888888,
+                  111111111111111111111111.2222222222,
+                  0.085,
+                  16.9};
+
+    for (i = 0; i < 10; i++) {
+        char s21Str[4000] = {0};
+        s21_sprintf(s21Str, formatStr, -1, d[i]);
+
+        char origStr[4000] = {0};
+        sprintf(origStr, formatStr, -1, d[i]);
+
+        ck_assert_msg(strcmp(s21Str, origStr) == 0,
+                      "test failed on i = %d, \ns21: |%s|, \norig: |%s|", i,
+                      s21Str, origStr);
+    }
+}
+END_TEST
+
 TCase* CreateSprintfCase() {
     TCase* sprintfCase = tcase_create("sprintf case");
 
@@ -210,6 +266,8 @@ TCase* CreateSprintfCase() {
 
     tcase_add_test(sprintfCase, eSpecTest0);
     tcase_add_test(sprintfCase, eSpecTest1);
+    tcase_add_test(sprintfCase, eSpecTest2);
+    tcase_add_test(sprintfCase, eSpecTest3);
 
     return sprintfCase;
 }
