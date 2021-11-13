@@ -18,12 +18,6 @@ int main(void) {
     TCase *memcmpCase = CreateMemcmpCase();
     suite_add_tcase(s1, memcmpCase);
 
-    TCase *strcspnCase = CreateStrcspnCase();
-    suite_add_tcase(s1, strcspnCase);
-    
-    TCase *strcmpCase = CreateStrcmpCase();
-    suite_add_tcase(s1, strcmpCase);
-
     TCase *memchrCase = CreateMemchrCase();
     suite_add_tcase(s1, memchrCase);
 
@@ -36,21 +30,41 @@ int main(void) {
     TCase *sprintfCase = CreateSprintfCase();
     suite_add_tcase(s1, sprintfCase);
 
-    TCase *strncmpCase = CreateStrncmpCase();
-    suite_add_tcase(s1, strncmpCase);
+    TCase *strcmpCase = CreateStrncmpCase();
+    suite_add_tcase(s1, strcmpCase);
+
+    TCase *strcspnCase = CreateStrcspnCase();
+    suite_add_tcase(s1, strcspnCase);
+
+    TCase *strcpyCase = CreateStrcpyCase();
+    suite_add_tcase(s1, strcpyCase);
+
+    TCase *strncpyCase = CreateStrncpyCase();
+    suite_add_tcase(s1, strncpyCase);
+
+    TCase *strlenCase = CreateStrlenCase();
+    suite_add_tcase(s1, strlenCase);
+
+    TCase *strerrorCase = CreateStrerrorCase();
+    suite_add_tcase(s1, strerrorCase);
 
     /* TODO: Seldon rewrite
         TCase *strcatCase = CreateStrcatCase();
         suite_add_tcase(s1, strcatCase);
     */
 
-    /* TODO: Seldon rewrite
-       TCase *strncatCase = CreateStrncatCase();
-       suite_add_tcase(s1, strncatCase);
-    */
+    /* TODO: Seldon rewrite */
+    TCase *strncatCase = CreateStrncatCase();
+    suite_add_tcase(s1, strncatCase);
 
     TCase *strchrCase = CreateStrchrCase();
     suite_add_tcase(s1, strchrCase);
+
+    TCase *strspnCase = CreateStrspnCase();
+    suite_add_tcase(s1, strspnCase);
+
+    TCase *strstrCase = CreateStrstrCase();
+    suite_add_tcase(s1, strstrCase);
 
     srunner_run_all(sr, CK_ENV);
     nf = srunner_ntests_failed(sr);

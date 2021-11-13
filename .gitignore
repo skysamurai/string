@@ -71,3 +71,9 @@ src/.vscode/launch.json
 main.c
 main*
 test*
+src/main.c
+materials/linters/cpplint.py
+*.gcno
+*.gcda
+src/report/*
+*.info

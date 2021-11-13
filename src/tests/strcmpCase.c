@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 
-#include "s21_string.h"
+#include "../s21_string.h"
 #include "tests.h"
 
 START_TEST(normalEqualTest) {
@@ -85,11 +85,7 @@ START_TEST(arg3ZeroTest) {
 }
 END_TEST
 
-START_TEST(arg3NULLTest) {  // must return SIGSEGV
-    int* nullint = S21_NULL;
-
-    s21_strcmp("aaa", "baa");
-}
+START_TEST(arg3NULLTest) { s21_strcmp("aaa", "baa"); }
 END_TEST
 
 TCase* CreateStrcmpCase() {
@@ -98,17 +94,14 @@ TCase* CreateStrcmpCase() {
     tcase_add_test(strcmpCase, normalEqualTest);
     tcase_add_test(strcmpCase, normalLessTest);
     tcase_add_test(strcmpCase, normalMoreTest);
-    tcase_add_test(strcmpCase, arg3TooMuchTest);
-    tcase_add_test(strcmpCase, arg3ZeroTest);
     tcase_add_test(strcmpCase, arg1EmptyTest);
     tcase_add_test(strcmpCase, arg2EmptyTest);
 
     tcase_add_test_raise_signal(strcmpCase, arg1NULLTest, SIGSEGV);
     tcase_add_test_raise_signal(strcmpCase, arg2NULLTest, SIGSEGV);
-    tcase_add_test_raise_signal(strcmpCase, arg3NULLTest, SIGSEGV);
+    tcase_add_test(strcmpCase, arg3NULLTest);
 
     return strcmpCase;
 }
 
 // arg Null
-
