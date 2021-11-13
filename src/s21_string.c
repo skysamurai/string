@@ -313,9 +313,9 @@ char *s21_strcat(char *dest, const char *src) {
     char *a = dest;
     for (; *dest != '\0'; dest++) {
     }
-    for (; *src != '\0'; src++) {
+    for (; *src != '\0'; dest++, src++) {
+        *dest = *src;
     }
-    *dest = *src;
     return a;
 }
 
