@@ -2,11 +2,7 @@
 
 #include <limits.h>
 #include <stdlib.h>
-<<<<<<< HEAD
 #include <limits.h>
-=======
-
->>>>>>> 35972364623cd96c1b6eb255f4ee0f45f2c4de55
 #include "parser.h"
 #include "s21_string.h"
 
@@ -14,7 +10,6 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
     format_info f_info;
     char *percent_pos;
 
-<<<<<<< HEAD
     char *s_cursor = str;
     const char *f_cursor = format;
 
@@ -28,18 +23,6 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
             s21_memcpy(s_cursor, f_cursor, sizeof(char) * (percent_pos - f_cursor));
             s_cursor += percent_pos - f_cursor;
             f_cursor += percent_pos - f_cursor + 1;
-=======
-    char *s_cursor = str;          /* string cursor */
-    const char *f_cursor = format; /*format cursor */
-
-    while (f_cursor != S21_NULL) {
-        percent_pointer = strchr(f_cursor, '%'); /* stdlib, wait for s21 */
-        if (percent_pointer != S21_NULL) {
-            s21_memcpy(s_cursor, f_cursor,
-                       sizeof(char) * (percent_pointer - f_cursor));
-            s_cursor += percent_pointer - f_cursor;
-            f_cursor += percent_pointer - f_cursor + 1;
->>>>>>> 35972364623cd96c1b6eb255f4ee0f45f2c4de55
         } else {
             s21_memcpy(s_cursor, f_cursor, s21_strlen(f_cursor));
             s_cursor += s21_strlen(f_cursor);
@@ -84,12 +67,9 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
                 real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
             } else if (*f_cursor == 'f') {
-<<<<<<< HEAD
                 f_info.flags |= CAPITALIZE;
                 f_info.flags |= SIGNED;
                 f_info.flags |= EXPONENT;
-=======
->>>>>>> 35972364623cd96c1b6eb255f4ee0f45f2c4de55
             }
             f_cursor++;
         }
@@ -198,26 +178,7 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
         aggregate = ' ';
     }
 
-<<<<<<< HEAD
-    // get the number_sign of a number
-    // number_sign priority
-    // ' ' > '+'
-    // ' ' > '-'
-    // If the number has a - number_sign,
-    // then the minus number_sign is output in
-    // any case, except for unsigned numbers.
     number_sign = '\0';
-=======
-    /* get the sign of a number
-     * sign priority
-     * ' ' > '+'
-     * ' ' > '-'
-     * If the number has a - sign,
-     * then the minus sign is output in
-     * any case, except for unsigned numbers.
-     */
-    sign = '\0';
->>>>>>> 35972364623cd96c1b6eb255f4ee0f45f2c4de55
     if (info->flags & SIGNED) {
         if (info->qualifier == SHORT && ((short)number) < 0) {
             number = -(short)number;
@@ -318,7 +279,6 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
 }
 
 void real_number_to_char(char **str, double number, format_info *info) {
-<<<<<<< HEAD
     int i;
 
     int number_sign;
@@ -456,55 +416,6 @@ void real_number_to_char(char **str, double number, format_info *info) {
         while (i > 0) {
             *(*str)++ = exponent_reverse[(i--) - 1];
         }
-=======
-    char *actualStr = *str;
-    int exponent;
-    int exponentSign;
-    int sign;
-    int _precision = info->precision != -1 ? info->precision : 6;
-    char *out;
-    // TODO: maximum precision number? compiler/system dependency?
-    // own fcvt implementation?
-    out = fcvt(number, INT_MAX, &exponent, &sign);
-
-    if (exponent >= 0)
-        exponentSign = 0;
-    else
-        exponentSign = -1;
-
-    exponent = abs(exponent);
-    if (exponentSign == 0)
-        exponent--;
-    else
-        exponent++;
-
-    if (sign != 0) *(*str)++ = '-';
-
-    int i = 0;
-    for (i = 0; out[i] != 0 && i <= _precision; i++) {
-        if (i == 1) *(*str)++ = '.';
-        *(*str)++ = out[i];
-    }
-    while (i <= _precision) {
-        *(*str)++ = '0';
-        i++;
-    }
-
-    *(*str)++ = 'e';
-    *(*str)++ = exponentSign == 0 ? '+' : '-';
-    if (exponent < 10) *(*str)++ = '0';
-    if (exponent == 0) *(*str)++ = '0';
-    char exponentStr[128] = {0};
-    i = 126;
-    while (exponent != 0) {
-        exponentStr[i--] = (exponent % 10) + '0';
-        exponent /= 10;
-    }
-    i++;
-    while (i <= 126) {
-        *(*str)++ = exponentStr[i];
-        i++;
->>>>>>> 35972364623cd96c1b6eb255f4ee0f45f2c4de55
     }
 
     // If there is a free width left, fill in with spaces
