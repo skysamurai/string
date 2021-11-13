@@ -59,7 +59,7 @@ void p_precision(const char **format, format_info *info, va_list args) {
             info->precision = va_arg(args, int);
         }
         if (info->precision < 0) {
-            info->precision = 0;
+            info->precision = -1;
         }
     }
 }
