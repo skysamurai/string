@@ -32,7 +32,6 @@ all: s21_string.a test
 	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
 
 
-
 tests/%.o: tests/%.c tests/tests.h
 	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
 

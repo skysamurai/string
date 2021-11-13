@@ -97,34 +97,46 @@ char *s21_strchr(const char *str, int c) {
 s21_size_t s21_strlen(const char *str) { return (s21_strchr(str, 0) - str); }
 
 void *s21_to_upper(const char *str) {
-    int n = s21_strlen(str);
-    void *temp = malloc(n * sizeof(char));
-    for (int i = 0; i < n; i++) {
-        if ((*((char *)str + i) > 96) & (*((char *)str + i) < 123)) {
-            *((char *)temp + i) = *((char *)str + i) - 32;
-        } else {
-            *((char *)temp + i) = *((char *)str + i);
+    void *temp;
+    if (str != S21_NULL) {
+        int n = s21_strlen(str);
+        temp = malloc(n * sizeof(char));
+        for (int i = 0; i < n; i++) {
+            if ((*((char *)str + i) > 96) & (*((char *)str + i) < 123)) {
+                *((char *)temp + i) = *((char *)str + i) - 32;
+            } else {
+                *((char *)temp + i) = *((char *)str + i);
+            }
         }
+    } else {
+        temp = malloc(sizeof(S21_NULL));
+        temp = S21_NULL;
     }
-    return (char *)temp;
+    return (char* )temp;
 }
 
 void *s21_to_lower(const char *str) {
-    int n = s21_strlen(str);
-    void *temp = malloc(n * sizeof(char));
-    for (int i = 0; i < n; i++) {
-        if ((*((char *)str + i) > 64) & (*((char *)str + i) < 91)) {
-            *((char *)temp + i) = *((char *)str + i) + 32;
-        } else {
-            *((char *)temp + i) = *((char *)str + i);
+    void *temp;
+    if (str != S21_NULL) {
+        int n = s21_strlen(str);
+        temp = malloc(n * sizeof(char));
+        for (int i = 0; i < n; i++) {
+            if ((*((char *)str + i) > 64) & (*((char *)str + i) < 91)) {
+                *((char *)temp + i) = *((char *)str + i) + 32;
+            } else {
+                *((char *)temp + i) = *((char *)str + i);
+            }
         }
+    } else {
+        temp = malloc(sizeof(S21_NULL));
+        temp = S21_NULL;
     }
-    return (char *)temp;
+    return temp;
 }
 
 char *s21_strcpy(char *dest, const char *src) {
     s21_size_t n = s21_strlen(src);
-    s21_memcpy(dest, src, n);
+    s21_memcpy(dest, src, n + 1);
     return dest;
 }
 
@@ -160,10 +172,11 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {
-    void *temp;
-    if (trim_chars == S21_NULL) {
-        temp = (char *)src;
-    } else {
+    void *temp = S21_NULL;
+    if ((trim_chars == S21_NULL) && (src != S21_NULL)) {
+        temp = malloc(s21_strlen(src) * sizeof(char));
+        s21_strcpy(temp, src);
+    } else if (src != S21_NULL) {
         int i = 0, j = s21_strlen(src);
         char tp[2] = {*(char *)(src + i), '\0'};
         while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
@@ -313,9 +326,9 @@ char *s21_strcat(char *dest, const char *src) {
     char *a = dest;
     for (; *dest != '\0'; dest++) {
     }
-    for (; *src != '\0'; src++) {
+    for (; *src != '\0'; dest++, src++) {
+        *dest = *src;
     }
-    *dest = *src;
     return a;
 }
 
