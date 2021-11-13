@@ -29,11 +29,8 @@ all: s21_string.a test
 
 
 %.o: %.c %.h
-<<<<<<< HEAD
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) -MD -c $< -o $@
-=======
 	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
->>>>>>> f56aceab9e190ad8ad089b7b89cc13c9787410c6
+
 
 
 tests/%.o: tests/%.c tests/tests.h
@@ -50,10 +47,6 @@ s21_string.a: libs21_string.a
 
 test: s21_string.a $(TEST_OBJECTS)
 	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
-<<<<<<< HEAD
-
-=======
->>>>>>> f56aceab9e190ad8ad089b7b89cc13c9787410c6
 
 clean:
 	find . -type f -name "*.o" -delete
