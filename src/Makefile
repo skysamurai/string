@@ -31,8 +31,8 @@ all: s21_string.a test
 -include $(wildcart $(D_LIB_SOURCES))
 -include $(wildcart $(D_TEST_SOURCES))
 
-%.o: %.c %.d
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) -MD -c $< -o $@
+%.o: %.c %.h
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
 
 tests/%.o: tests/%.c tests/tests.h
 	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@ -I$(CURDIR)
@@ -44,7 +44,7 @@ libs21_string.a: $(LIB_OBJECTS)
 s21_string.a: libs21_string.a
 
 test: s21_string.a $(TEST_OBJECTS)
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
 
 clean:
 	find . -type f -name "*.o" -delete
@@ -58,14 +58,17 @@ fclean: clean
 re: fclean all
 
 .PHONY:
-	all clean fclean re
+	all clean fclean re clear
 
 # our target`s zone
+clear:
+	clear
+
 $(TARGET): s21_string.a
 	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) $@.c -L. -ls21_string -o $(TARGET)
 
 f_prog: $(TARGET)
 	./$(TARGET)
 
-f_test: test
+f_test: clear test
 	./test
