@@ -97,16 +97,22 @@ char *s21_strchr(const char *str, int c) {
 s21_size_t s21_strlen(const char *str) { return (s21_strchr(str, 0) - str); }
 
 void *s21_to_upper(const char *str) {
-    int n = s21_strlen(str);
-    void *temp = malloc(n * sizeof(char));
-    for (int i = 0; i < n; i++) {
-        if ((*((char *)str + i) > 96) & (*((char *)str + i) < 123)) {
-            *((char *)temp + i) = *((char *)str + i) - 32;
-        } else {
-            *((char *)temp + i) = *((char *)str + i);
+    void *temp;
+    if (str != S21_NULL) {
+        int n = s21_strlen(str);
+        temp = malloc(n * sizeof(char));
+        for (int i = 0; i < n; i++) {
+            if ((*((char *)str + i) > 96) & (*((char *)str + i) < 123)) {
+                *((char *)temp + i) = *((char *)str + i) - 32;
+            } else {
+                *((char *)temp + i) = *((char *)str + i);
+            }
         }
+    } else {
+        temp = malloc(sizeof(S21_NULL));
+        temp = S21_NULL;
     }
-    return (char *)temp;
+    return (char* )temp;
 }
 
 void *s21_to_lower(const char *str) {
