@@ -67,8 +67,8 @@ main: s21_string.a
 clear:
 	clear
 
-f_prog: clear main
+fprog: clear main
 	./main
 
-f_test: clear test
+ftest: clear test
 	./test

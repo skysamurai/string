@@ -82,8 +82,8 @@ START_TEST(dFlagTest6) {
     char origStr[300] = "";
     char s21Str[300] = "";
 
-    s21_sprintf(s21Str, formatStr, 40, 300, 3, 14, 15, 92, 6);
-    sprintf(origStr, formatStr, 40, 300, 3, 14, 15, 92, 6);
+    s21_sprintf(s21Str, formatStr, 40, 300, 3, 14, 15, 92, 6, 5);
+    sprintf(origStr, formatStr, 40, 300, 3, 14, 15, 92, 6, 5);
 
     ck_assert(strcmp(s21Str, origStr) == 0);
 }
@@ -94,8 +94,8 @@ START_TEST(dFlagTest7) {
     char origStr[300] = "";
     char s21Str[300] = "";
 
-    s21_sprintf(s21Str, formatStr, 40, 300, 3, 14, 15, 92, 6);
-    sprintf(origStr, formatStr, 40, 300, 3, 14, 15, 92, 6);
+    s21_sprintf(s21Str, formatStr, 40, 300, 3, 14, 15, 92, 6, 5);
+    sprintf(origStr, formatStr, 40, 300, 3, 14, 15, 92, 6, 5);
 
     ck_assert(strcmp(s21Str, origStr) == 0);
 }
@@ -174,10 +174,11 @@ START_TEST(eSpecTest1) {
                   555555.55555555555555555,
                   -888888888888888.8888888,
                   111111111111111111111111.2222222222,
+                  0.095,
                   0.085,
                   16.9};
 
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 11; i++) {
         char s21Str[4000] = {0};
         s21_sprintf(s21Str, formatStr, d[i]);
 

@@ -300,37 +300,43 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
 void real_number_to_char(char **str, void *number, format_info *info) {
     int i;
     int number_sign;
-    char cnumber_sign;
+    char char_number_sign;
 
     int exponent;
-    char exponent_sign;
+    char char_exponent_sign;
 
     char placeholder;
+    char *number_digits = S21_NULL;
 
-    char exponent_reverse[64] = {0};
+    // variable for output exponent
+    char tmp_char[8] = {0};
 
-    // it is needed to understand
-    // the state of variables.
-    // if >= 0, user`s precision
-    // else if == -1, no user`s precision
-    // else user`s 0 prcision
-    if (info->precision > 0) {
-        info->field_width -= info->precision;
-    } else if (info->precision == -1) {
+    // negative precision processing
+    // according to the standard, it becomes 6
+    if (info->precision == -1) {
         info->precision = 6;
-        info->field_width -= info->precision;
+    }
+
+    // processing numbers by type
+    if (info->qualifier == LONG) {
+        number_digits = ecvt(*(long double *)number, info->precision + 1, &exponent, &number_sign);
+    } else if (info->qualifier == NONE) {
+        number_digits = ecvt(*((double *)number), info->precision + 1, &exponent, &number_sign);
+    } else if (info->qualifier == SHORT) {
+        number_digits = fcvt(*((float *)number), info->precision, &exponent, &number_sign);
+    }
+
+    // reducing the width field by the number of digits
+    if (info->qualifier == SHORT) {
+        info->field_width -= s21_strlen(number_digits);
     } else {
-        info->precision = 0;
+        info->field_width -= 1;
         info->field_width -= info->precision;
     }
 
-    char *cnumber = S21_NULL;
-    if (info->qualifier == LONG) {
-        cnumber = ecvt(*(long double *)number, info->precision + 1, &exponent, &number_sign);
-    } else if (info->qualifier == NONE) {
-        cnumber = ecvt(*((double *)number), info->precision + 1, &exponent, &number_sign);
-    } else if (info->qualifier == SHORT) {
-        cnumber = fcvt(*((float *)number), info->precision, &exponent, &number_sign);
+
+    if (info->qualifier == SHORT && exponent <= 0) {
+        info->field_width += (exponent - 1);
     }
 
     // left alignment has a higher priority
@@ -340,44 +346,45 @@ void real_number_to_char(char **str, void *number, format_info *info) {
     }
     placeholder = (info->flags & ZERO_PADDING) ? '0' : ' ';
 
-    cnumber_sign = '\0';
+    char_number_sign = '\0';
     if (number_sign != 0) {
-        cnumber_sign = '-';
+        char_number_sign = '-';
         info->field_width--;
     } else if (info->flags & SHOW_SIGN) {
-        cnumber_sign = '+';
+        char_number_sign = '+';
         info->field_width--;
     } else if (info->flags & SPACE_INSTEAD_SIGN) {
-        cnumber_sign = ' ';
+        char_number_sign = ' ';
         info->field_width--;
     }
 
-    // 1 sign required for "."
-    info->field_width -= 1;
+    if (info->flags & NUMBER_SYSTEM || info->precision > 0) {
+        info->field_width--;
+    }
 
     // The minimum exponent size is 2 digits,
     // the maximum is 3.
     // 2 digits are obtained if the number of digits
     // in the exponent is from 0-2 (example: e+00, e+05, e+59),
     // otherwise 3 (example e+100, e+305)
-    if (get_dec_digit_count(exponent) <= 2) {
+    if (info->qualifier != SHORT) {
+        if (get_dec_digit_count(exponent) <= 2) {
+            info->field_width -= 2;
+        } else {
+            info->field_width -= 3;
+        }
+
+        // 1 sign is assigned to the exponent "e",
+        // 1 sign is assigned to the exponent sign
+        //  "+" or "-"
         info->field_width -= 2;
-    } else {
-        info->field_width -= 3;
     }
 
-    // normalized part always takes 1 character
-    info->field_width -= 1;
-
-    // 1 sign is assigned to the exponent "e",
-    // 1 sign is assigned to the exponent sign
-    //  "+" or "-"
-    info->field_width -= 2;
 
     // if ZERO_PADDING (example: 000005e+5) and we have a sign,
     // first print the sign, then zeros (example: +000005e+5)
-    if (cnumber_sign != '\0' && (info->flags & ZERO_PADDING)) {
-        *(*str)++ = cnumber_sign;
+    if (char_number_sign != '\0' && (info->flags & ZERO_PADDING)) {
+        *(*str)++ = char_number_sign;
     }
 
     // if there is no left alignment, first prints the placeholder
@@ -391,13 +398,13 @@ void real_number_to_char(char **str, void *number, format_info *info) {
 
     // if there is a sign and if there are no zeros,
     // then you can output the sign of the number
-    if (cnumber_sign != '\0' && !(info->flags & ZERO_PADDING)) {
-        *(*str)++ = cnumber_sign;
+    if (char_number_sign != '\0' && !(info->flags & ZERO_PADDING)) {
+        *(*str)++ = char_number_sign;
     }
 
     if (info->qualifier != SHORT) {
         // output of a normalized number
-        *(*str)++ = *cnumber++;
+        *(*str)++ = *number_digits++;
 
         // put dot after normalized number
         if (info->flags & NUMBER_SYSTEM || info->precision != 0)
@@ -406,15 +413,15 @@ void real_number_to_char(char **str, void *number, format_info *info) {
         // mantiss output
         if (info->qualifier == LONG) {
             while((info->precision)-- > 0) {
-                    *(*str)++ = *cnumber++;
+                    *(*str)++ = *number_digits++;
             }
         } else if (info->qualifier == NONE) {
             while((info->precision)-- > 0) {
-                    *(*str)++ = *cnumber++;
+                    *(*str)++ = *number_digits++;
             }
         } else if (info->qualifier == SHORT) {
             while((info->precision)-- > 0) {
-                    *(*str)++ = *cnumber++;
+                    *(*str)++ = *number_digits++;
             }
         }
         if (info->flags & CAPITALIZE) {
@@ -426,15 +433,15 @@ void real_number_to_char(char **str, void *number, format_info *info) {
         // The exponent always has a sign,
         // so we don't have to equate it to zero
         if (exponent > 0) {
-            exponent_sign = '+';
+            char_exponent_sign = '+';
             exponent -= 1;
         } else {
-            exponent_sign = '-';
+            char_exponent_sign = '-';
             exponent = -exponent;
             exponent += 1;
         }
 
-        *(*str)++ = exponent_sign;
+        *(*str)++ = char_exponent_sign;
 
         if (exponent == 0) {
             *(*str)++ = '0';
@@ -444,11 +451,11 @@ void real_number_to_char(char **str, void *number, format_info *info) {
                 *(*str)++ = '0';
             }
             for (i = 0; exponent > 0; ++i) {
-                exponent_reverse[i] = '0' + exponent % 10;
+                tmp_char[i] = '0' + exponent % 10;
                 exponent /= 10;
             }
             while (i > 0) {
-                *(*str)++ = exponent_reverse[(i--) - 1];
+                *(*str)++ = tmp_char[(i--) - 1];
             }
         }
     } else {
@@ -461,42 +468,16 @@ void real_number_to_char(char **str, void *number, format_info *info) {
             }
         } else {
             while (exponent-- > 0) {
-                *(*str)++ = *cnumber++;
+                *(*str)++ = *number_digits++;
             }
-            if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+            if (info->flags & NUMBER_SYSTEM || info->precision != 0) {
                 *(*str)++ = '.';
+            }
         }
-        while((info->precision)-- > 0) {
-            *(*str)++ = *cnumber++;
+        while(*number_digits != '\0') {
+            *(*str)++ = *number_digits++;
         }
     }
-
-    // exponent output
-    // if (info->qualifier != SHORT) {
-    //     if (info->flags & CAPITALIZE) {
-    //         *(*str)++ = 'E';
-    //     } else {
-    //         *(*str)++ = 'e';
-    //     }
-
-    //     *(*str)++ = exponent_sign;
-
-    //     if (exponent == 0) {
-    //         *(*str)++ = '0';
-    //         *(*str)++ = '0';
-    //     } else {
-    //         if (exponent <= 9) {
-    //             *(*str)++ = '0';
-    //         }
-    //         for (i = 0; exponent > 0; ++i) {
-    //             exponent_reverse[i] = '0' + exponent % 10;
-    //             exponent /= 10;
-    //         }
-    //         while (i > 0) {
-    //             *(*str)++ = exponent_reverse[(i--) - 1];
-    //         }
-    //     }
-    // }
 
     // If there is a free width left, fill in with spaces
     while (info->field_width-- > 0) {
