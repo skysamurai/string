@@ -9,7 +9,7 @@ START_TEST(normalEqualTest_1_40) {
     for(int errnum = 1; errnum < 41; errnum++) {
         const char* origResult = strerror(errnum);
         const char* s21Result = s21_strerror(errnum);
-        ck_assert_msg(s21Result == origResult,
+        ck_assert_msg(s21_strcmp(origResult, s21Result) == 0,
                     "fail for strerror№ %d. orig:%s,  s21:%s", errnum,
                     origResult, s21Result);
     }
@@ -21,9 +21,7 @@ START_TEST(ZeroTest) {
     int errnum = 0;
     const char* origResult = strerror(errnum);
     const char* s21Result = s21_strerror(errnum);
-    // printf(">>>sreerror %d>>>>%s\n", errnum, origResult);
-    // printf(">>>s21error %d>>>>%s\n", errnum, s21Result);
-    ck_assert_msg(s21Result == origResult,
+    ck_assert_msg(s21_strcmp(origResult, s21Result) == 0,
                 "fail for strerror№ %d. orig:%s,  s21:%s", errnum,
                 origResult, s21Result);
 }
