@@ -1,7 +1,6 @@
 CC = gcc
 ERROR_FLAGS = -Wall -Wextra -Werror
 DEBUG_FLAGS = -g3
-OPTIM_FLAGS = -O3
 
 
 OS := $(shell uname)
@@ -29,11 +28,11 @@ all: s21_string.a test
 
 
 %.o: %.c %.h
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
+	$(CC) $(DEBUG_FLAGS) -MD -c $< -o $@
 
 
 tests/%.o: tests/%.c tests/tests.h
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
+	$(CC) $(DEBUG_FLAGS) -MD -c $< -o $@
 
 
 libs21_string.a: $(LIB_OBJECTS)
@@ -45,7 +44,7 @@ s21_string.a: libs21_string.a
 
 
 test: s21_string.a $(TEST_OBJECTS)
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
+	$(CC) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
 
 clean:
 	find . -type f -name "*.o" -delete
@@ -62,7 +61,7 @@ re: clean all
 
 # our target`s zone
 main: s21_string.a
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) $@.c -L. -ls21_string -o main
+	$(CC) $(DEBUG_FLAGS) $(ERROR_FLAGS) $@.c -L. -ls21_string -o main
 
 clear:
 	clear
