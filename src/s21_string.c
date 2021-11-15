@@ -2,14 +2,38 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
-int s21_wrapper_sprintf(char *str, char *format, ...) {
+size_t s21_strspn(const char *str1, const char *str2) {
+    int n_str1 = s21_strlen(str1);
+    int flag = 1;
+    size_t res_len = 0;
+    for (int i = 0; i < n_str1 && flag; i++) {
+        if (s21_strchr(str2, (str1 + i)[0]) != NULL) {
+            res_len++;
+        } else {
+            flag = 0;
+        }
+    }
+    return res_len;
+}
+
+int s21_sprintf(char *str, char *format, ...) {
     va_list args;
-    int changes_count;
+    int bytes_written;
     va_start(args, format);
-    changes_count = s21_sprintf(str, format, args);
+    bytes_written = s21_sprintf_(str, format, args);
     va_end(args);
-    return changes_count;
+    return bytes_written;
+}
+
+int s21_sscanf(char *str, char *format, ...) {
+    va_list args;
+    int item_filled;
+    va_start(args, format);
+    item_filled = s21_sscanf_(str, format, args);
+    va_end(args);
+    return item_filled;
 }
 
 void *s21_memchr(const void *str, int c, s21_size_t n) {
@@ -25,10 +49,8 @@ void *s21_memchr(const void *str, int c, s21_size_t n) {
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
     int res = 0, n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2);
     s21_size_t i = 0;
-    if (n_str1 > n_str2)
-        res = 1;
-    if (n_str1 < n_str2)
-    res = -1;
+    if (n_str1 > n_str2) res = 1;
+    if (n_str1 < n_str2) res = -1;
     if (n_str1 == n_str2) {
         while ((res == 0) & (i < n)) {
             res = *((char *)str1 + i) - *((char *)str2 + i);
@@ -39,7 +61,8 @@ int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
 }
 
 void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
-    for (s21_size_t i = 0; i < n; i++) {
+    s21_size_t i;
+    for (i = 0; i < n; i++) {
         *((char *)dest + i) = *((char *)src + i);
     }
     return dest;
@@ -62,54 +85,74 @@ void *s21_memset(void *str, int c, s21_size_t n) {
 }
 
 char *s21_strchr(const char *str, int c) {
-     char *flag = NULL;
-     for (; str != '\0'; str++)
-    if (str == c){
-    flag = (char *) str; }
-
-return flag;
-
+    char *res = S21_NULL;
+    int i = 0;
+    while (((str + i)[0] != c) && (((str + i)[0]) != '\0')) {
+        i++;
+    }
+    if ((str + i)[0] == c) {
+        res = (char *)(str + i);
+    }
+    return res;
+}
 
 s21_size_t s21_strlen(const char *str) { return (s21_strchr(str, 0) - str); }
 
 void *s21_to_upper(const char *str) {
-    int n = s21_strlen(str);
-    void *temp = malloc(n * sizeof(char));
-    for (int i = 0; i < n; i++) {
-        if ((*((char *)str + i) > 96) & (*((char *)str + i) < 123)) {
-            *((char *)temp + i) = *((char *)str + i) - 32;
-        } else {
-            *((char *)temp + i) = *((char *)str + i);
+    void *temp;
+    if (str != S21_NULL) {
+        int n = s21_strlen(str);
+        temp = malloc(n * sizeof(char));
+        for (int i = 0; i < n; i++) {
+            if ((*((char *)str + i) > 96) & (*((char *)str + i) < 123)) {
+                *((char *)temp + i) = *((char *)str + i) - 32;
+            } else {
+                *((char *)temp + i) = *((char *)str + i);
+            }
         }
+    } else {
+        temp = malloc(sizeof(S21_NULL));
+        temp = S21_NULL;
     }
     return (char *)temp;
 }
 
 void *s21_to_lower(const char *str) {
-    int n = s21_strlen(str);
-    void *temp = malloc(n * sizeof(char));
-    for (int i = 0; i < n; i++) {
-        if ((*((char *)str + i) > 64) & (*((char *)str + i) < 91)) {
-            *((char *)temp + i) = *((char *)str + i) + 32;
-        } else {
-            *((char *)temp + i) = *((char *)str + i);
+    void *temp;
+    if (str != S21_NULL) {
+        int n = s21_strlen(str);
+        temp = malloc(n * sizeof(char));
+        for (int i = 0; i < n; i++) {
+            if ((*((char *)str + i) > 64) & (*((char *)str + i) < 91)) {
+                *((char *)temp + i) = *((char *)str + i) + 32;
+            } else {
+                *((char *)temp + i) = *((char *)str + i);
+            }
         }
+    } else {
+        temp = malloc(sizeof(S21_NULL));
+        temp = S21_NULL;
     }
-    return (char *)temp;
+    return temp;
 }
 
 char *s21_strcpy(char *dest, const char *src) {
     s21_size_t n = s21_strlen(src);
-    s21_memcpy(dest, src, n);
+    s21_memcpy(dest, src, n + 1);
     return dest;
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
-    s21_size_t n_src = s21_strlen(src), n_str = s21_strlen(str);
+    s21_size_t n_src, n_str;
+    if ((src != S21_NULL) && (str != S21_NULL)) {
+        n_src = s21_strlen(src);
+    }
     void *temp;
-    if (start_index > n_src - 1) {
+    if ((start_index > n_src - 1) || (src == S21_NULL) || (str == S21_NULL)) {
+        temp = malloc(sizeof(S21_NULL));
         temp = S21_NULL;
     } else {
+        n_str = s21_strlen(str);
         int n = n_src + n_str;
         temp = malloc(n * sizeof(char));
         s21_memcpy(temp, (char *)src, start_index);
@@ -136,10 +179,11 @@ char *s21_strpbrk(const char *str1, const char *str2) {
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {
-    void* temp;
-    if (trim_chars == S21_NULL) {
-        temp = src;
-    } else {
+    void *temp = S21_NULL;
+    if ((trim_chars == S21_NULL) && (src != S21_NULL)) {
+        temp = malloc(s21_strlen(src) * sizeof(char));
+        s21_strcpy(temp, src);
+    } else if (src != S21_NULL) {
         int i = 0, j = s21_strlen(src);
         char tp[2] = {*(char *)(src + i), '\0'};
         while (s21_strpbrk(trim_chars, tp) != S21_NULL) {
@@ -179,7 +223,8 @@ char *s21_strtok(char *str, const char *delim) {
     start_token = last_point;
 
     if (start_token != S21_NULL) {
-        start_token += strspn(start_token, delim); /* clear delim from start */
+        start_token +=
+            s21_strspn(start_token, delim); /* clear delim from start */
         end_token = start_token;
 
         if (*start_token == '\0') {
@@ -189,7 +234,8 @@ char *s21_strtok(char *str, const char *delim) {
             result = start_token;
         }
 
-        end_token = start_token + (strpbrk(start_token, delim) - start_token);
+        end_token =
+            start_token + (s21_strpbrk(start_token, delim) - start_token);
         if (end_token != S21_NULL) {
             *end_token = '\0';
             last_point = end_token + 1;
@@ -207,34 +253,39 @@ char *s21_strtok(char *str, const char *delim) {
 }
 
 int s21_strcmp(const char *str1, const char *str2) {
-    int i = 0;
-    int flag = 0;
-    while ((flag != -1) && (str1[i] != '\0') && ((str2[i] != '\0'))) {
-        if (str1[i] != str2[i])
-            flag = -1;
-        else
+    int res = 0;
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
+    if (n_str1 > n_str2) res = 1;
+    if (n_str1 < n_str2) res = -1;
+    if (n_str1 == n_str2) {
+        while ((str1[i] == str2[i]) && (n_str1)) {
             ++i;
+            --n_str1;
+        }
+        if (n_str1 != 0) res = str1[i] - str2[i];
     }
-    return flag;
+    return res;
 }
 
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-    s21_size_t i = 0;
-    int flag = 0;
-    while ((flag != -1) && (i != n) && ((str2[i] != '\0'))) {
-        if (str1[i] != str2[i])
-            flag = -1;
-        else
+    int res = 0;
+    int n_str1 = s21_strlen(str1), n_str2 = s21_strlen(str2), i = 0;
+    if (n_str1 == n_str2) {
+        while ((str1[i] == str2[i]) && (n) && (i < n_str1)) {
             ++i;
+            --n;
+        }
     }
-    return flag;
+    if (n != 0) res = str1[i] - str2[i];
+    return res;
 }
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
     s21_size_t i = 0;
-    while ((src[i] != 0) && (i <= n)) {
+    while (i < n) {
         dest[i] = src[i];
         ++i;
+        if (src[i] != 0) dest[i] = '\0';
     }
     return dest;
 }
@@ -254,58 +305,80 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 }
 
 const char *s21_strerror(int errnum) {
-    #ifdef Linux
-    const char *err;
-    if ((errnum > 0) && (errnum < 134))
+    static const char *err;
+    int errmax = 133;
+    int err41 = 41;
+    int err58 = 58;
+    static char errZero[100] = "Success";
+    char unkerr[] = "Unknown error %d";
+    int errseg = errnum;
+#ifdef __APPLE__
+    errmax = 106;
+    s21_strcpy(errZero, "Undefined error: 0");
+    s21_strcpy(unkerr, "Unknown error: %d");
+    err41 = 333;
+    err58 = 333;
+#endif
+    if ((errnum > 0) && (errnum <= errmax) && (errnum != err41) &&
+        (errnum != err58)) {
         err = sys_errlist[errnum];
-    else
-        err = "Unknown error";
+    } else {
+        if (errnum == 0) {
+            err = errZero;
+        } else {
+            if ((errnum > errmax) || (errnum < 0)) {
+                static char errch[512];
+                s21_sprintf(errch, unkerr, errnum);
+                err = errch;
+            } else {
+                err = S21_NULL;
+            }
+        }
+    }
     return err;
-    #endif
-    #ifdef MAC
-        const char *err;
-    if ((errnum > 0) && (errnum < 106))
-        err = sys_errlist[errnum];
-    else
-        err = "Unknown error";
-    return err;
-    #endif
 }
 
 char *s21_strcat(char *dest, const char *src) {
     char *a = dest;
     for (; *dest != '\0'; dest++) {
     }
-    for (; *src != '\0'; src++) {
+    for (; *src != '\0'; dest++, src++) {
+        *dest = *src;
     }
-    *dest = *src;
     return a;
 }
 
 char *s21_strstr(const char *haystack, const char *needle) {
-    int i = 0, j = 0, n_haystack = s21_strlen(haystack), n_needle = s21_strlen(needle);
+    char *res = S21_NULL;
+    int i = 0, j = 0, n_haystack = s21_strlen(haystack),
+        n_needle = s21_strlen(needle);
     while ((j < n_needle) && (i < n_haystack)) {
         j = 0;
         while (needle[j] != haystack[i]) {
             i++;
         }
         int k = i;
-        while ((needle[j] == haystack[k]) && (k < n_haystack) && (j < n_needle)) {
+        while ((needle[j] == haystack[k]) && (k < n_haystack) &&
+               (j < n_needle)) {
             j++;
             k++;
         }
-        i++; 
+        i++;
     }
-    return (char *)haystack + i;
+    if (i != 0) res = (char *)haystack + i - 1;
+    if (n_needle == 0) res = (char *)haystack;
+    return res;
 }
 
-
-  char *s21_strncat(char *dest, const char *src, s21_size_t n){
-       char *a = dest;
-       s21_size_t i = 0;
-    for (; *dest != '\0' ; dest++) {}
-    for (i=0; i<= n; i++) {
-    *(dest + i) = *(src + i);
+char *s21_strncat(char *dest, const char *src, s21_size_t n) {
+    char *a = dest;
+    s21_size_t i = 0;
+    s21_size_t n_dest = s21_strlen(dest);
+    s21_size_t n_src = s21_strlen(src);
+    for (; *dest != '\0'; dest++) {
+    }
+    for (i = 0; i < n && i < (n_src + n_dest); i++) {
+        *(dest + i) = *(src + i);
     }
     return a;
-  }
+}

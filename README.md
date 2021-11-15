@@ -107,29 +107,30 @@ The only support for strings in the programming language proper is that the comp
 
 where:
 - str − This is the C string that the function processes as its source to retrieve the data;
-- format − This is the C string that contains one or more of the following items: Whitespace character, Non-whitespace character and Format specifiers. A format specifier follows this prototype: %[flags][width][.precision][length]specifier.
+- format − This is the C string that contains one or more of the following items: Whitespace character, Non-whitespace character and Format specifiers. A format specifier for print functions follows this prototype: %[flags][width][.precision][length]specifier. A format specifier for scan functions follows this prototype: %[*][width][length]specifier.
 
 ### sprintf And sscanf Specifiers
 
-| No. | Specifier | Output |
-| - | - | - |
-| 1 | c | Character |
-| 2 | d or i | Signed decimal integer |
-| 3 | e | Scientific notation (mantissa/exponent) using e character |
-| 4 | E | Scientific notation (mantissa/exponent) using E character |
-| 5 | f | Decimal floating point |
-| 6 | g | Uses the shorter of %e or %f |
-| 7 | G | Uses the shorter of %E or %f |
-| 8 | o | Signed octal |
-| 9 | s | String of characters |
-| 10 | u | Unsigned decimal integer |
-| 11 | x | Unsigned hexadecimal integer |
-| 12 | X | Unsigned hexadecimal integer (capital letters) |
-| 13 | p | Pointer address |
-| 14 | n | Nothing printed |
-| 15 | % | Character |
+| No. | Specifier | sprintf output | sscanf output |
+| - | - | - | - |
+| 1 | c | Character | Character |
+| 2 | d | Signed decimal integer | Signed decimal integer |
+| 3 | i | Signed decimal integer | Signed integer (may be decimal, octal or hexadecimal) |
+| 4 | e | Scientific notation (mantissa/exponent) using e character (the output of the numbers must match up to e-16) | Decimal floating point or scientific notation (mantissa/exponent) |
+| 5 | E | Scientific notation (mantissa/exponent) using E character | Decimal floating point or scientific notation (mantissa/exponent) |
+| 6 | f | Decimal floating point | Decimal floating point or scientific notation (mantissa/exponent) |
+| 7 | g | Uses the shorter of %e or %f | Decimal floating point or scientific notation (mantissa/exponent) |
+| 8 | G | Uses the shorter of %E or %f | Decimal floating point or scientific notation (mantissa/exponent) |
+| 9 | o | Unsigned octal | Unsigned octal |
+| 10 | s | String of characters | String of characters |
+| 11 | u | Unsigned decimal integer | Unsigned decimal integer |
+| 12 | x | Unsigned hexadecimal integer | Unsigned hexadecimal integer (any letters) |
+| 13 | X | Unsigned hexadecimal integer (capital letters) | Unsigned hexadecimal integer (any letters) |
+| 14 | p | Pointer address | Pointer address |
+| 15 | n | Number of characters printed until %n occurs | Number of characters scanned until %n occurs |
+| 16 | % | Character % | Character % |
 
-### sprintf And sscanf Flags
+### sprintf Flags
 
 | No. | Flags | Description |
 | - | - | - |
@@ -144,13 +145,13 @@ where:
 | No. |	Width | Description |
 | - | - | - |
 | 1	| (number) | Minimum number of characters to be printed. If the value to be printed is shorter than this number, the result is padded with blank spaces. The value is not truncated even if the result is larger. |
-| 2 | * | The width is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted. |
+| 2 | * | In sprintf the * sign means, that the width is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted. In sscanf the * sign placed after % and before the format specifier reads data of the specified type, but suppresses their assignment. |
 
-### sprintf And sscanf Precision Description
+### sprintf Precision Description
 
 | No. |	.precision | Description |
 | - | - | - |
-| 1	| .number | For integer specifiers (d, i, o, u, x, X) − precision specifies the minimum number of digits to be written. If the value to be written is shorter than this number, the result is padded with leading zeros. The value is not truncated even if the result is longer. A precision of 0 means that no character is written for the value 0. For e, E and f specifiers − this is the number of digits to be printed after the decimal point. For g and G specifiers − This is the maximum number of significant digits to be printed. For s − this is the maximum number of characters to be printed. By default all characters are printed until the ending null character is encountered. For c type − it has no effect. When no precision is specified, the default is 1. If the period is specified without an explicit value for precision, 0 is assumed. |
+| 1	| .number | For integer specifiers (d, i, o, u, x, X) − precision specifies the minimum number of digits to be written. If the value to be written is shorter than this number, the result is padded with leading zeros. The value is not truncated even if the result is longer. A precision of 0 means that no character is written for the value 0. For e, E and f specifiers − this is the number of digits to be printed after the decimal point. For g and G specifiers − This is the maximum number of significant digits to be printed. For s − this is the maximum number of characters to be printed. By default all characters are printed until the ending null character is encountered. For c type − it has no effect. When no precision is specified for specifiers e, E, f, g and G, the default one is 6. When no precision is specified for all other kind of specifiers, the default is 1. If the period is specified without an explicit value for precision, 0 is assumed. |
 | 2	| .* | The precision is not specified in the format string, but as an additional integer value argument preceding the argument that has to be formatted. |
 
 ### sprintf And sscanf Length Description
@@ -182,7 +183,9 @@ It is necessary to implement the described [above](#stringh-functions) functions
  - The library must be developed in accordance with the principles of structured programming, duplication in the code must be avoided
  - Prepare a full coverage of the library's functions by unit-tests using the Check library
  - Unit-tests must check the results of your implementation by comparing them with the implementation of the standard string.h library
- - Provide a Makefile for building the library and tests (with the targets all, clean, test, s21_string.a)
+ - Unit tests must cover at least 80% of each function (checked using gcov)
+ - Provide a Makefile for building the library and tests (with the targets all, clean, test, s21_string.a, gcov_report)
+ - The gcov_report target should generate a gcov report in the form of an html page. Unit tests must be run with gcov flags to do this
  - Use prefix s21_ before each function
  - It is forbidden to copy the implementation of the standard string.h library and other string processing libraries and to use them anywhere, except unit-tests
  - You must follow the logic of the standard string.h library (in terms of checks, working with memory and behavior in emergency situations - tests will help you with that)

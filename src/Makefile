@@ -1,32 +1,74 @@
-CC = clang
-e_flags = -Wall -Wextra -Werror -g3
-h_path = -I${HOME}/homebrew/include -I./tests/* -I./s21_string -I./s21_string/s21_sprintf
-check_flags = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
-target = a.o
+CC = gcc
+ERROR_FLAGS = -Wall -Wextra -Werror
+DEBUG_FLAGS = -g3
+OPTIM_FLAGS = -O0
 
-all: programm tests
 
-s21_string.o:
-	$(CC) -c ./s21_string/*.c ./s21_string/s21_sprintf/*.c $(h_path)
+OS := $(shell uname)
+ifeq ($(OS),Darwin)
+	CHECK_FLAGS = -L$(HOME)/homebrew/Cellar/check/0.15.2/lib -lcheck
+else ifeq ($(OS), Linux)
+	CHECK_FLAGS = -lcheck_pic -pthread -lrt -lm -lsubunit
+endif
 
-s21_string.a: s21_string.o
-	ar rcs libs21_string.a *.o
+LIB_SOURCES = parser.c s21_sprintf.c s21_string.c s21_sscanf.c
+LIB_OBJECTS = $(patsubst %.c,%.o,$(LIB_SOURCES))
+D_LIB_SOURCES = $(patsubst %.c,%.d,$(LIB_SOURCES))
 
-programm:
-	$(CC) main.c -L. -ls21_string -o $(target)
+TEST_SOURCES = $(shell find tests -type f -name "*.c" )
+TEST_OBJECTS = $(patsubst %.c,%.o,$(TEST_SOURCES))
+D_TEST_SOURCES = $(patsubst %.c,%.d,$(TEST_SOURCES))
 
-test:
-	$(CC) ./tests/*.c -L. -ls21_string $(check_flags) -o $(target) -I${HOME}/homebrew/include
+
+#include extern makefile text
+-include $(wildcard $(D_LIB_SOURCES))
+-include $(wildcard $(D_TEST_SOURCES))
+
+
+all: s21_string.a test
+
+
+%.o: %.c %.h
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
+
+
+tests/%.o: tests/%.c tests/tests.h
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@ $(ERROR_FLAGS)
+
+
+libs21_string.a: $(LIB_OBJECTS)
+	ar rc libs21_string.a $^
+	ranlib libs21_string.a
+
+
+s21_string.a: libs21_string.a
+
+
+test: s21_string.a $(TEST_OBJECTS)
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
 
 clean:
-	rm -rf *.o* *.a
+	find . -type f -name "*.o" -delete
+	find . -type f -name "*.d" -delete
+	rm -f libs21_string.a
+	rm -f test
+	rm -f main
 
-cls:
+
+re: clean all
+
+.PHONY:
+	all clean fclean re clear
+
+# our target`s zone
+main: s21_string.a
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) $(ERROR_FLAGS) $@.c -L. -ls21_string -o main
+
+clear:
 	clear
 
-run_programm:
-	./$(target)
+f_prog: clear main
+	./main
 
-f_prog: cls clean s21_string.a programm run_programm
-
-f_test: cls clean s21_string.a test run_programm
+f_test: clear test
+	./test

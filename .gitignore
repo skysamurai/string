@@ -67,3 +67,13 @@ src/.vscode/settings.json
 src/.vscode/tasks.json
 src/.vscode/c_cpp_properties.json
 src/.vscode/launch.json
+.editorconfig
+main.c
+main*
+test
+src/main.c
+materials/linters/cpplint.py
+*.gcno
+*.gcda
+src/report/*
+*.info
