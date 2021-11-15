@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
 size_t s21_strspn(const char *str1, const char *str2) {
     int n_str1 = s21_strlen(str1);
@@ -302,18 +303,25 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 const char *s21_strerror(int errnum) {
     static const char *err;
     int errmax = 133;
+    int err41 = 41;
+    int err58 = 58;
     static char errZero[100] = "Success";
     char unkerr[] = "Unknown error %d";
+    int errseg = errnum;
 #ifdef __APPLE__
     errmax = 106;
     s21_strcpy(errZero, "Undefined error: 0");
     s21_strcpy(unkerr, "Unknown error: %d");
+    err41 = 333;
+    err58 = 333;
 #endif
-    if ((errnum > 0) && (errnum <= errmax)) {
+    if ((errnum > 0) && (errnum <= errmax) && (errnum != err41) &&
+        (errnum != err58)) {
         err = sys_errlist[errnum];
     } else if (errnum == 0)
         err = errZero;
-    else if ((errnum > errmax) || (errnum < 0)) {
+    else if ((errnum > errmax) || (errnum < 0) || (errnum == err41) ||
+             (errnum == err58)) {
         static char errch[512];
         s21_sprintf(errch, unkerr, errnum);
         err = errch;
