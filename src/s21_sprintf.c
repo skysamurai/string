@@ -57,37 +57,16 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
             } else if (*f_cursor == 'u') {
                 put_udec_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'e') {
-                f_info.flags |= SIGNED;
-                f_info.flags |= EXPONENT;
-                long double dlnumber;
-                double dnumber;
-                if (f_info.qualifier == LONG) {
-                    dlnumber = va_arg(args, long double);
-                    real_number_to_char(&s_cursor, (void *)&dlnumber, &f_info);
-                } else if (f_info.qualifier == NONE) {
-                    dnumber = va_arg(args, double);
-                    real_number_to_char(&s_cursor, (void *)(&(dnumber)), &f_info);
-                }
+                put_exp_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'E') {
                 f_info.flags |= CAPITALIZE;
-                f_info.flags |= SIGNED;
-                f_info.flags |= EXPONENT;
-                long double dlnumber;
-                double dnumber;
-                if (f_info.qualifier == LONG) {
-                    dlnumber = va_arg(args, long double);
-                    real_number_to_char(&s_cursor, (void *)&dlnumber, &f_info);
-                } else if (f_info.qualifier == NONE) {
-                    dnumber = va_arg(args, double);
-                    real_number_to_char(&s_cursor, (void *)&dlnumber, &f_info);
-                }
+                put_exp_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
-
-            } else if (*f_cursor == 'f') {
-                f_info.flags |= SIGNED;
-                f_info.flags |= EXPONENT;
-                float snumber = va_arg(args, double);
+                f_info.qualifier = VAR_FORMAT;
+                double snumber = va_arg(args, double);
                 real_number_to_char(&s_cursor, (void *)&snumber, &f_info);
+            } else if (*f_cursor == 'f') {
+                put_flt_number_cursoring(&s_cursor, &f_info, args);
             }
             f_cursor++;
         }
@@ -169,6 +148,27 @@ void put_octo_number_cursoring(char **str, format_info *info, va_list args) {
     info->flags |= UNSIGNED;
     info->number_system = 8;
     int_number_to_char(str, (long)va_arg(args, void *), info);
+}
+
+void put_exp_number_cursoring(char **str, format_info *info, va_list args) {
+    info->flags |= SIGNED;
+    info->flags |= EXPONENT;
+    long double dlnumber;
+    double dnumber;
+    if (info->qualifier == LONG) {
+        dlnumber = va_arg(args, long double);
+        real_number_to_char(str, (void *)&dlnumber, info);
+    } else if (info->qualifier == NONE) {
+        dnumber = va_arg(args, double);
+        real_number_to_char(str, (void *)(&(dnumber)), info);
+    }
+}
+
+void put_flt_number_cursoring(char **str, format_info *info, va_list args) {
+    info->flags |= SIGNED;
+    info->flags |= EXPONENT;
+    float snumber = va_arg(args, double);
+    real_number_to_char(str, (void *)&snumber, info);
 }
 
 void int_number_to_char(char **str, unsigned long number, format_info *info) {
@@ -296,10 +296,6 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
     }
 }
 
-void float_to_str(char *buf, float number) {
-
-}
-
 void real_number_to_char(char **str, void *number, format_info *info) {
     int i;
     int number_sign;
@@ -311,6 +307,7 @@ void real_number_to_char(char **str, void *number, format_info *info) {
     char placeholder;
     char *number_digits = S21_NULL;
 
+    int len = -1;
     // variable for output exponent
     char tmp_char[8] = {0};
 
@@ -320,6 +317,38 @@ void real_number_to_char(char **str, void *number, format_info *info) {
         info->precision = 6;
     }
 
+    if (info->qualifier == VAR_FORMAT) {
+        number_digits = ecvt(*(double *)number, info->precision + 1, &exponent, &number_sign);
+        if (exponent > 0) {
+            if (info->precision > exponent - 1 && exponent - 1 >= -4)  {
+                info->qualifier = VAR_SHORT;
+            } else {
+                info->qualifier = NONE;
+            }
+        } else {
+            if (info->precision > exponent - 1 && exponent - 1 >= -4)  {
+                info->qualifier = VAR_SHORT;
+            } else {
+                info->qualifier = NONE;
+            }
+        }
+        if (info->precision != 0) {
+            info->precision -= 1;
+        }
+        if (!(info->flags & NUMBER_SYSTEM)) {
+            len = s21_strlen(number_digits) - 1;
+            if (info->qualifier == NONE) {
+                while (number_digits[--len] == '0') {
+                    continue;
+                }
+            } else {
+                while (number_digits[--len] == '0' && (len >= exponent - 1 || len >= exponent - 1)) {
+                    continue;
+                }
+            }
+        }
+    }
+
     // processing numbers by type
     if (info->qualifier == LONG) {
         number_digits = ecvt(*(long double *)number, info->precision + 1, &exponent, &number_sign);
@@ -327,11 +356,20 @@ void real_number_to_char(char **str, void *number, format_info *info) {
         number_digits = ecvt(*((double *)number), info->precision + 1, &exponent, &number_sign);
     } else if (info->qualifier == SHORT) {
         number_digits = fcvt(*((float *)number), info->precision, &exponent, &number_sign);
+    } else if (info->qualifier == VAR_SHORT) {
+        number_digits = ecvt(*((double *)number), info->precision + 1, &exponent, &number_sign);
+        info->qualifier = SHORT;
     }
 
     // reducing the width field by the number of digits
-    if (info->qualifier == SHORT) {
+    if (info->qualifier == SHORT && len == -1) {
         info->field_width -= s21_strlen(number_digits);
+    } else if (len != -1 && info->qualifier == SHORT) {
+        number_digits[len + exponent] = 0;
+        info->field_width -= (s21_strlen(number_digits) - 1);
+    } else if (len != -1 && info->qualifier == NONE) {
+        number_digits[len + 1] = 0;
+        info->field_width -= (s21_strlen(number_digits));
     } else {
         info->field_width -= 1;
         info->field_width -= info->precision;
@@ -361,7 +399,7 @@ void real_number_to_char(char **str, void *number, format_info *info) {
         info->field_width--;
     }
 
-    if (info->flags & NUMBER_SYSTEM || info->precision > 0) {
+    if ((info->flags & NUMBER_SYSTEM || info->precision > 0) && len == -1) {
         info->field_width--;
     }
 
@@ -410,23 +448,23 @@ void real_number_to_char(char **str, void *number, format_info *info) {
         *(*str)++ = *number_digits++;
 
         // put dot after normalized number
-        if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+        if ((info->flags & NUMBER_SYSTEM || info->precision != 0) && len == -1) {
             *(*str)++ = '.';
-
-        // mantiss output
-        if (info->qualifier == LONG) {
-            while((info->precision)-- > 0) {
-                    *(*str)++ = *number_digits++;
-            }
-        } else if (info->qualifier == NONE) {
-            while((info->precision)-- > 0) {
-                    *(*str)++ = *number_digits++;
-            }
-        } else if (info->qualifier == SHORT) {
-            while((info->precision)-- > 0) {
-                    *(*str)++ = *number_digits++;
+        } else if ((info->flags & NUMBER_SYSTEM || info->precision != 0) && len > -1) {
+            if (len != 0) {
+                *(*str)++ = '.';
             }
         }
+
+        // mantiss output
+        while (!(info->flags & NUMBER_SYSTEM) && (len > 0)) {
+            *(*str)++ = *number_digits++;
+            len--;
+        }
+        while(info->precision-- > 0 && len == -1) {
+                *(*str)++ = *number_digits++;
+        }
+
         if (info->flags & CAPITALIZE) {
             *(*str)++ = 'E';
         } else {
@@ -473,11 +511,17 @@ void real_number_to_char(char **str, void *number, format_info *info) {
             while (exponent-- > 0) {
                 *(*str)++ = *number_digits++;
             }
-            if (info->flags & NUMBER_SYSTEM || info->precision != 0) {
+            if ((info->flags & NUMBER_SYSTEM || info->precision != 0) && len == -1) {
                 *(*str)++ = '.';
             }
         }
-        while(*number_digits != '\0') {
+        while (!(info->flags & NUMBER_SYSTEM) && len > 0) {
+            if (*number_digits != '\0') {
+                *(*str)++ = *number_digits++;
+            }
+            len--;
+        }
+        while(*number_digits != '\0' && len == -1) {
             *(*str)++ = *number_digits++;
         }
     }

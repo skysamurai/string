@@ -35,5 +35,8 @@ void put_udec_number_cursoring(char **str, format_info *info,
                                va_list args);
 void put_octo_number_cursoring(char **str, format_info *info,
                                va_list args);
-
+void put_exp_number_cursoring(char **str, format_info *info,
+                                   va_list args);
+void put_flt_number_cursoring(char **str, format_info *info,
+                                   va_list args);
 #endif /* SRC_S21_SPRINTF_ */

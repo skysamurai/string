@@ -21,6 +21,8 @@
 #define LONG 'l'
 #define SHORT 'h'
 #define DOUBLE 'd'
+#define VAR_FORMAT 'g'
+#define VAR_SHORT 's'
 
 typedef struct format_info_t {
     unsigned flags;
