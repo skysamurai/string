@@ -5,7 +5,6 @@
 #include "../s21_string.h"
 #include "tests.h"
 
-// TODO
 START_TEST(normalEqualTest) {
     int origResult = strcspn("1234567890", "1234567890");
     int s21Result = s21_strcspn("1234567890", "1234567890");

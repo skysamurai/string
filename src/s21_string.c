@@ -322,15 +322,18 @@ const char *s21_strerror(int errnum) {
     if ((errnum > 0) && (errnum <= errmax) && (errnum != err41) &&
         (errnum != err58)) {
         err = sys_errlist[errnum];
-    } else if (errnum == 0)
-        err = errZero;
-    else if ((errnum > errmax) || (errnum < 0) || (errnum == err41) ||
-             (errnum == err58)) {
-        static char errch[512];
-        s21_sprintf(errch, unkerr, errnum);
-        err = errch;
     } else {
-        err = S21_NULL;
+        if (errnum == 0) {
+            err = errZero;
+        } else {
+            if ((errnum > errmax) || (errnum < 0)) {
+                static char errch[512];
+                s21_sprintf(errch, unkerr, errnum);
+                err = errch;
+            } else {
+                err = S21_NULL;
+            }
+        }
     }
     return err;
 }

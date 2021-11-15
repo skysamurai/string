@@ -303,7 +303,7 @@ START_TEST(eSpecTest5) {
 }
 END_TEST
 
-// TODO (camaerie): add tests for %f, %g, %G when implemented
+// TODO(camaerie): add tests for %f, %g, %G when implemented.
 
 START_TEST(oSpecTest0) {
     char formatStr[100] = "%o word";

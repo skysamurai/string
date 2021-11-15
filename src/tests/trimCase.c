@@ -1,7 +1,7 @@
 #include <check.h>
 #include <signal.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../s21_string.h"
 #include "tests.h"
