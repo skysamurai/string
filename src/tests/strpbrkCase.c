@@ -62,7 +62,6 @@ START_TEST(arg2NULLTest) {  // must create SIGSEGV
 END_TEST
 
 START_TEST(argsEmptyTest) {
-    const char* a = "";
     char* origOutput;
     char* s21Output;
     origOutput = strpbrk("a", "a");

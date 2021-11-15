@@ -394,7 +394,7 @@ START_TEST(pSpecTest0) {
     char origStr[300] = "";
     char s21Str[300] = "";
 
-    char* ptr;
+    char* ptr = "stringWithPtr";
 
     s21_sprintf(s21Str, formatStr, ptr);
     sprintf(origStr, formatStr, ptr);
@@ -420,14 +420,12 @@ START_TEST(nSpecTest0) {
 END_TEST
 
 START_TEST(precentSpecTest0) {
-    char formatStr[100] = "%% word%%";
+    char formatStr[100] = "%% word%%d%d";
     char origStr[300] = "";
     char s21Str[300] = "";
 
-    char* ptr;
-
-    s21_sprintf(s21Str, formatStr, ptr);
-    sprintf(origStr, formatStr, ptr);
+    s21_sprintf(s21Str, formatStr, 5);
+    sprintf(origStr, formatStr, 5);
 
     ck_assert(strcmp(s21Str, origStr) == 0);
 }

@@ -33,7 +33,7 @@ all: s21_string.a test
 
 
 tests/%.o: tests/%.c tests/tests.h
-	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@
+	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) -MD -c $< -o $@ $(ERROR_FLAGS)
 
 
 libs21_string.a: $(LIB_OBJECTS)
