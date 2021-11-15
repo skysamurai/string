@@ -44,9 +44,9 @@ START_TEST(arg1EmptyTest) {
     char* origResult = strcpy(str1, "01234");
     char* s21Result = s21_strcpy(str2, "01234");
     ck_assert_msg(strcmp(s21Result, origResult) == 0,
-                    "fail for strcpy(\"0\", \"01234\"). orig:%s,  s21:%s",
-                    origResult, s21Result);
-    }
+                  "fail for strcpy(\"0\", \"01234\"). orig:%s,  s21:%s",
+                  origResult, s21Result);
+}
 END_TEST
 
 START_TEST(arg2EmptyTest) {
@@ -55,7 +55,7 @@ START_TEST(arg2EmptyTest) {
     char* origResult = strcpy(str1, "");
     char* s21Result = s21_strcpy(str2, "");
     ck_assert_msg(strcmp(s21Result, origResult) == 0,
-                  "fail for strcpy(\"abc\", \"\"). orig:%s,  s21:%s",
+                  "fail for strcpy(\"abc\", \"\"). orig:%s ,  s21:%s",
                   origResult, s21Result);
 }
 END_TEST
@@ -82,7 +82,7 @@ TCase* CreateStrcpyCase() {
     // tcase_add_test_raise_signal(strcpyCase, arg1NULLTest, SIGSEGV);
     // tcase_add_test_raise_signal(strcpyCase, arg2NULLTest, SIGSEGV);
 
-return strcpyCase;
+    return strcpyCase;
 }
 
 // arg Null
