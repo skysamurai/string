@@ -22,7 +22,7 @@ END_TEST
 START_TEST(arg1NULLTest) {
    char* str = S21_NULL;
    char sym []="210";
-   s21_size_t res = s21_strcspn(str,sym);
+   s21_size_t res = s21_strspn(str,sym);
 }
 END_TEST
 
@@ -36,14 +36,14 @@ END_TEST
 START_TEST(arg2NULLTest) {
    char str []="0123456789";
    char* sym = S21_NULL;
-   s21_size_t res = s21_strcspn(str,sym);
+   s21_size_t res = s21_strspn(str,sym);
 }
 END_TEST
 
 START_TEST(argsNULLTest) {
    char* str = S21_NULL;
    char* sym = S21_NULL;
-   s21_size_t res = s21_strcspn(str,sym);
+   s21_size_t res = s21_strspn(str,sym);
 }
 END_TEST
 
