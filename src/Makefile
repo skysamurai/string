@@ -1,4 +1,4 @@
-CC = gcc
+CC = gcc --coverage
 ERROR_FLAGS = -Wall -Wextra -Werror
 DEBUG_FLAGS = -g3
 OPTIM_FLAGS = -O0
@@ -47,9 +47,18 @@ s21_string.a: libs21_string.a
 test: s21_string.a $(TEST_OBJECTS)
 	$(CC) $(OPTIM_FLAGS) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
 
+gcov_report: clean test 
+	./test
+	lcov -t "gcov_report" -o gcov_report.info -c -d . 
+	genhtml -o gcov_report gcov_report.info
+
 clean:
 	find . -type f -name "*.o" -delete
 	find . -type f -name "*.d" -delete
+	find . -type f -name "*.gcda" -delete
+	find . -type f -name "*.gcno" -delete
+	find . -type f -name "*.info" -delete
+	rm -rf gcov_report
 	rm -f libs21_string.a
 	rm -f test
 	rm -f main
@@ -72,3 +81,5 @@ f_prog: clear main
 
 f_test: clear test
 	./test
+
+
