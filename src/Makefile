@@ -1,7 +1,7 @@
 CC = gcc
 ERROR_FLAGS = -Wall -Wextra -Werror
 DEBUG_FLAGS = -g3
-OPTIM_FLAGS = -O0
+OPTIM_FLAGS = -O3
 
 
 OS := $(shell uname)

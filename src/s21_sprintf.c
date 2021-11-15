@@ -19,7 +19,6 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
         // otherwise,
         // copy full string
         percent_pos = strchr(f_cursor, '%');
-
         if (percent_pos != S21_NULL) {
             s21_memcpy(s_cursor, f_cursor,
                        sizeof(char) * (percent_pos - f_cursor));
@@ -295,6 +294,10 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
     while (info->field_width-- > 0) {
         *(*str)++ = ' ';
     }
+}
+
+void float_to_str(char *buf, float number) {
+
 }
 
 void real_number_to_char(char **str, void *number, format_info *info) {
