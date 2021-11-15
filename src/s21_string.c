@@ -141,11 +141,16 @@ char *s21_strcpy(char *dest, const char *src) {
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
-    s21_size_t n_src = s21_strlen(src), n_str = s21_strlen(str);
+    s21_size_t n_src, n_str;
+    if ((src != S21_NULL) && (str != S21_NULL)) {
+        n_src = s21_strlen(src);
+    }
     void *temp;
-    if (start_index > n_src - 1) {
+    if ((start_index > n_src - 1) || (src == S21_NULL) || (str == S21_NULL)) {
+        temp = malloc(sizeof(S21_NULL));
         temp = S21_NULL;
     } else {
+        n_str = s21_strlen(str);
         int n = n_src + n_str;
         temp = malloc(n * sizeof(char));
         s21_memcpy(temp, (char *)src, start_index);
