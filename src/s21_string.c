@@ -114,7 +114,7 @@ void *s21_to_upper(const char *str) {
         temp = malloc(sizeof(S21_NULL));
         temp = S21_NULL;
     }
-    return (char* )temp;
+    return (char *)temp;
 }
 
 void *s21_to_lower(const char *str) {
@@ -280,12 +280,7 @@ char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
     while (i < n) {
         dest[i] = src[i];
         ++i;
-<<<<<<< HEAD
         if (src[i] != 0) dest[i] = '\0';
-=======
-        if (src[i] != 0) 
-            dest[i] = '\0';
->>>>>>> fb5d7c57d565b50553d2c04a4be6c5a7401c808b
     }
     return dest;
 }
@@ -312,10 +307,7 @@ const char *s21_strerror(int errnum) {
 #ifdef __APPLE__
     errmax = 106;
     s21_strcpy(errZero, "Undefined error: 0");
-<<<<<<< HEAD
     s21_strcpy(unkerr, "Unknown error: %d");
-=======
->>>>>>> fb5d7c57d565b50553d2c04a4be6c5a7401c808b
 #endif
     if ((errnum > 0) && (errnum <= errmax)) {
         err = sys_errlist[errnum];
