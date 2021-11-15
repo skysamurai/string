@@ -1,4 +1,5 @@
 #include <stdarg.h>
+
 #include "parser.h"
 
 void parse_format(const char **format, format_info *info, va_list args) {
@@ -79,9 +80,7 @@ void p_qualifier(const char **format, format_info *info) {
     }
 }
 
-int is_digit(char chr) {
-    return (chr >= '0') && (chr <= '9');
-}
+int is_digit(char chr) { return (chr >= '0') && (chr <= '9'); }
 
 int get_dec_digit_count(int number) {
     number = number >= 0 ? number : -number;
@@ -94,13 +93,13 @@ int get_dec_digit_count(int number) {
 }
 
 int is_hexdec_digit(char chr) {
-    return ((is_digit(chr)) || ((chr >= 'a') && (chr <= 'f')) || ((chr >= 'A') && (chr <= 'F')));
+    return ((is_digit(chr)) || ((chr >= 'a') && (chr <= 'f')) ||
+            ((chr >= 'A') && (chr <= 'F')));
 }
 
 int atoi_cursoring(const char **cursor) {
     char chr;
     int i;
-    for (i = 0; is_digit(chr = **cursor); ++ * cursor)
-        i = i * 10 + chr - '0';
+    for (i = 0; is_digit(chr = **cursor); ++*cursor) i = i * 10 + chr - '0';
     return i;
 }

@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 
 size_t s21_strspn(const char *str1, const char *str2) {
     int n_str1 = s21_strlen(str1);
@@ -64,7 +65,6 @@ void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
     for (i = 0; i < n; i++) {
         *((char *)dest + i) = *((char *)src + i);
     }
-    *((char *)dest + i) = '\0';
     return dest;
 }
 
@@ -143,11 +143,16 @@ char *s21_strcpy(char *dest, const char *src) {
 }
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
-    s21_size_t n_src = s21_strlen(src), n_str = s21_strlen(str);
+    s21_size_t n_src, n_str;
+    if ((src != S21_NULL) && (str != S21_NULL)) {
+        n_src = s21_strlen(src);
+    }
     void *temp;
-    if (start_index > n_src - 1) {
+    if ((start_index > n_src - 1) || (src == S21_NULL) || (str == S21_NULL)) {
+        temp = malloc(sizeof(S21_NULL));
         temp = S21_NULL;
     } else {
+        n_str = s21_strlen(str);
         int n = n_src + n_str;
         temp = malloc(n * sizeof(char));
         s21_memcpy(temp, (char *)src, start_index);
@@ -302,23 +307,33 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 const char *s21_strerror(int errnum) {
     static const char *err;
     int errmax = 133;
+    int err41 = 41;
+    int err58 = 58;
     static char errZero[100] = "Success";
     char unkerr[] = "Unknown error %d";
+    int errseg = errnum;
 #ifdef __APPLE__
     errmax = 106;
     s21_strcpy(errZero, "Undefined error: 0");
     s21_strcpy(unkerr, "Unknown error: %d");
+    err41 = 333;
+    err58 = 333;
 #endif
-    if ((errnum > 0) && (errnum <= errmax)) {
+    if ((errnum > 0) && (errnum <= errmax) && (errnum != err41) &&
+        (errnum != err58)) {
         err = sys_errlist[errnum];
-    } else if (errnum == 0)
-        err = errZero;
-    else if ((errnum > errmax) || (errnum < 0)) {
-        static char errch[512];
-        s21_sprintf(errch, unkerr, errnum);
-        err = errch;
     } else {
-        err = S21_NULL;
+        if (errnum == 0) {
+            err = errZero;
+        } else {
+            if ((errnum > errmax) || (errnum < 0)) {
+                static char errch[512];
+                s21_sprintf(errch, unkerr, errnum);
+                err = errch;
+            } else {
+                err = S21_NULL;
+            }
+        }
     }
     return err;
 }

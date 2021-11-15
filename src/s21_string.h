@@ -1,5 +1,5 @@
-#ifndef SRC_S21_STRING_S21_STRING_H_
-#define SRC_S21_STRING_S21_STRING_H_
+#ifndef SRC_S21_STRING_H_
+#define SRC_S21_STRING_H_
 
 #ifndef S21_SIZE_T
 #define S21_SIZE_T
@@ -37,14 +37,14 @@ char *s21_strchr(const char *str, int c);
 int s21_strcmp(const char *str1, const char *str2);
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n);
 
-int s21_strncmp(const char *str1, const char *str2, s21_size_t n); // V
-int s21_strcmp(const char *str1, const char *str2); // V
-char *s21_strcpy(char *dest, const char *src);  // V
-char *s21_strncpy(char *dest, const char *src, s21_size_t n); // V
-s21_size_t s21_strcspn(const char *str1, const char *str2); // V
-const char *s21_strerror(int errnum); // ...
-s21_size_t s21_strlen(const char *str); // V
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n);  // V
+int s21_strcmp(const char *str1, const char *str2);                 // V
+char *s21_strcpy(char *dest, const char *src);                      // V
+char *s21_strncpy(char *dest, const char *src, s21_size_t n);       // V
+s21_size_t s21_strcspn(const char *str1, const char *str2);         // V
+const char *s21_strerror(int errnum);                               // ...
+s21_size_t s21_strlen(const char *str);                             // V
 
 char *s21_strcat(char *dest, const char *src);
 
-#endif  // SRC_S21_STRING_S21_STRING_H_
+#endif  // SRC_S21_STRING_H_

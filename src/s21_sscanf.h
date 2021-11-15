@@ -1,8 +1,8 @@
-#ifndef S21_SSCANF_
-#define S21_SSCANF_
+#ifndef SRC_S21_SSCANF_H_
+#define SRC_S21_SSCANF_H_
 
 #include <stdarg.h>
 
 int s21_sscanf_(char *str, char *format, va_list args);
 
-#endif  // S21_SSCANF_
+#endif  // SRC_S21_SSCANF_H_

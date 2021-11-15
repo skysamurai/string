@@ -67,7 +67,8 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
                     real_number_to_char(&s_cursor, (void *)&dlnumber, &f_info);
                 } else if (f_info.qualifier == NONE) {
                     dnumber = va_arg(args, double);
-                    real_number_to_char(&s_cursor, (void *)(&(dnumber)), &f_info);
+                    real_number_to_char(&s_cursor, (void *)(&(dnumber)),
+                                        &f_info);
                 }
             } else if (*f_cursor == 'E') {
                 f_info.flags |= CAPITALIZE;
@@ -83,7 +84,6 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
                     real_number_to_char(&s_cursor, (void *)&dlnumber, &f_info);
                 }
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
-
             } else if (*f_cursor == 'f') {
                 f_info.flags |= SIGNED;
                 f_info.flags |= EXPONENT;
@@ -326,11 +326,14 @@ void real_number_to_char(char **str, void *number, format_info *info) {
 
     char *cnumber = S21_NULL;
     if (info->qualifier == LONG) {
-        cnumber = ecvt(*(long double *)number, info->precision + 1, &exponent, &number_sign);
+        cnumber = ecvt(*(long double *)number, info->precision + 1, &exponent,
+                       &number_sign);
     } else if (info->qualifier == NONE) {
-        cnumber = ecvt(*((double *)number), info->precision + 1, &exponent, &number_sign);
+        cnumber = ecvt(*((double *)number), info->precision + 1, &exponent,
+                       &number_sign);
     } else if (info->qualifier == SHORT) {
-        cnumber = fcvt(*((float *)number), info->precision, &exponent, &number_sign);
+        cnumber =
+            fcvt(*((float *)number), info->precision, &exponent, &number_sign);
     }
 
     // left alignment has a higher priority
@@ -405,16 +408,16 @@ void real_number_to_char(char **str, void *number, format_info *info) {
 
         // mantiss output
         if (info->qualifier == LONG) {
-            while((info->precision)-- > 0) {
-                    *(*str)++ = *cnumber++;
+            while ((info->precision)-- > 0) {
+                *(*str)++ = *cnumber++;
             }
         } else if (info->qualifier == NONE) {
-            while((info->precision)-- > 0) {
-                    *(*str)++ = *cnumber++;
+            while ((info->precision)-- > 0) {
+                *(*str)++ = *cnumber++;
             }
         } else if (info->qualifier == SHORT) {
-            while((info->precision)-- > 0) {
-                    *(*str)++ = *cnumber++;
+            while ((info->precision)-- > 0) {
+                *(*str)++ = *cnumber++;
             }
         }
         if (info->flags & CAPITALIZE) {
@@ -466,7 +469,7 @@ void real_number_to_char(char **str, void *number, format_info *info) {
             if (info->flags & NUMBER_SYSTEM || info->precision != 0)
                 *(*str)++ = '.';
         }
-        while((info->precision)-- > 0) {
+        while ((info->precision)-- > 0) {
             *(*str)++ = *cnumber++;
         }
     }

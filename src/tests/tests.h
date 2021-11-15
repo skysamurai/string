@@ -3,6 +3,10 @@
 
 #include <check.h>
 
+TCase* CreateMemmoveCase();
+TCase* CreateMemsetCase();
+TCase* CreateMemcpyCase();
+TCase* CreateInsertCase();
 TCase* CreateStrpbrkCase();
 TCase* CreateStrrchrCase();
 TCase* CreateMemcmpCase();

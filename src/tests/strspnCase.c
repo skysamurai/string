@@ -19,12 +19,12 @@ START_TEST(arg1EmptyTest) {
 }
 END_TEST
 
-// START_TEST(arg1NULLTest) {
-//     char* str = S21_NULL;
-//     char sym[] = "210";
-//     s21_size_t res = s21_strcspn(str, sym);
-// }
-// END_TEST
+/* START_TEST(arg1NULLTest) {
+    char* str = S21_NULL;
+    char sym[] = "210";
+    s21_size_t res = s21_strcspn(str, sym);
+}
+END_TEST */
 
 START_TEST(arg2EmptyTest) {
     char str[] = "0123456789";
@@ -33,19 +33,19 @@ START_TEST(arg2EmptyTest) {
 }
 END_TEST
 
-// START_TEST(arg2NULLTest) {
-//     char str[] = "0123456789";
-//     char* sym = S21_NULL;
-//     s21_size_t res = s21_strcspn(str, sym);
-// }
-// END_TEST
+/* START_TEST(arg2NULLTest) {
+    char str[] = "0123456789";
+    char* sym = S21_NULL;
+    s21_size_t res = s21_strcspn(str, sym);
+}
+END_TEST */
 
-// START_TEST(argsNULLTest) {
-//     char* str = S21_NULL;
-//     char* sym = S21_NULL;
-//     s21_size_t res = s21_strcspn(str, sym);
-// }
-// END_TEST
+/* START_TEST(argsNULLTest) {
+    char* str = S21_NULL;
+    char* sym = S21_NULL;
+    s21_size_t res = s21_strcspn(str, sym);
+}
+END_TEST */
 
 TCase* CreateStrspnCase() {
     TCase* strspnCase = tcase_create("strspn case");

@@ -1,5 +1,5 @@
-#ifndef SRC_S21_PARSER_
-#define SRC_S21_PARSER_
+#ifndef SRC_PARSER_H_
+#define SRC_PARSER_H_
 #include <stdarg.h>
 
 /* flags */
@@ -10,11 +10,11 @@
 #define ZERO_PADDING (1U << 4U)       /* '0' fill with zeros */
 
 /* sprintf string format */
-#define SIGNED (1U << 5U)             /* signed number */
-#define UNSIGNED (1U << 6U)           /* unsigned number */
-#define CAPITALIZE (1U << 7U)         /* output in capital letters */
-#define EXPONENT (1U << 8U)           /* output in exponential form */
-#define FLOAT (1U << 9U)              /* float type */
+#define SIGNED (1U << 5U)     /* signed number */
+#define UNSIGNED (1U << 6U)   /* unsigned number */
+#define CAPITALIZE (1U << 7U) /* output in capital letters */
+#define EXPONENT (1U << 8U)   /* output in exponential form */
+#define FLOAT (1U << 9U)      /* float type */
 
 /* qualifier specifier */
 #define NONE ' '
@@ -41,4 +41,4 @@ int is_hexdec_digit(char chr);
 int atoi_cursoring(const char **cursor);
 int get_dec_digit_count(int number);
 
-#endif /* SRC_S21_PARSER_ */
+#endif  // SRC_PARSER_H_
