@@ -12,9 +12,15 @@ START_TEST(normalEqualTest_1_106) {
         if ((errnum == 41) || (errnum = 58)) ++errnum;
         const char* origResult = strerror(errnum);
         const char* s21Result = s21_strerror(errnum);
+<<<<<<< HEAD
         ck_assert_msg(strcmp(s21Result, origResult) == 0,
                       "fail for strerror№ %d. orig:%s,  s21:%s", errnum,
                       origResult, s21Result);
+=======
+        ck_assert_msg(s21_strcmp(origResult, s21Result) == 0,
+                    "fail for strerror№ %d. orig:%s,  s21:%s", errnum,
+                    origResult, s21Result);
+>>>>>>> fb5d7c57d565b50553d2c04a4be6c5a7401c808b
     }
 }
 END_TEST
@@ -35,9 +41,15 @@ START_TEST(ZeroTest) {
     int errnum = 0;
     const char* origResult = strerror(errnum);
     const char* s21Result = s21_strerror(errnum);
+<<<<<<< HEAD
     ck_assert_msg(strcmp(s21Result, origResult) == 0,
                   "fail for strerror№ %d. orig:%s,  s21:%s", errnum, origResult,
                   s21Result);
+=======
+    ck_assert_msg(s21_strcmp(origResult, s21Result) == 0,
+                "fail for strerror№ %d. orig:%s,  s21:%s", errnum,
+                origResult, s21Result);
+>>>>>>> fb5d7c57d565b50553d2c04a4be6c5a7401c808b
 }
 END_TEST
 

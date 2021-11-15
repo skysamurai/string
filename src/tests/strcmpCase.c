@@ -45,10 +45,10 @@ START_TEST(arg1EmptyTest) {
 }
 END_TEST
 
-START_TEST(arg1NULLTest) {  // must return SIGSEGV
-    s21_strcmp(S21_NULL, "aaa");
-}
-END_TEST
+// START_TEST(arg1NULLTest) {  // must return SIGSEGV
+//     s21_strcmp(S21_NULL, "aaa");
+// }
+// END_TEST
 
 START_TEST(arg2EmptyTest) {
     int origResult = strcmp("aaa", "");
@@ -60,10 +60,10 @@ START_TEST(arg2EmptyTest) {
 }
 END_TEST
 
-START_TEST(arg2NULLTest) {  // must return SIGSEGV
-    s21_strcmp("aaa", S21_NULL);
-}
-END_TEST
+// START_TEST(arg2NULLTest) {  // must return SIGSEGV
+//     s21_strcmp("aaa", S21_NULL);
+// }
+// END_TEST
 
 START_TEST(arg3TooMuchTest) {
     int origResult = strcmp("aba", "aaa");
@@ -85,9 +85,6 @@ START_TEST(arg3ZeroTest) {
 }
 END_TEST
 
-START_TEST(arg3NULLTest) { s21_strcmp("aaa", "baa"); }
-END_TEST
-
 TCase* CreateStrcmpCase() {
     TCase* strcmpCase = tcase_create("strcmpCase");
 
@@ -95,11 +92,13 @@ TCase* CreateStrcmpCase() {
     tcase_add_test(strcmpCase, normalLessTest);
     tcase_add_test(strcmpCase, normalMoreTest);
     tcase_add_test(strcmpCase, arg1EmptyTest);
+    tcase_add_test(strcmpCase, arg3TooMuchTest);
+    tcase_add_test(strcmpCase, arg3ZeroTest);
+
     tcase_add_test(strcmpCase, arg2EmptyTest);
 
-    tcase_add_test_raise_signal(strcmpCase, arg1NULLTest, SIGSEGV);
-    tcase_add_test_raise_signal(strcmpCase, arg2NULLTest, SIGSEGV);
-    tcase_add_test(strcmpCase, arg3NULLTest);
+    // tcase_add_test_raise_signal(strcmpCase, arg1NULLTest, SIGSEGV);
+    // tcase_add_test_raise_signal(strcmpCase, arg2NULLTest, SIGSEGV);
 
     return strcmpCase;
 }

@@ -9,6 +9,12 @@ int main(void) {
     SRunner *sr = srunner_create(s1);
     int nf;
 
+    TCase *toupperCase = CreateToupperCase();
+    suite_add_tcase(s1, toupperCase);
+
+    TCase *tolowerCase = CreateTolowerCase();
+    suite_add_tcase(s1, tolowerCase);
+
     TCase *strpbrkCase = CreateStrpbrkCase();
     suite_add_tcase(s1, strpbrkCase);
 
@@ -48,12 +54,9 @@ int main(void) {
     TCase *strerrorCase = CreateStrerrorCase();
     suite_add_tcase(s1, strerrorCase);
 
-    /* TODO: Seldon rewrite
-        TCase *strcatCase = CreateStrcatCase();
-        suite_add_tcase(s1, strcatCase);
-    */
+    TCase *strcatCase = CreateStrcatCase();
+    suite_add_tcase(s1, strcatCase);
 
-    /* TODO: Seldon rewrite */
     TCase *strncatCase = CreateStrncatCase();
     suite_add_tcase(s1, strncatCase);
 
