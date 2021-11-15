@@ -19,6 +19,7 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
         // otherwise,
         // copy full string
         percent_pos = strchr(f_cursor, '%');
+
         if (percent_pos != S21_NULL) {
             s21_memcpy(s_cursor, f_cursor,
                        sizeof(char) * (percent_pos - f_cursor));
@@ -59,17 +60,35 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
             } else if (*f_cursor == 'e') {
                 f_info.flags |= SIGNED;
                 f_info.flags |= EXPONENT;
-                real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
+                long double dlnumber;
+                double dnumber;
+                if (f_info.qualifier == LONG) {
+                    dlnumber = va_arg(args, long double);
+                    real_number_to_char(&s_cursor, (void *)&dlnumber, &f_info);
+                } else if (f_info.qualifier == NONE) {
+                    dnumber = va_arg(args, double);
+                    real_number_to_char(&s_cursor, (void *)(&(dnumber)), &f_info);
+                }
             } else if (*f_cursor == 'E') {
                 f_info.flags |= CAPITALIZE;
                 f_info.flags |= SIGNED;
                 f_info.flags |= EXPONENT;
-                real_number_to_char(&s_cursor, va_arg(args, double), &f_info);
+                long double dlnumber;
+                double dnumber;
+                if (f_info.qualifier == LONG) {
+                    dlnumber = va_arg(args, long double);
+                    real_number_to_char(&s_cursor, (void *)&dlnumber, &f_info);
+                } else if (f_info.qualifier == NONE) {
+                    dnumber = va_arg(args, double);
+                    real_number_to_char(&s_cursor, (void *)&dlnumber, &f_info);
+                }
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
+
             } else if (*f_cursor == 'f') {
-                f_info.flags |= CAPITALIZE;
                 f_info.flags |= SIGNED;
                 f_info.flags |= EXPONENT;
+                float snumber = va_arg(args, double);
+                real_number_to_char(&s_cursor, (void *)&snumber, &f_info);
             }
             f_cursor++;
         }
@@ -278,9 +297,8 @@ void int_number_to_char(char **str, unsigned long number, format_info *info) {
     }
 }
 
-void real_number_to_char(char **str, double number, format_info *info) {
+void real_number_to_char(char **str, void *number, format_info *info) {
     int i;
-
     int number_sign;
     char cnumber_sign;
 
@@ -306,7 +324,14 @@ void real_number_to_char(char **str, double number, format_info *info) {
         info->field_width -= info->precision;
     }
 
-    char *cnumber = ecvt(number, info->precision + 1, &exponent, &number_sign);
+    char *cnumber = S21_NULL;
+    if (info->qualifier == LONG) {
+        cnumber = ecvt(*(long double *)number, info->precision + 1, &exponent, &number_sign);
+    } else if (info->qualifier == NONE) {
+        cnumber = ecvt(*((double *)number), info->precision + 1, &exponent, &number_sign);
+    } else if (info->qualifier == SHORT) {
+        cnumber = fcvt(*((float *)number), info->precision, &exponent, &number_sign);
+    }
 
     // left alignment has a higher priority
     // than filling empty space with zeros
@@ -344,17 +369,6 @@ void real_number_to_char(char **str, double number, format_info *info) {
     // normalized part always takes 1 character
     info->field_width -= 1;
 
-    // The exponent always has a sign,
-    // so we don't have to equate it to zero
-    if (exponent > 0) {
-        exponent_sign = '+';
-        exponent -= 1;
-    } else {
-        exponent_sign = '-';
-        exponent = -exponent;
-        exponent += 1;
-    }
-
     // 1 sign is assigned to the exponent "e",
     // 1 sign is assigned to the exponent sign
     //  "+" or "-"
@@ -381,42 +395,108 @@ void real_number_to_char(char **str, double number, format_info *info) {
         *(*str)++ = cnumber_sign;
     }
 
-    // output of a normalized number
-    *(*str)++ = *cnumber++;
-
-    // put dot after normalized number
-    if (info->flags & NUMBER_SYSTEM || info->precision != 0)
-        *(*str)++ = '.';
-
-    // mantiss output
-    for (; info->precision > 0; --info->precision, number *= 10) {
+    if (info->qualifier != SHORT) {
+        // output of a normalized number
         *(*str)++ = *cnumber++;
+
+        // put dot after normalized number
+        if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+            *(*str)++ = '.';
+
+        // mantiss output
+        if (info->qualifier == LONG) {
+            while((info->precision)-- > 0) {
+                    *(*str)++ = *cnumber++;
+            }
+        } else if (info->qualifier == NONE) {
+            while((info->precision)-- > 0) {
+                    *(*str)++ = *cnumber++;
+            }
+        } else if (info->qualifier == SHORT) {
+            while((info->precision)-- > 0) {
+                    *(*str)++ = *cnumber++;
+            }
+        }
+        if (info->flags & CAPITALIZE) {
+            *(*str)++ = 'E';
+        } else {
+            *(*str)++ = 'e';
+        }
+
+        // The exponent always has a sign,
+        // so we don't have to equate it to zero
+        if (exponent > 0) {
+            exponent_sign = '+';
+            exponent -= 1;
+        } else {
+            exponent_sign = '-';
+            exponent = -exponent;
+            exponent += 1;
+        }
+
+        *(*str)++ = exponent_sign;
+
+        if (exponent == 0) {
+            *(*str)++ = '0';
+            *(*str)++ = '0';
+        } else {
+            if (exponent <= 9) {
+                *(*str)++ = '0';
+            }
+            for (i = 0; exponent > 0; ++i) {
+                exponent_reverse[i] = '0' + exponent % 10;
+                exponent /= 10;
+            }
+            while (i > 0) {
+                *(*str)++ = exponent_reverse[(i--) - 1];
+            }
+        }
+    } else {
+        if (exponent <= 0) {
+            *(*str)++ = '0';
+            if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+                *(*str)++ = '.';
+            while (exponent++ < 0) {
+                *(*str)++ = '0';
+            }
+        } else {
+            while (exponent-- > 0) {
+                *(*str)++ = *cnumber++;
+            }
+            if (info->flags & NUMBER_SYSTEM || info->precision != 0)
+                *(*str)++ = '.';
+        }
+        while((info->precision)-- > 0) {
+            *(*str)++ = *cnumber++;
+        }
     }
 
     // exponent output
-    if (info->flags & CAPITALIZE) {
-        *(*str)++ = 'E';
-    } else {
-        *(*str)++ = 'e';
-    }
+    // if (info->qualifier != SHORT) {
+    //     if (info->flags & CAPITALIZE) {
+    //         *(*str)++ = 'E';
+    //     } else {
+    //         *(*str)++ = 'e';
+    //     }
 
-    *(*str)++ = exponent_sign;
+    //     *(*str)++ = exponent_sign;
 
-    if (exponent == 0) {
-        *(*str)++ = '0';
-        *(*str)++ = '0';
-    } else {
-        if (exponent <= 9) {
-            *(*str)++ = '0';
-        }
-        for (i = 0; exponent > 0; ++i) {
-            exponent_reverse[i] = '0' + exponent % 10;
-            exponent /= 10;
-        }
-        while (i > 0) {
-            *(*str)++ = exponent_reverse[(i--) - 1];
-        }
-    }
+    //     if (exponent == 0) {
+    //         *(*str)++ = '0';
+    //         *(*str)++ = '0';
+    //     } else {
+    //         if (exponent <= 9) {
+    //             *(*str)++ = '0';
+    //         }
+    //         for (i = 0; exponent > 0; ++i) {
+    //             exponent_reverse[i] = '0' + exponent % 10;
+    //             exponent /= 10;
+    //         }
+    //         while (i > 0) {
+    //             *(*str)++ = exponent_reverse[(i--) - 1];
+    //         }
+    //     }
+    // }
 
     // If there is a free width left, fill in with spaces
     while (info->field_width-- > 0) {

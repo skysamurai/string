@@ -60,9 +60,11 @@ int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
 }
 
 void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
-    for (s21_size_t i = 0; i < n; i++) {
+    s21_size_t i;
+    for (i = 0; i < n; i++) {
         *((char *)dest + i) = *((char *)src + i);
     }
+    *((char *)dest + i) = '\0';
     return dest;
 }
 
@@ -112,7 +114,7 @@ void *s21_to_upper(const char *str) {
         temp = malloc(sizeof(S21_NULL));
         temp = S21_NULL;
     }
-    return (char* )temp;
+    return (char *)temp;
 }
 
 void *s21_to_lower(const char *str) {
@@ -278,8 +280,7 @@ char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
     while (i < n) {
         dest[i] = src[i];
         ++i;
-        if (src[i] != 0) 
-            dest[i] = '\0';
+        if (src[i] != 0) dest[i] = '\0';
     }
     return dest;
 }
@@ -299,22 +300,22 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 }
 
 const char *s21_strerror(int errnum) {
-    const char *err;
+    static const char *err;
     int errmax = 133;
-    char errZero[100] = "Success";
+    static char errZero[100] = "Success";
+    char unkerr[] = "Unknown error %d";
 #ifdef __APPLE__
     errmax = 106;
     s21_strcpy(errZero, "Undefined error: 0");
+    s21_strcpy(unkerr, "Unknown error: %d");
 #endif
     if ((errnum > 0) && (errnum <= errmax)) {
         err = sys_errlist[errnum];
-    } else if (errnum == 0) {
-        err = "Success";
-        printf("err=%s\n", err);
-    } else if ((errnum > errmax) || (errnum < 0)) {
-        char errch[100];
-        sprintf(errch, "Unknown error: %d",
-                errnum);  // change sprintf to s21_sprintf !!!
+    } else if (errnum == 0)
+        err = errZero;
+    else if ((errnum > errmax) || (errnum < 0)) {
+        static char errch[512];
+        s21_sprintf(errch, unkerr, errnum);
         err = errch;
     } else {
         err = S21_NULL;
