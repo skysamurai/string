@@ -9,6 +9,18 @@ int main(void) {
     SRunner *sr = srunner_create(s1);
     int nf;
 
+    TCase *memmoveCase = CreateMemmoveCase();
+    suite_add_tcase(s1, memmoveCase);
+
+    TCase *memsetCase = CreateMemsetCase();
+    suite_add_tcase(s1, memsetCase);
+
+    TCase *memcpyCase = CreateMemcpyCase();
+    suite_add_tcase(s1, memcpyCase);
+
+    TCase *insertCase = CreateInsertCase();
+    suite_add_tcase(s1, insertCase);
+
     TCase *toupperCase = CreateToupperCase();
     suite_add_tcase(s1, toupperCase);
 
@@ -36,8 +48,11 @@ int main(void) {
     TCase *sprintfCase = CreateSprintfCase();
     suite_add_tcase(s1, sprintfCase);
 
-    TCase *strcmpCase = CreateStrncmpCase();
+    TCase *strcmpCase = CreateStrcmpCase();
     suite_add_tcase(s1, strcmpCase);
+
+    TCase *strncmpCase = CreateStrncmpCase();
+    suite_add_tcase(s1, strncmpCase);
 
     TCase *strcspnCase = CreateStrcspnCase();
     suite_add_tcase(s1, strcspnCase);

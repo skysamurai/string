@@ -51,10 +51,10 @@ START_TEST(arg1EmptyTest) {
 }
 END_TEST
 
-START_TEST(arg1NULLTest) {  // must return SIGSEGV
+/* START_TEST(arg1NULLTest) {  // must return SIGSEGV
     s21_strncpy(S21_NULL, "aaa", 3);
 }
-END_TEST
+END_TEST */
 
 START_TEST(arg2EmptyTest) {
     char str1[100] = "aaa";
@@ -67,11 +67,11 @@ START_TEST(arg2EmptyTest) {
 }
 END_TEST
 
-START_TEST(arg2NULLTest) {  // must return SIGSEGV
+/* START_TEST(arg2NULLTest) {  // must return SIGSEGV
     char str1[100] = "aaa";
     s21_strncpy(str1, S21_NULL, 3);
 }
-END_TEST
+END_TEST */
 
 START_TEST(arg3TooMuchTest) {
     char str1[1000] = "aaa";
@@ -97,13 +97,13 @@ START_TEST(arg3ZeroTest) {
 }
 END_TEST
 
-START_TEST(arg3NULLTest) {  // must return SIGSEGV
+/* START_TEST(arg3NULLTest) {  // must return SIGSEGV
     char str1[100] = "aaa";
     char* nullint = S21_NULL;
 
     s21_strncpy(str1, "baa", *nullint);
 }
-END_TEST
+END_TEST */
 
 TCase* CreateStrncpyCase() {
     TCase* strncpyCase = tcase_create("strncpyCase");
@@ -116,9 +116,9 @@ TCase* CreateStrncpyCase() {
     tcase_add_test(strncpyCase, arg1EmptyTest);
     tcase_add_test(strncpyCase, arg2EmptyTest);
 
-    tcase_add_test_raise_signal(strncpyCase, arg1NULLTest, SIGSEGV);
+/*     tcase_add_test_raise_signal(strncpyCase, arg1NULLTest, SIGSEGV);
     tcase_add_test_raise_signal(strncpyCase, arg2NULLTest, SIGSEGV);
-    tcase_add_test_raise_signal(strncpyCase, arg3NULLTest, SIGSEGV);
+    tcase_add_test_raise_signal(strncpyCase, arg3NULLTest, SIGSEGV); */
 
     return strncpyCase;
 }

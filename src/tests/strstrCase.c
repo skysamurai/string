@@ -25,13 +25,13 @@ START_TEST(arg1EmptyTest) {
 }
 END_TEST
 
-START_TEST(arg1NULLTest) {
+/* START_TEST(arg1NULLTest) {
     char* str1 = S21_NULL;
     char str2[] = "asdasd";
     char *istr, *s21_istr;
     s21_istr = s21_strstr(str1, str2);
 }
-END_TEST
+END_TEST */
 
 START_TEST(arg2EmptyTest) {
     char str1[] = "asdasd";
@@ -43,30 +43,30 @@ START_TEST(arg2EmptyTest) {
 }
 END_TEST
 
-START_TEST(arg2NULLTest) {
+/* START_TEST(arg2NULLTest) {
     char str1[] = "dgdfgs";
     char* str2 = S21_NULL;
     char *istr, *s21_istr;
     s21_istr = s21_strstr(str1, str2);
 }
-END_TEST
+END_TEST */
 
-START_TEST(argsNULLTest) {
+/* START_TEST(argsNULLTest) {
     char* str1 = S21_NULL;
     char* str2 = S21_NULL;
     char *istr, *s21_istr;
     s21_istr = s21_strstr(str1, str2);
 }
-END_TEST
+END_TEST */
 
 TCase* CreateStrstrCase() {
     TCase* strstrCase = tcase_create("strstr case");
     tcase_add_test(strstrCase, normalTest);
     tcase_add_test(strstrCase, arg1EmptyTest);
-    tcase_add_test_raise_signal(strstrCase, arg1NULLTest, SIGSEGV);
+/*     tcase_add_test_raise_signal(strstrCase, arg1NULLTest, SIGSEGV); */
     tcase_add_test(strstrCase, arg2EmptyTest);
-    tcase_add_test_raise_signal(strstrCase, arg2NULLTest, SIGSEGV);
-    tcase_add_test_raise_signal(strstrCase, argsNULLTest, SIGSEGV);
+/*     tcase_add_test_raise_signal(strstrCase, arg2NULLTest, SIGSEGV);
+    tcase_add_test_raise_signal(strstrCase, argsNULLTest, SIGSEGV); */
 
     return strstrCase;
 }
