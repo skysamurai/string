@@ -38,7 +38,6 @@ void p_qualifier(const char **format, format_info *info);
 
 int is_digit(char chr);
 int is_hexdec_digit(char chr);
-/*int is_specifer(char chr);*/
 int atoi_cursoring(const char **cursor);
 int get_dec_digit_count(int number);
 

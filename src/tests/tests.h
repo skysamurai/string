@@ -6,7 +6,6 @@
 TCase* CreateStrpbrkCase();
 TCase* CreateStrrchrCase();
 TCase* CreateMemcmpCase();
-TCase* CreateStrcspnCase();
 TCase* CreateMemchrCase();
 TCase* CreateTrimCase();
 TCase* CreateStrtokCase();
@@ -14,9 +13,16 @@ TCase* CreateSprintfCase();
 TCase* CreateStrchrCase();
 TCase* CreateStrcmpCase();
 TCase* CreateStrncmpCase();
+TCase* CreateStrcspnCase();
+TCase* CreateStrcpyCase();
+TCase* CreateStrncpyCase();
 TCase* CreateStrcatCase();
 TCase* CreateStrncatCase();
+TCase* CreateStrlenCase();
+TCase* CreateStrerrorCase();
 TCase* CreateStrstrCase();
 TCase* CreateStrspnCase();
+TCase* CreateTolowerCase();
+TCase* CreateToupperCase();
 
 #endif  // SRC_TESTS_TESTS_H_
