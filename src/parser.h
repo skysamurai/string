@@ -1,12 +1,12 @@
-#ifndef SRC_S21_PARSER_
-#define SRC_S21_PARSER_
+#ifndef S21_PARSER_
+#define S21_PARSER_
 #include <stdarg.h>
 
 /* flags */
 #define LEFT_JUSTIFY (1U << 0U)       /* '-' left alignment */
 #define SHOW_SIGN (1U << 1U)          /* '+' display '+' or '-' */
 #define SPACE_INSTEAD_SIGN (1U << 2U) /* ' ' replace '+' sign with space */
-#define NUMBER_SYSTEM (1U << 3U)      /* '#' display number system */
+#define SPECIAL (1U << 3U)      /* '#' display number system */
 #define ZERO_PADDING (1U << 4U)       /* '0' fill with zeros */
 
 /* sprintf string format */
@@ -21,8 +21,7 @@
 #define LONG 'l'
 #define SHORT 'h'
 #define DOUBLE 'd'
-#define VAR_FORMAT 'g'
-#define VAR_SHORT 's'
+#define VAR_FORMAT 'g'  // !WILL DELETE
 
 typedef struct format_info_t {
     unsigned flags;
@@ -43,4 +42,4 @@ int is_hexdec_digit(char chr);
 int atoi_cursoring(const char **cursor);
 int get_dec_digit_count(int number);
 
-#endif /* SRC_S21_PARSER_ */
+#endif  // SRC_S21_PARSER_
