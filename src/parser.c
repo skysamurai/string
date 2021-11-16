@@ -24,7 +24,7 @@ void p_flag(const char **format, format_info *info) {
             info->flags |= SPACE_INSTEAD_SIGN;
             ++(*format);
         } else if (**format == '#') {
-            info->flags |= NUMBER_SYSTEM;
+            info->flags |= SPECIAL;
             ++(*format);
         } else if (**format == '0') {
             info->flags |= ZERO_PADDING;
