@@ -43,10 +43,10 @@ libs21_string.a: $(LIB_OBJECTS)
 s21_string.a: libs21_string.a
 
 
-test: s21_string.a $(TEST_OBJECTS)
+test: libs21_string.a $(TEST_OBJECTS)
 	$(CC) $(DEBUG_FLAGS) tests/*.o -L. -ls21_string -o $@ $(CHECK_FLAGS)
 
-gcov_report: clean test 
+gcov_report: test
 	./test
 	lcov -t "gcov_report" -o gcov_report.info -c -d . 
 	genhtml -o gcov_report gcov_report.info
@@ -69,7 +69,7 @@ re: clean all
 	all clean fclean re clear
 
 # our target`s zone
-main: s21_string.a
+main: libs21_string.a
 	$(CC) $(DEBUG_FLAGS) $(ERROR_FLAGS) $@.c -L. -ls21_string -o main
 
 clear:
