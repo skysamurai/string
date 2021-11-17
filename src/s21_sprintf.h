@@ -40,7 +40,9 @@ void put_udec_number_cursoring(char **str, format_info *info,
 void put_octo_number_cursoring(char **str, format_info *info,
                                va_list args);
 void put_exp_number_cursoring(char **str, format_info *info,
-                                   va_list args);
+                              va_list args);
 void put_flt_number_cursoring(char **str, format_info *info,
-                                   va_list args);
+                              va_list args);
+void put_fortran_number_cursoring(char **str, format_info *info,
+                                  va_list args);
 #endif  // S21_SPRINTF_

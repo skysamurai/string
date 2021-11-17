@@ -62,14 +62,11 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
             } else if (*f_cursor == 'E') {
                 f_info.flags |= CAPITALIZE;
                 put_exp_number_cursoring(&s_cursor, &f_info, args);
-            } else if (*f_cursor == 'g' || *f_cursor == 'G') {
-                if (f_info.qualifier == LONG) {
-                    f_info.qualifier = FORTRAN_L;
-                } else {
-                    f_info.qualifier = FORTRAN;
-                }
-                double snumber = va_arg(args, double);
-                real_number_to_char(&s_cursor, (void *)&snumber, &f_info);
+            } else if (*f_cursor == 'g') {
+                put_fortran_number_cursoring(&s_cursor, &f_info, args);
+            } else if (*f_cursor == 'G') {
+                f_info.flags |= CAPITALIZE;
+                put_fortran_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'f') {
                 put_flt_number_cursoring(&s_cursor, &f_info, args);
             }
@@ -160,6 +157,21 @@ void put_octo_number_cursoring(char **str, format_info *info, va_list args) {
     info->flags |= UNSIGNED;
     info->number_system = 8;
     int_number_to_char(str, (long)va_arg(args, void *), info);
+}
+
+void put_fortran_number_cursoring(char **str, format_info *info, va_list args) {
+    info->flags |= SIGNED;
+    long double dlnumber;
+    double dnumber;
+    if (info->qualifier == LONG) {
+        info->qualifier = FORTRAN_L;
+        dlnumber = va_arg(args, long double);
+        real_number_to_char(str, (void *)&dlnumber, info);
+    } else {
+        info->qualifier = FORTRAN;
+        dnumber = va_arg(args, double);
+        real_number_to_char(str, (void *)&dnumber, info);
+    }
 }
 
 void put_exp_number_cursoring(char **str, format_info *info, va_list args) {
@@ -499,7 +511,6 @@ void double_to_fortran(char *buffer, void* number, format_info *info) {
             }
         }
     }
-    printf("%s\n", buffer);
 }
 
 void real_number_to_char(char **str, void *number, format_info *info) {
