@@ -18,6 +18,7 @@ void int_number_to_char(char **str, unsigned long number,
 void real_number_to_char(char **str, void *number, format_info *info);
 void float_to_str(char *buffer, float number, format_info *info);
 void double_to_str(char *buffer, void* number, format_info *info);
+void double_to_fortran(char *buffer, void* number, format_info *info);
 
 void write_count_recorded_char(s21_size_t record_count, format_info *info,
                                va_list args);

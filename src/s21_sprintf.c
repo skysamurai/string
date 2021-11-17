@@ -63,7 +63,11 @@ int s21_sprintf_(char *str, const char *format, va_list args) {
                 f_info.flags |= CAPITALIZE;
                 put_exp_number_cursoring(&s_cursor, &f_info, args);
             } else if (*f_cursor == 'g' || *f_cursor == 'G') {
-                f_info.qualifier = VAR_FORMAT;
+                if (f_info.qualifier == LONG) {
+                    f_info.qualifier = FORTRAN_L;
+                } else {
+                    f_info.qualifier = FORTRAN;
+                }
                 double snumber = va_arg(args, double);
                 real_number_to_char(&s_cursor, (void *)&snumber, &f_info);
             } else if (*f_cursor == 'f') {
@@ -342,7 +346,6 @@ void float_to_str(char *buffer, float number, format_info *info) {
 }
 
 void double_to_str(char *buffer, void* number, format_info *info) {
-    char *dbuf = buffer;
     int number_sign;
     int exponent;
     char *number_digits;
@@ -411,6 +414,94 @@ void double_to_str(char *buffer, void* number, format_info *info) {
 
 }
 
+void double_to_fortran(char *buffer, void* number, format_info *info) {
+    int i = 0;
+    int j = 0;
+    int exponent;
+    char exponent_sign;
+    char *number_digits;
+    char *tmp = buffer;
+    int number_sign;
+
+    // calculating the exponent to select the output format
+    if (info->qualifier == FORTRAN_L) {
+        number_digits = ecvt(*(long double *)number, info->precision + 1, &exponent, &number_sign);
+        info->qualifier = LONG;
+    } else {
+        number_digits = ecvt(*(double *)number, info->precision + 1, &exponent, &number_sign);
+        info->qualifier = NONE;
+    }
+
+    // float
+    if ((info->precision > (exponent - 1)) && (exponent - 1 >= -4)) {
+        // ecvt does not work correctly with precision for float
+        if (info->qualifier == FORTRAN_L) {
+            number_digits = ecvt(*(long double *)number, info->precision, &exponent, &number_sign);
+            info->qualifier = LONG;
+        } else {
+            number_digits = ecvt(*(double *)number, info->precision, &exponent, &number_sign);
+            info->qualifier = NONE;
+        }
+        j = s21_strlen(number_digits) - 1;
+        if (!(info->flags & SPECIAL)) {
+            while (number_digits[j] == '0' && j > 0 && j >= exponent) {
+                number_digits[j--] = '\0';
+            }
+            if (j == exponent - 1) {
+                info->precision = 0;
+            }
+        }
+        // inserts number sign
+        if (number_sign > 0) {
+            *(buffer++) = '-';
+        } else if (info->flags & SHOW_SIGN) {
+            *(buffer++) = '+';
+        } else if (info->flags & SPACE_INSTEAD_SIGN) {
+            *(buffer++) = ' ';
+        }
+        // insert number dot if necessary
+        if (exponent <= 0) {
+            *(buffer++) = '0';
+            if (info->precision != 0 || info->flags & SPECIAL)
+                *(buffer++) = '.';
+            while (exponent++ < 0) {
+                *(buffer++) = '0';
+            }
+        } else {
+            while (exponent-- > 0) {
+                *(buffer++) = *number_digits++;
+            }
+            if (info->precision != 0 || info->flags & SPECIAL) {
+                *(buffer++) = '.';
+            }
+        }
+        while(*number_digits != '\0') {
+            *(buffer++) = *number_digits++;
+        }
+    // double
+    } else {
+        info->precision--;
+        double_to_str(buffer, number, info);
+        if (!(info->flags & SPECIAL)) {
+            while (buffer[j] != 'e' && buffer[j] != 'E') {
+                --j;
+            }
+            for (i = j - 1; i > 0 && buffer[i] == '0'; --i) {
+                buffer[i] = '\0';
+            }
+            if (buffer[i] == '.') {
+                buffer[i] = '\0';
+            } else {
+                i += 1;
+            }
+            while (buffer[j] != '\0') {
+                buffer[i++] = buffer[j++];
+            }
+        }
+    }
+    printf("%s\n", buffer);
+}
+
 void real_number_to_char(char **str, void *number, format_info *info) {
     int i = 0;
     char placeholder;
@@ -426,6 +517,8 @@ void real_number_to_char(char **str, void *number, format_info *info) {
         double_to_str(str_number, number, info);
     } else if (info->qualifier == SHORT) {
         float_to_str(str_number, *((float *)number), info);
+    } else if (info->qualifier == FORTRAN || info->qualifier == FORTRAN_L) {
+        double_to_fortran(str_number, number, info);
     }
 
     info->field_width -= s21_strlen(str_number);

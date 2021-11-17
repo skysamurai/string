@@ -21,7 +21,8 @@
 #define LONG 'l'
 #define SHORT 'h'
 #define DOUBLE 'd'
-#define VAR_FORMAT 'g'  // !WILL DELETE
+#define FORTRAN 'g'
+#define FORTRAN_L 'G'
 
 typedef struct format_info_t {
     unsigned flags;
