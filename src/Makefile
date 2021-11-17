@@ -69,7 +69,7 @@ re: clean all
 	all clean fclean re clear
 
 # our target`s zone
-main: libs21_string.a
+main: libs21_string.a main.c
 	$(CC) $(DEBUG_FLAGS) $(ERROR_FLAGS) $@.c -L. -ls21_string -o main
 
 clear:
