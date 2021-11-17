@@ -77,3 +77,4 @@ materials/linters/cpplint.py
 *.gcda
 src/report/*
 *.info
+gcov_report
