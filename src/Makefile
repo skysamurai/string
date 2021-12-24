@@ -80,7 +80,7 @@ clean:
 
 check:
 	cp ../materials/linters/CPPLINT.cfg .
-	python3 ../materials/linters/cpplint.py *.c *.h
+	python3 ../materials/linters/cpplint.py *.c *.h ./tests/*.h ./tests/*.c
 	rm -rf CPPLINT.cfg
 
 main: s21_string.a main.c

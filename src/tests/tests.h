@@ -1,5 +1,5 @@
-#ifndef SRC_TESTS_H_
-#define SRC_TESTS_H_
+#ifndef SRC_TESTS_TESTS_H_
+#define SRC_TESTS_TESTS_H_
 #include <check.h>
 #include <math.h>
 #include <stdio.h>
@@ -33,4 +33,4 @@ TCase* CreateStrspnCase();
 TCase* CreateTolowerCase();
 TCase* CreateToupperCase();
 
-#endif  // SRC_TESTS_H_
+#endif  // SRC_TESTS_TESTS_H_

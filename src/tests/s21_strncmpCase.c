@@ -70,7 +70,7 @@ START_TEST(arg3ZeroTest) {
 }
 END_TEST
 
-//NEW TESTS
+// NEW TESTS
 
 START_TEST(test1) {
     char str1[] = {'1', '0', '3', '5', '\0'};
@@ -79,7 +79,8 @@ START_TEST(test1) {
     int s21_res;
     res = strncmp(str1, str2, 3);
     s21_res = s21_strncmp(str1, str2, 3);
-    ck_assert_msg(res < 0 && s21_res < 0, "failed. orig:%d   s21:%d", res, s21_res);
+    ck_assert_msg(res < 0 && s21_res < 0, "failed. orig:%d   s21:%d", res,
+                  s21_res);
 }
 END_TEST
 
@@ -90,7 +91,8 @@ START_TEST(test2) {
     int s21_res;
     res = strncmp(str1, str2, 4);
     s21_res = s21_strncmp(str1, str2, 4);
-    ck_assert_msg(res > 0 && s21_res > 0, "failed. orig:%d   s21:%d", res, s21_res);
+    ck_assert_msg(res > 0 && s21_res > 0, "failed. orig:%d   s21:%d", res,
+                  s21_res);
 }
 END_TEST
 
@@ -105,7 +107,7 @@ TCase* CreateStrncmpCase() {
     tcase_add_test(strncmpCase, arg1EmptyTest);
     tcase_add_test(strncmpCase, arg2EmptyTest);
 
-    //NEW TESTS
+    // NEW TESTS
 
     tcase_add_test(strncmpCase, test1);
     tcase_add_test(strncmpCase, test2);
