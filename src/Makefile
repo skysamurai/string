@@ -31,6 +31,7 @@ TEST_SOURCES=$(shell find tests/ -name '*.c')
 TEST_OBJECTS=$(addprefix ./build/, $(patsubst %.c,%.o, $(TEST_SOURCES)))
 DEBUG_FLAG=
 ERROR_FLAG=
+GCOVFLAGS= -fprofile-arcs -ftest-coverage
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
@@ -40,8 +41,10 @@ ifeq ($(UNAME_S),Darwin)
         CCHECK = -lcheck 
 endif
 
+all: clean s21_string.a test
+
 ./build/string/%.o: %.c
-	gcc -MD -c $< -lm -o $@ $(ERROR_FLAG) $(DEBUG_FLAG) --coverage
+	gcc -MD -c $< -lm -o $@ $(ERROR_FLAG) $(DEBUG_FLAG)
 
 ./build/tests/%.o: ./tests/%.c
 	gcc -MD -c $< -o $@ $(ERROR_FLAG)
@@ -51,12 +54,14 @@ s21_string.a: $(OBJECTS)
 	ranlib s21_string.a
 
 test: $(TEST_OBJECTS) s21_string.a
-	gcc $(TEST_OBJECTS) -L. s21_string.a -o tests.out $(CCHECK) $(DEBUG_FLAG) --coverage
+	gcc $(TEST_OBJECTS) -L. s21_string.a -o tests.out $(CCHECK) $(DEBUG_FLAG)
 
-gcov_report: test
-	./tests.out
-	lcov -t "gcov_report" -o gcov_report.info -c -d ./build/string/
-	genhtml -o gcov_report gcov_report.info
+
+gcov_report: s21_string.a
+	gcc $(GCOVFLAGS) ./tests/*Case.c ./tests/tests.c $(SOURSES) $(CHECKFLAGS) -o gcovreport $(CCHECK)
+	./gcovreport
+	lcov -t "GcovReport" -o gcovreport.info -c -d .
+	genhtml -o report gcovreport.info
 
 clean:
 	find . -name "*.o" -type f -delete
@@ -67,8 +72,9 @@ clean:
 	find . -name "*.gcda" -type f -delete
 	rm -rf ./main
 	rm -rf tests.out
-	rm -rf gcov_report
-	rm -rf gcov_report.info
+	rm -rf report
+	rm -rf gcovreport.info
+	rm -rf gcovreport
 
 .PHONY: clean fprog check
 
@@ -78,7 +84,7 @@ check:
 	rm -rf CPPLINT.cfg
 
 main: s21_string.a main.c
-	gcc main.c -L. s21_string.a -lm -o main $(DEBUG_FLAG) --coverage
+	gcc main.c -L. s21_string.a -lm -o main $(DEBUG_FLAG)
 
 fprog: main
 	./main
