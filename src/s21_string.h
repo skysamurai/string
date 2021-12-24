@@ -1,7 +1,9 @@
 #ifndef SRC_S21_STRING_H_
 #define SRC_S21_STRING_H_
 
+#include <math.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 #include "stringtypes.h"
 
@@ -25,26 +27,56 @@ typedef struct format_info_t {
 #define STATE_DONE 7
 
 /* flags */
-#define FLAG_MINUS            (1 << 0)
-#define FLAG_PLUS             (1 << 1)
-#define FLAG_SPACE            (1 << 2)
-#define FLAG_NUM              (1 << 3)
-#define FLAG_ZERO             (1 << 4)
-#define FLAG_UP               (1 << 5)
-#define FLAG_UNSIGNED         (1 << 6)
-#define FLAG_SHORT            (1 << 7)
-#define FLAG_LONG             (1 << 8)
-#define FLAG_LONGDOUBLE       (1 << 9)
-#define FLAG_MANTISSA         (1 << 10)
-#define FLAG_G                (1 << 11)
-#define FLAG_POINTER          (1 << 12)
-#define FLAG_DOT              (1 << 13)
-#define FLAG_EXIT             (1 << 14)
+#define FLAG_MINUS (1 << 0)
+#define FLAG_PLUS (1 << 1)
+#define FLAG_SPACE (1 << 2)
+#define FLAG_NUM (1 << 3)
+#define FLAG_ZERO (1 << 4)
+#define FLAG_UP (1 << 5)
+#define FLAG_UNSIGNED (1 << 6)
+#define FLAG_SHORT (1 << 7)
+#define FLAG_LONG (1 << 8)
+#define FLAG_LONGDOUBLE (1 << 9)
+#define FLAG_MANTISSA (1 << 10)
+#define FLAG_G (1 << 11)
+#define FLAG_POINTER (1 << 12)
+#define FLAG_DOT (1 << 13)
+#define FLAG_EXIT (1 << 14)
 
 int countExp(long n);
 int countExp_Less_than_One(long double fl);
-int s21_sprintf(char* s, const char* format, ...);
 
+typedef struct t {
+    char spec;
+    int perc;
+    int width;
+    int len;
+    int flag;
+    int score;
+} token;
+int s21_sprintf(char *buf, ...);
+void *parser_format(const char *f);
+int str_num(const char *str1, const char *str2);
+int parser_numbers(const char *f);
+int parser_flag(const char *f);
+int parser_lenght(const char *f);
+int parser_specificator(const char *f);
+void s21_chtoa(char sym, char *buf, int spec, int flag, int width, int perc);
+void s21_itoa(long long num, char *buf, int width, int flag, int spec,
+              int perc);
+void s21_etoa(long double num, int perc, int spec, char *buf, int flag);
+void s21_dtoa(long double num, int perc, char *buf, int flag, int spec);
+void s21_utoa(unsigned long long num, char *buf, int width, int flag, int spec,
+              int perc);
+void *s21_ctoa(char *str, char *buf, int spec, int flag, int width, int perc);
+void s21_uutoa(unsigned long long num, char *buf, int spec, int flag, int width,
+               int perc);
+char *fill(int score, int width, char *buf, int flag, int perc, int spec);
+char *minus_or(int min, char *buf, int flag, int spec);
+char *record(int score, long long num, char *buf, int perc);
+void *flags_e(char *buf, int width, int flag, int score, char *temp_buff_diff,
+              int perc, int spec);
+char *record_p(int c, char *temp_mass, char *buf, int perc);
 
 char *s21_strtok(char *str, const char *delim);
 void *s21_memchr(const void *str, int c, s21_size_t n);

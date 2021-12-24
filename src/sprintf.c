@@ -1,557 +1,870 @@
 #include "s21_string.h"
-#include <stdarg.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <inttypes.h>
-#include <wchar.h>
-#include <math.h>
 
-static void print_char(char *buffer, s21_size_t *currlen, char c) {
-    buffer[(*currlen)++] = c;
-    return;
-}
-
-int countExp(long n) {
-    int result = 0;
-    if (n / 10 == 0) {
-        result = 0;
-    } else {
-        result = 1 + countExp(n / 10);
-    }
-    return result;
-}
-
-int countExp_Less_than_One(long double fl) {
-    int temp = fl, result = 0;
-    if (temp != 0) {
-        result = 0;
-    } else {
-        result = 1 + countExp_Less_than_One(fl * 10);
-    }
-    return result;
-}
-
-static void format_int(char *buffer, s21_size_t *currlen, long value, int base,
-                       int width, int prec, int flags) {
-    int signvalue = 0, place = 0, spadlen = 0, zpadlen = 0,
-        up = (flags & FLAG_UP) ? 1 : 0;
-    unsigned long unsign_val = value;
-    char convert[SIZE];
-
-    if (prec < 0) prec = 0;
-
-    if (!(flags & FLAG_UNSIGNED)) {
-        if (value < 0) {
-            signvalue = '-';
-            unsign_val = -value;
-        } else if (flags & FLAG_PLUS) {
-            signvalue = '+';
-        } else if (flags & FLAG_SPACE) {
-            signvalue = ' ';
-        }
-    }
-
-    do {
-        convert[place++] =
-            (up ? "0123456789ABCDEF" : "0123456789abcdef")[unsign_val % base];
-        unsign_val = unsign_val / base;
-    } while (unsign_val);
-
-#if defined(__linux__)
-    if (flags & FLAG_POINTER || (flags & FLAG_NUM && base == 16)) {
-        if (value != 0) {
-            width -= 2;
-        } else {
-            width -= 4;
-        }
-    }
-#endif
-#if defined(__MACH__)
-    if (flags & FLAG_POINTER) width -= 2;
-#endif
-    zpadlen = prec - place;
-    spadlen = width - (prec > place ? prec : place) - (signvalue ? 1 : 0);
-
-    if (zpadlen < 0) zpadlen = 0;
-    if (spadlen < 0) spadlen = 0;
-    if (flags & FLAG_ZERO) {
-        zpadlen = (zpadlen > spadlen ? zpadlen : spadlen);
-        spadlen = 0;
-    }
-    if (flags & FLAG_MINUS) spadlen = -spadlen;
-
-    while (spadlen > 0) {
-        print_char(buffer, currlen, ' ');
-        --spadlen;
-    }
-
-#if defined(__linux__)
-
-    if (value == 0 && (flags & FLAG_POINTER)) {
-        char nil[5] = "(nil)";
-        for (int i = 0; i < 5; ++i) {
-            print_char(buffer, currlen, nil[i]);
-        }
-        flags |= FLAG_EXIT;
-    }
-#endif
-    if (!(flags & FLAG_EXIT)) {
-        if (signvalue) print_char(buffer, currlen, signvalue);
-
-        if (flags & FLAG_POINTER || flags & FLAG_NUM) {
-            if (base == 16) {
-                print_char(buffer, currlen, '0');
-                print_char(buffer, currlen, 'x');
-            } else if (base == 8) {
-                print_char(buffer, currlen, '0');
+int s21_sprintf(char *buf, ...) {
+    char c, *mass;
+    int d, score = 0;
+    short int hd;
+    long int ld;
+    unsigned short int ho;
+    unsigned long int lo;
+    double e;
+    unsigned int o;
+    unsigned long int p;
+    double f;
+    va_list ptr;
+    va_start(ptr, buf);
+    char *format = va_arg(ptr, char *);
+    token *tokens;
+    while (*format != '\0') {
+        if (*format == '%') {
+            format++;
+            score++;
+            tokens = parser_format(format);
+            if (tokens->perc == -5) {
+                tokens->perc = va_arg(ptr, int);
             }
-        }
-
-        if (zpadlen > 0) {
-            while (zpadlen > 0) {
-                print_char(buffer, currlen, '0');
-                --zpadlen;
+            if (tokens->width == -5) {
+                tokens->width = va_arg(ptr, int);
             }
-        }
-
-        while (place > 0) print_char(buffer, currlen, convert[--place]);
-
-        while (spadlen < 0) {
-            print_char(buffer, currlen, ' ');
-            ++spadlen;
-        }
-    }
-    return;
-}
-
-static void format_str(char *buffer, s21_size_t *currlen, char *value,
-                       int flags, int width, int prec) {
-    int padlen = 0, str_len = s21_strlen(value);
-    if (str_len > prec) str_len = prec;
-    padlen = width - str_len;
-    if (padlen < 0) padlen = 0;
-    if (flags & FLAG_MINUS) padlen = -padlen;
-
-    for (int i = 0; padlen > 0 && i < prec; padlen--, i--)
-        print_char(buffer, currlen, ' ');
-
-    for (int i = 0; *value && i < prec; i++)
-        print_char(buffer, currlen, *value++);
-
-    for (int i = 0; padlen < 0 && i < prec; padlen--, i++)
-        print_char(buffer, currlen, ' ');
-
-    return;
-}
-
-static void format_float(char *buffer, s21_size_t *currlen, long double fvalue,
-                         int width, int prec, int flags) {
-    long double ufvalue, temp_ufvalue;
-    unsigned long intpart = 0;
-    int signvalue = 0, iplace = 0, fplace = 0, padlen = 0, exp = 0,
-        up = (flags & FLAG_UP) ? 1 : 0;
-    char iconvert[SIZE], fconvert[SIZE], scientific[4] = "e+00";
-
-    if (prec < 0) prec = (flags & FLAG_NUM || flags & FLAG_DOT) ? 0 : 6;
-    if (prec >= SIZE) prec = SIZE;
-
-    ufvalue = (fvalue >= 0) ? fvalue : -fvalue;
-    if (fvalue < 0)
-        signvalue = '-';
-    else if (flags & FLAG_PLUS)
-        signvalue = '+';
-    else if (flags & FLAG_SPACE)
-        signvalue = ' ';
-    else if (flags & FLAG_ZERO)
-        signvalue = '0';
-
-    if (flags & FLAG_MANTISSA || flags & FLAG_G) {
-        temp_ufvalue = ufvalue;
-        intpart = ufvalue;
-        exp = intpart != 0 ? countExp(intpart)
-                           : countExp_Less_than_One(temp_ufvalue);
-        int temp = intpart != 0 ? exp : -exp;
-        if (flags & FLAG_G) {
-            if (temp < -4 || temp >= prec) {
-                flags |= FLAG_MANTISSA, --prec, ++width;
-            } else {
-                prec -= (exp + 1);
-            }
-        }
-    }
-
-    if (flags & FLAG_MANTISSA) {
-        ufvalue = intpart != 0 ? temp_ufvalue / pow(10, exp)
-                               : temp_ufvalue * pow(10, exp);
-        if (intpart == 0) scientific[1] = '-';
-        if (exp > 9) {
-            scientific[2] = exp / 10 + '0';
-            scientific[3] = exp % 10 + '0';
-        } else {
-            scientific[3] = exp + '0';
-        }
-        if (up) scientific[0] = 'E';
-    }
-
-    intpart = ufvalue;
-    ufvalue -= (int)ufvalue;
-    ufvalue *= 10;
-    for (int i = 0; i < prec; ++i) {
-        fconvert[fplace++] = (int)ufvalue + '0';
-        ufvalue = ufvalue - (int)ufvalue;
-        ufvalue *= 10;
-    }
-
-    if (fplace == SIZE) fplace--;
-    fconvert[fplace] = 0;
-
-    if (ufvalue > 5) {
-        int find = fplace - 1;
-        int carry = 1;
-        while (carry && find + 1) {
-            fconvert[find]++;
-            if (fconvert[find] > '9') {
-                fconvert[find] = '0';
-                carry = 1;
-            } else {
-                carry = 0;
-            }
-            --find;
-        }
-        if (carry) ++intpart;
-    }
-
-    /*  trim zeroes for spec G  */
-    if (flags & FLAG_G) {
-        int place = fplace - 1;
-        if (place >= 0) {
-            while ((fconvert[place] - '0') == 0) fconvert[place--] = '\0';
-        }
-    }
-
-    do {
-        iconvert[iplace++] =
-            (up ? "0123456789ABCDEF" : "0123456789abcdef")[intpart % 10];
-        intpart = (intpart / 10);
-    } while (intpart && (iplace < SIZE));
-    if (iplace == SIZE) iplace--;
-    iconvert[iplace] = 0;
-
-    /* -1 for decimal point, another -1 if we are printing a sign */
-    padlen = width - iplace - prec - 1 - ((signvalue) ? 1 : 0);
-    if (flags & FLAG_MANTISSA) padlen -= 4;
-    if (padlen < 0) padlen = 0;
-    if (flags & FLAG_MINUS) padlen = -padlen;
-
-    if ((flags & FLAG_ZERO) && (padlen > 0)) {
-        if (signvalue) {
-            print_char(buffer, currlen, signvalue);
-            signvalue = 0;
-        }
-        while (padlen > 0) {
-            print_char(buffer, currlen, '0');
-            --padlen;
-        }
-    }
-
-    while (padlen > 0) {
-        print_char(buffer, currlen, ' ');
-        --padlen;
-    }
-    if (signvalue) print_char(buffer, currlen, signvalue);
-    while (iplace > 0) print_char(buffer, currlen, iconvert[--iplace]);
-    if ((prec == 0) && (flags & FLAG_NUM)) print_char(buffer, currlen, '.');
-    if (prec > 0) {
-        if (!((flags & FLAG_G) && (s21_strlen(fconvert) == 0))) {
-            print_char(buffer, currlen, '.');
-            for (int i = 0; i < fplace && fconvert[i] != '\0'; ++i)
-                print_char(buffer, currlen, fconvert[i]);
-        }
-    }
-
-    if (flags & FLAG_MANTISSA) {
-        for (int i = 0; i < 4; ++i) print_char(buffer, currlen, scientific[i]);
-    }
-
-    while (padlen < 0) {
-        print_char(buffer, currlen, ' ');
-        ++padlen;
-    }
-    return;
-}
-
-static void switcher(char *buff, const char *format, va_list args) {
-    char *strvalue;
-    s21_size_t place = 0;
-    int flags = 0, width = 0, prec = -1, state = STATE_DEFAULT;
-    char ch = *format++;
-    mbstate_t mbstate;
-    char mbchar[4];
-
-    while (state != STATE_DONE) {
-        if ('\0' == ch) state = STATE_DONE;
-
-        switch (state) {
-            case STATE_DEFAULT:
-                if (ch == '%')
-                    state = STATE_FLAGS;
-                else
-                    print_char(buff, &place, ch);
-                ch = *format++;
-                break;
-            case STATE_FLAGS:
-                switch (ch) {
-                    case '-':
-                        flags |= FLAG_MINUS;
-                        ch = *format++;
-                        break;
-                    case '+':
-                        flags |= FLAG_PLUS;
-                        ch = *format++;
-                        break;
-                    case ' ':
-                        flags |= FLAG_SPACE;
-                        ch = *format++;
-                        break;
-                    case '#':
-                        flags |= FLAG_NUM;
-                        ch = *format++;
-                        break;
-                    case '0':
-                        flags |= FLAG_ZERO;
-                        ch = *format++;
-                        break;
-                    default:
-                        state = STATE_WIDTH;
-                        break;
-                }
-                break;
-            case STATE_WIDTH:
-                if (isdigit(ch)) {
-                    width = 10 * width + (ch - '0');
-                    ch = *format++;
-                } else if ('*' == ch) {
-                    width = va_arg(args, int);
-                    ch = *format++;
-                    state = STATE_PRECISION;
-                } else {
-                    state = STATE_PRECISION;
-                }
-                break;
-            case STATE_PRECISION:
-                if ('.' == ch) {
-                    state = STATE_MAX_PREC;
-                    flags |= FLAG_DOT;
-                    ch = *format++;
-                } else {
-                    state = STATE_LEN;
-                }
-                break;
-            case STATE_MAX_PREC:
-                if (isdigit(ch)) {
-                    if (prec < 0) prec = 0;
-                    prec = 10 * prec + (ch - '0');
-                    ch = *format++;
-                } else if ('*' == ch) {
-                    prec = va_arg(args, int);
-                    ch = *format++;
-                    state = STATE_LEN;
-                } else {
-                    state = STATE_LEN;
-                }
-                break;
-            case STATE_LEN:
-                if (ch == 'h') {
-                    flags |= FLAG_SHORT;
-                    ch = *format++;
-                    state = STATE_SPEC;
-                } else if (ch == 'l') {
-                    flags |= FLAG_LONG;
-                    ch = *format++;
-                    state = STATE_SPEC;
-                } else if (ch == 'L') {
-                    flags |= FLAG_LONGDOUBLE;
-                    ch = *format++;
-                    state = STATE_SPEC;
-                } else {
-                    state = STATE_SPEC;
-                }
-                break;
-            case STATE_SPEC:
-                switch (ch) {
-                    case 'd':
-                    case 'i':
-                        {}
-                        long int sign_long_int = va_arg(args, long int);
-                        if (flags & FLAG_SHORT) {
-                            short sign_short_int = sign_long_int;
-                            format_int(buff, &place, sign_short_int, 10, width,
-                                       prec, flags);
-                        } else if (!(flags & FLAG_LONG)) {
-                            int sign_int = sign_long_int;
-                            format_int(buff, &place, sign_int, 10, width, prec,
-                                       flags);
-                        } else {
-                            format_int(buff, &place, sign_long_int, 10, width,
-                                       prec, flags);
-                        }
-                        break;
-                    case 'u':
-                        flags |= FLAG_UNSIGNED;
-                        unsigned long unsign_long_int =
-                            va_arg(args, unsigned long int);
-                        if (flags & FLAG_SHORT) {
-                            unsigned short unsign_short_int = unsign_long_int;
-                            format_int(buff, &place, unsign_short_int, 10,
-                                       width, prec, flags);
-                        } else if (!(flags & FLAG_LONG)) {
-                            unsigned unsign_int = unsign_long_int;
-                            format_int(buff, &place, unsign_int, 10, width,
-                                       prec, flags);
-                        } else {
-                            format_int(buff, &place, unsign_long_int, 10, width,
-                                       prec, flags);
-                        }
-                        break;
-                    case 'o':
-                        flags |= FLAG_UNSIGNED;
-                        unsign_long_int = va_arg(args, unsigned long int);
-                        if (flags & FLAG_SHORT) {
-                            unsigned short unsign_short_int = unsign_long_int;
-                            format_int(buff, &place, unsign_short_int, 8, width,
-                                       prec, flags);
-                        } else if (!(flags & FLAG_LONG)) {
-                            unsigned unsign_int = unsign_long_int;
-                            format_int(buff, &place, unsign_int, 8, width, prec,
-                                       flags);
-                        } else {
-                            format_int(buff, &place, unsign_long_int, 8, width,
-                                       prec, flags);
-                        }
-                        break;
-                    case 'X':
-                    case 'x':
-                        if (ch == 'X') flags |= FLAG_UP;
-                        flags |= FLAG_UNSIGNED;
-                        unsign_long_int = va_arg(args, unsigned long int);
-                        if (flags & FLAG_SHORT) {
-                            unsigned short unsign_short_int = unsign_long_int;
-                            format_int(buff, &place, unsign_short_int, 16,
-                                       width, prec, flags);
-                        } else if (!(flags & FLAG_LONG)) {
-                            unsigned unsign_int = unsign_long_int;
-                            format_int(buff, &place, unsign_int, 16, width,
-                                       prec, flags);
-                        } else {
-                            format_int(buff, &place, unsign_long_int, 16, width,
-                                       prec, flags);
-                        }
-                        break;
-                    case 'E':
-                    case 'e':
-                        if (ch == 'E') flags |= FLAG_UP;
-                        flags |= FLAG_MANTISSA;
-                        if (flags & FLAG_LONGDOUBLE) {
-                            long double long_doub_val =
-                                va_arg(args, long double);
-                            format_float(buff, &place, long_doub_val, width,
-                                         prec, flags);
-                        } else {
-                            double doub_val = va_arg(args, double);
-                            format_float(buff, &place, doub_val, width, prec,
-                                         flags);
-                        }
-                        break;
-                    case 'G':
-                    case 'g':
-                        if (ch == 'G') flags |= FLAG_UP;
-                        flags |= FLAG_G;
-                        if (flags & FLAG_LONGDOUBLE) {
-                            long double long_doub_val =
-                                va_arg(args, long double);
-                            format_float(buff, &place, long_doub_val, width,
-                                         prec, flags);
-                        } else {
-                            double doub_val = va_arg(args, double);
-                            format_float(buff, &place, doub_val, width, prec,
-                                         flags);
-                        }
-                        break;
-                    case 'f':
-                        if (flags & FLAG_LONGDOUBLE) {
-                            long double long_doub_val =
-                                va_arg(args, long double);
-                            format_float(buff, &place, long_doub_val, width,
-                                         prec, flags);
-                        } else {
-                            double doub_val = va_arg(args, double);
-                            format_float(buff, &place, doub_val, width, prec,
-                                         flags);
-                        }
-                        break;
-                    case 'c':
-                        if (flags & FLAG_LONG) {
-                            wchar_t *sym = (wchar_t *)va_arg(args, wchar_t *);
-                            s21_memset(&mbstate, 0, sizeof(mbstate));
-                            wcrtomb(mbchar, sym[0], &mbstate);
-                            if (prec < 0) prec = 6;
-                            format_str(buff, &place, mbchar, flags, width,
-                                       prec);
-                        } else {
-                            print_char(buff, &place, va_arg(args, int));
-                        }
-                        break;
-                    case 'p':
-                        flags |= FLAG_POINTER;
-                        unsign_long_int =
-                            (unsigned long)((uintptr_t)va_arg(args, void *));
-                        format_int(buff, &place, unsign_long_int, 16, width,
-                                   prec, flags);
-                        break;
-                    case 's':
-                        if (prec < 0) prec = SIZE;
-                        if (flags & FLAG_LONG) {
-                            wchar_t *sym = va_arg(args, wchar_t *);
-                            s21_memset(&mbstate, 0, sizeof(mbstate));
-                            size_t len = wcslen(sym);
-                            for (size_t i = 0; i < len; i++) {
-                                wcrtomb(mbchar, *sym, &mbstate);
-                                sym++;
-                                format_str(buff, &place, mbchar, flags, width,
-                                           prec);
-                            }
-                        } else {
-                            strvalue = va_arg(args, char *);
-                            format_str(buff, &place, strvalue, flags, width,
-                                       prec);
-                        }
-                        break;
-                    case '%':
-                        print_char(buff, &place, ch);
-                        break;
-                    case 'n': {
-                        int *p_int = va_arg(args, int *);
-                        *p_int = place;
-                        break;
+            char temp_buff_diff[256];
+            switch (tokens->spec) {
+                case 1:  // c
+                    c = (char)va_arg(ptr, int);
+                    s21_chtoa(c, buf, tokens->spec, tokens->flag, tokens->width,
+                              tokens->perc);
+                    break;
+                case 2:
+                case 3:  // d i
+                    switch (tokens->len) {
+                        case 0:
+                            d = va_arg(ptr, int);
+                            s21_itoa(d, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
+                        case 1:
+                            hd = (short int)va_arg(ptr, int);
+                            s21_itoa(hd, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
+                        case 2:
+                            ld = va_arg(ptr, long int);
+                            s21_itoa(ld, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
                     }
-                }
-                int cflags = 0;
-                ch = *format++;
-                state = STATE_DEFAULT;
-                flags = cflags = width = 0;
-                prec = -1;
-                break;
-            case STATE_DONE:
-                break;
+                    break;
+                case 4:  // e
+                    e = va_arg(ptr, double);
+                    s21_etoa(e, tokens->perc, tokens->spec, temp_buff_diff,
+                             tokens->flag);
+                    d = s21_strlen(temp_buff_diff);
+                    buf = flags_e(buf, tokens->width, tokens->flag, d,
+                                  temp_buff_diff, tokens->perc, tokens->spec);
+                    break;
+                case 5:  // E
+                    e = va_arg(ptr, double);
+                    s21_etoa(e, tokens->perc, tokens->spec, temp_buff_diff,
+                             tokens->flag);
+                    d = s21_strlen(temp_buff_diff);
+                    buf = flags_e(buf, tokens->width, tokens->flag, d,
+                                  temp_buff_diff, tokens->perc, tokens->spec);
+                    break;
+                case 6:  // f
+                    f = va_arg(ptr, double);
+                    s21_dtoa(f, tokens->perc, temp_buff_diff, tokens->flag,
+                             tokens->spec);
+                    d = s21_strlen(temp_buff_diff);
+                    buf = flags_e(buf, tokens->width, tokens->flag, d,
+                                  temp_buff_diff, tokens->perc, tokens->spec);
+                    break;
+                case 7:
+                case 8:  // g G
+                    e = va_arg(ptr, double);
+                    s21_etoa(e, tokens->perc, tokens->spec, temp_buff_diff,
+                             tokens->flag);
+                    int a = s21_strlen(temp_buff_diff);
+                    s21_dtoa(e, tokens->perc, temp_buff_diff, tokens->flag,
+                             tokens->spec);
+                    int b = s21_strlen(temp_buff_diff);
+                    if (a < b) {
+                        s21_etoa(e, tokens->perc, tokens->spec, temp_buff_diff,
+                                 tokens->flag);
+                    }
+                    d = s21_strlen(temp_buff_diff);
+                    buf = flags_e(buf, tokens->width, tokens->flag, d,
+                                  temp_buff_diff, tokens->perc, tokens->spec);
+                    break;
+                case 9:  // o
+                    switch (tokens->len) {
+                        case 0:
+                            o = va_arg(ptr, unsigned int);
+                            s21_utoa(o, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
+                        case 1:
+                            ho = (unsigned short int)va_arg(ptr, unsigned int);
+                            s21_utoa(ho, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
+                        case 2:
+                            lo = va_arg(ptr, unsigned long int);
+                            s21_utoa(lo, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
+                    }
+                    break;
+                case 10:  // s
+                    mass = va_arg(ptr, char *);
+                    buf = s21_ctoa(mass, buf, tokens->spec, tokens->flag,
+                                   tokens->width, tokens->perc);
+                    break;
+                case 11:  // u
+                    switch (tokens->len) {
+                        case 0:
+                            o = va_arg(ptr, unsigned int);
+                            s21_utoa(o, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
+                        case 1:
+                            ho = (unsigned short int)va_arg(ptr, unsigned int);
+                            s21_utoa(ho, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
+                        case 2:
+                            lo = va_arg(ptr, unsigned long int);
+                            s21_utoa(lo, buf, tokens->width, tokens->flag,
+                                     tokens->spec, tokens->perc);
+                            break;
+                    }
+                    break;
+                case 12:  // x
+                    switch (tokens->len) {
+                        case 0:
+                            o = va_arg(ptr, unsigned int);
+                            s21_uutoa(o, buf, tokens->spec, tokens->flag,
+                                      tokens->width, tokens->perc);
+                            break;
+                        case 1:
+                            ho = (unsigned short int)va_arg(ptr, unsigned int);
+                            s21_uutoa(ho, buf, tokens->spec, tokens->flag,
+                                      tokens->width, tokens->perc);
+                            break;
+                        case 2:
+                            lo = va_arg(ptr, unsigned long int);
+                            s21_uutoa(lo, buf, tokens->spec, tokens->flag,
+                                      tokens->width, tokens->perc);
+                            break;
+                    }
+                    break;
+                case 13:  // X
+                    switch (tokens->len) {
+                        case 0:
+                            o = va_arg(ptr, unsigned int);
+                            s21_uutoa(o, buf, tokens->spec, tokens->flag,
+                                      tokens->width, tokens->perc);
+                            break;
+                        case 1:
+                            ho = (unsigned short int)va_arg(ptr, unsigned int);
+                            s21_uutoa(ho, buf, tokens->spec, tokens->flag,
+                                      tokens->width, tokens->perc);
+                            break;
+                        case 2:
+                            lo = va_arg(ptr, unsigned long int);
+                            s21_uutoa(lo, buf, tokens->spec, tokens->flag,
+                                      tokens->width, tokens->perc);
+                            break;
+                    }
+                    break;
+                case 14:  // p
+                    p = va_arg(ptr, unsigned long int);
+                    s21_uutoa(p, buf, tokens->spec, tokens->flag, tokens->width,
+                              tokens->perc);
+                    break;
+                case 15:  // n
+                    score--;
+                    unsigned long int *n = va_arg(ptr, unsigned long int *);
+                    *n = score;
+                    score++;
+                    break;
+                case 16:  // %
+                    *buf++ = '%';
+                    score--;
+                    *buf = '\0';
+                    break;
+            }
+            while (tokens->score) {
+                format++;
+                score++;
+                tokens->score--;
+            }
+            while (*buf != '\0') {
+                buf++;
+            }
+        } else {
+            *buf++ = *format++;
+            score++;
+            *buf = '\0';
         }
     }
-    buff[place] = '\0';
+    va_end(ptr);
+    return s21_strlen(buf);
 }
 
-int s21_sprintf(char *str, const char *format, ...) {
-    va_list args;
-    va_start(args, format);
-    switcher(str, format, args);
-    va_end(args);
-    return 0;
+void *parser_format(const char *f) {
+    static token one;
+    one.score = 0;
+    one.flag = 3;
+    while (*f == '-' || *f == '+' || *f == ' ' || *f == '#' || *f == '0') {
+        if ((one.flag = parser_flag(f)) != 3) {
+            one.score++;
+            f++;
+        } else {
+            one.flag = 3;
+        }
+    }
+    if (*f == '*') {
+        one.width = -5;
+        one.score++;
+        f++;
+    } else if ((one.width = parser_numbers(f)) != 0) {
+        int temp = one.width;
+        while (temp /= 10) {
+            one.score++;
+            f++;
+        }
+        one.score++;
+        f++;
+    } else {
+        one.width = 0;
+    }
+    if (*f == '.') {
+        one.score++;
+        f++;
+        if (*f == '*') {
+            one.perc = -5;
+            one.score++;
+            f++;
+        } else if (*f == '0') {
+            one.perc = 0;
+            one.score++;
+            f++;
+        } else if ((one.perc = parser_numbers(f)) != 0) {
+            int temp = one.perc;
+            while (temp /= 10) {
+                one.score++;
+                f++;
+            }
+            one.score++;
+            f++;
+        } else {
+            one.perc = 0;
+        }
+    } else {
+        one.perc = -1;
+    }
+    if ((one.len = parser_lenght(f)) != 0) {
+        one.score++;
+        f++;
+    } else {
+        one.len = 0;
+    }
+    if ((one.spec = parser_specificator(f)) != 0) {
+        one.score++;
+    } else {
+        one.spec = 0;
+    }
+    token *adress = &one;
+    return one.spec == 0 ? 0 : adress;
+}
+
+int str_num(const char *str1, const char *str2) {
+    int flag = 0;
+    for (int i = 0; str2[i] != '\0'; i++) {
+        if (*str1 == str2[i]) {
+            flag = 1;
+            break;
+        }
+    }
+    return flag;
+}
+
+int parser_numbers(const char *f) {
+    const char numbers[] = {"0123456789"};
+    static char temp_num[256];
+    static char temp_mass[256];
+    int width = 0;
+    *temp_num = *f;
+    while (str_num(temp_num, numbers) != 0) {
+        s21_strcat(temp_mass, temp_num);
+        f++;
+        *temp_num = *f;
+    }
+    width = atoi(temp_mass);
+    int j = 0;
+    for (int i = 0; temp_mass[i + 1] != '\0'; i++) {
+        temp_mass[i] = '\0';
+        j = i + 1;
+    }
+    temp_mass[j] = '\0';
+    return width;
+}
+
+int parser_flag(const char *f) {
+    int flag = 3;
+    switch (*f) {
+        case '-':
+            flag = 1;
+            break;
+        case '+':
+            flag = 2;
+            break;
+        case '#':
+            flag = 4;
+            break;
+        case '0':
+            flag = 5;
+            break;
+        case ' ':
+            flag = 6;
+            break;
+    }
+    return flag;
+}
+
+int parser_lenght(const char *f) {
+    int flag = 0;
+    switch (*f) {
+        case 'h':
+            flag = 1;
+            break;
+        case 'l':
+            flag = 2;
+            break;
+        case 'L':
+            flag = 3;
+            break;
+    }
+    return flag;
+}
+
+int parser_specificator(const char *f) {
+    int flag = 0;
+    switch (*f) {
+        case 'c':
+            flag = 1;
+            break;
+        case 'd':
+            flag = 2;
+            break;
+        case 'i':
+            flag = 3;
+            break;
+        case 'e':
+            flag = 4;
+            break;
+        case 'E':
+            flag = 5;
+            break;
+        case 'f':
+            flag = 6;
+            break;
+        case 'g':
+            flag = 7;
+            break;
+        case 'G':
+            flag = 8;
+            break;
+        case 'o':
+            flag = 9;
+            break;
+        case 's':
+            flag = 10;
+            break;
+        case 'u':
+            flag = 11;
+            break;
+        case 'x':
+            flag = 12;
+            break;
+        case 'X':
+            flag = 13;
+            break;
+        case 'p':
+            flag = 14;
+            break;
+        case 'n':
+            flag = 15;
+            break;
+        case '%':
+            flag = 16;
+            break;
+    }
+    return flag;
+}
+
+void s21_chtoa(char sym, char *buf, int spec, int flag, int width, int perc) {
+    int score = 1;
+    perc = 0;
+    if (flag == 1) {
+        *buf = sym;
+        buf++;
+        buf = fill(score, width, buf, flag, perc, spec);
+    } else {
+        buf = fill(score, width, buf, flag, perc, spec);
+        *buf = sym;
+        buf++;
+    }
+    *buf++ = '\0';
+}
+
+void s21_itoa(long long num, char *buf, int width, int flag, int spec,
+              int perc) {
+    int score = 0, min = 0, q = -1;
+    if (num == 0) {
+        q = 0;
+    }
+    if (num < 0) {
+        min = -1;
+        num = -num;
+        score++;
+    } else if (flag == 2) {
+        score++;
+    }
+    int b = 0, k = 0;
+    while (num) {
+        b = b * 10 + num % 10;
+        num /= 10;
+        k++;
+        score++;
+    }
+    if (k < perc && flag == 2) {
+        width--;
+    }
+    if (q == 0) {
+        k = 1;
+    }
+    if (flag == 1) {
+        buf = minus_or(min, buf, flag, spec);
+        buf = record(k, b, buf, perc);
+        buf = fill(score, width, buf, flag, perc, spec);
+    } else if (flag == 2 || flag == 4) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        buf = minus_or(min, buf, flag, spec);
+        buf = record(k, b, buf, perc);
+    } else if (flag == 5) {
+        buf = minus_or(min, buf, flag, spec);
+        buf = fill(score, width, buf, flag, perc, spec);
+        buf = record(k, b, buf, perc);
+    } else if (flag == 3) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        buf = minus_or(min, buf, flag, spec);
+        buf = record(k, b, buf, perc);
+    } else if (flag == 6) {
+        if ((width <= score || perc >= width) && min == 0) {
+            *buf++ = ' ';
+        }
+        buf = fill(score, width, buf, flag, perc, spec);
+        buf = minus_or(min, buf, flag, spec);
+        buf = record(k, b, buf, perc);
+    }
+    *buf++ = '\0';
+}
+
+void s21_etoa(long double num, int perc, int spec, char *buf, int flag) {
+    if (perc == -1) {
+        perc = 6;
+    }
+    int m = 0, cut_num = 0, r = perc;
+    long long k = 1;
+    if (num < 0) {
+        *buf++ = '-';
+        num = -num;
+    } else if (flag == 2) {
+        *buf++ = '+';
+    }
+    while (num < 1 && num > 0) {
+        num *= 10;
+        cut_num++;
+        m = -1;
+    }
+    while (num > 10) {
+        num /= 10;
+        cut_num++;
+        m = 1;
+    }
+    while (r != 0) {
+        k *= 10;
+        r--;
+    }
+    num *= k;
+    num = round(num);
+    num /= k;
+    double clone_perc = num;
+    int clone_num2 = num;
+    *buf++ = clone_num2 % 10 + '0';
+    if (perc >= 1 || flag == 4) {
+        *buf++ = '.';
+    }
+    if (spec == 4 || spec == 5) {
+        for (long long clone_num = 0; perc != 0; perc--) {
+            clone_perc *= 10;
+            clone_num = clone_perc;
+            *buf = clone_num % 10 + '0';
+            if (*buf == '(') {
+                *buf = '0';
+            }
+            buf++;
+        }
+    } else if (spec == 7 || spec == 8) {
+        for (long long clone_num = 0; perc != 0; perc--) {
+            clone_perc *= 10;
+            clone_num = clone_perc;
+            *buf = clone_num % 10 + '0';
+            if (*buf == '(') {
+                *buf = '0';
+            }
+            buf++;
+            if (clone_perc == (int)clone_perc) {
+                break;
+            }
+        }
+    }
+    if (spec == 5 || spec == 8) {
+        *buf++ = 'E';
+    } else {
+        *buf++ = 'e';
+    }
+    if (m == -1) {
+        *buf++ = '-';
+    } else {
+        *buf++ = '+';
+    }
+    if (cut_num < 10) {
+        *buf++ = '0';
+        *buf++ = cut_num + '0';
+    } else {
+        int cut_num_reverse = 0;
+        while (cut_num) {
+            cut_num_reverse = cut_num_reverse * 10 + cut_num % 10;
+            cut_num /= 10;
+        }
+        while (cut_num_reverse) {
+            *buf++ = cut_num_reverse % 10 + '0';
+            cut_num_reverse /= 10;
+        }
+    }
+    *buf++ = '\0';
+}
+
+void s21_dtoa(long double num, int perc, char *buf, int flag, int spec) {
+    if (perc == -1) {
+        perc = 6;
+    }
+    int r = perc;
+    long long k = 1;
+    if (num < 0) {
+        *buf++ = '-';
+        num = -num;
+    } else if (flag == 2) {
+        *buf++ = '+';
+    }
+    while (r != 0) {
+        k *= 10;
+        r--;
+    }
+    num *= k;
+    num = roundl(num);
+    num /= k;
+    long long clone_num = num;
+    double clone_perc = num;
+    if (num < 1 && num > 0) {
+        *buf++ = '0';
+    } else if (num == 0) {
+        buf--;
+        *buf++ = '0';
+    } else {
+        int b = 0;
+        while (clone_num) {
+            b = b * 10 + clone_num % 10;
+            clone_num /= 10;
+        }
+        while (b) {
+            *buf++ = b % 10 + '0';
+            b /= 10;
+        }
+    }
+    if (perc >= 1 || flag == 4) {
+        *buf++ = '.';
+    }
+    if (spec == 6) {
+        for (; perc != 0; perc--) {
+            clone_perc *= 10;
+            clone_num = clone_perc;
+            *buf = clone_num % 10 + '0';
+            if (*buf == '(') {
+                *buf = '0';
+            }
+            buf++;
+        }
+    } else if (spec == 7 || spec == 8) {
+        for (; perc != 0; perc--) {
+            clone_perc *= 10;
+            clone_num = clone_perc;
+            *buf++ = clone_num % 10 + '0';
+            if (clone_perc == (int)clone_perc) {
+                break;
+            }
+        }
+    }
+    *buf++ = '\0';
+}
+
+void s21_utoa(unsigned long long num, char *buf, int width, int flag, int spec,
+              int perc) {
+    int score = 0;
+    if (flag == 4 && spec == 9) {
+        score++;
+    }
+    if ((spec == 9 || spec == 11) && flag == 2) {
+        score--;
+    }
+    int b = 0, k = 1;
+    if (spec == 9) {
+        int c = 0;
+        while (num) {
+            b = num % 8;
+            num /= 8;
+            c += b * pow(10, k - 1);
+            b = 0;
+            k++;
+        }
+        num = c;
+    }
+    k = 0;
+    while (num) {
+        b = b * 10 + num % 10;
+        num /= 10;
+        k++;
+        score++;
+    }
+    if (flag == 1) {
+        buf = record(k, b, buf, perc);
+        buf = fill(score, width, buf, flag, perc, spec);
+    } else if (flag == 2) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        buf = record(k, b, buf, perc);
+    } else if (flag == 4) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        if (spec == 9) {
+            *buf++ = '0';
+        }
+        buf = record(k, b, buf, perc);
+    } else if (flag == 5) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        buf = record(k, b, buf, perc);
+    } else if (flag == 3) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        buf = record(k, b, buf, perc);
+    }
+    *buf++ = '\0';
+}
+
+void *s21_ctoa(char *str, char *buf, int spec, int flag, int width, int perc) {
+    int score = s21_strlen(str);
+    if (perc >= 0) {
+        str[perc] = '\0';
+        if (perc > score) {
+            perc = score;
+        } else {
+            score = perc;
+        }
+    }
+    if (flag == 1) {
+        s21_strcat(buf, str);
+        while (*buf) {
+            buf++;
+        }
+        buf = fill(score, width, buf, flag, perc, spec);
+    } else if (flag == 5) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        s21_strcat(buf, str);
+    } else {
+        buf = fill(score, width, buf, flag, perc, spec);
+        s21_strcat(buf, str);
+    }
+    return buf;
+}
+
+void s21_uutoa(unsigned long long num, char *buf, int spec, int flag, int width,
+               int perc) {
+    int score = 0;
+    char mass[16] = {"0123456789abcdef"};
+    if (spec == 13) {
+        mass[10] = 'A';
+        mass[11] = 'B';
+        mass[12] = 'C';
+        mass[13] = 'D';
+        mass[14] = 'E';
+        mass[15] = 'F';
+    }
+    if (spec == 14 || flag == 4) {
+        score += 2;
+    }
+    if (flag == 2 && spec != 14) {
+        score++;
+    }
+    char temp_mass[256];
+    int c = 0;
+    while (num) {
+        unsigned int b;
+        b = num % 16;
+        for (unsigned int i = 0, j = 0; i < 16; i++, j++) {
+            if (b == i) {
+                temp_mass[c] = mass[j];
+                temp_mass[c + 1] = '\0';
+                c++;
+                break;
+            }
+        }
+        num /= 16;
+    }
+    score = score + s21_strlen(temp_mass);
+    c--;
+    if (flag == 1) {
+        if (spec == 14) {
+            *buf++ = '0';
+            *buf++ = 'x';
+        }
+        buf = record_p(c, temp_mass, buf, perc);
+        buf = fill(score, width, buf, flag, perc, spec);
+    } else if (flag == 2) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        if (spec == 14) {
+            *buf++ = '0';
+            *buf++ = 'x';
+        }
+        buf = record_p(c, temp_mass, buf, perc);
+    } else if (flag == 4) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        if (spec == 12 || spec == 14) {
+            *buf++ = '0';
+            *buf++ = 'x';
+        } else if (spec == 13) {
+            *buf++ = '0';
+            *buf++ = 'X';
+        }
+        buf = record_p(c, temp_mass, buf, perc);
+    } else if (flag == 3) {
+        buf = fill(score, width, buf, flag, perc, spec);
+        if (spec == 14) {
+            *buf++ = '0';
+            *buf++ = 'x';
+        }
+        buf = record_p(c, temp_mass, buf, perc);
+    } else if (flag == 5) {
+        if (spec == 14) {
+            *buf++ = '0';
+            *buf++ = 'x';
+        }
+        buf = fill(score, width, buf, flag, perc, spec);
+        buf = record_p(c, temp_mass, buf, perc);
+    }
+    *buf++ = '\0';
+}
+
+char *fill(int score, int width, char *buf, int flag, int perc, int spec) {
+    if (score <= perc) {
+        score = width - perc;
+    } else {
+        score = width - score;
+    }
+    if (flag == 5 && spec != 2 && spec != 3) {
+        while (score > 0) {
+            *buf++ = '0';
+            score--;
+        }
+    } else if (flag == 5 && (spec == 2 || spec == 3) && perc == -1) {
+        while (score > 0) {
+            *buf++ = '0';
+            score--;
+        }
+    } else {
+        while (score > 0) {
+            *buf++ = ' ';
+            score--;
+        }
+    }
+    *buf = '\0';
+    return buf;
+}
+
+char *minus_or(int min, char *buf, int flag, int spec) {
+    if (min == -1) {
+        *buf++ = '-';
+    } else if (flag == 2 && spec != 9 && spec != 11) {
+        *buf++ = '+';
+    }
+    return buf;
+}
+
+char *record(int score, long long num, char *buf, int perc) {
+    if (score < perc) {
+        perc = perc - score;
+        while (perc) {
+            *buf++ = '0';
+            perc--;
+        }
+    }
+    while (score) {
+        *buf++ = num % 10 + '0';
+        num /= 10;
+        score--;
+    }
+    return buf;
+}
+
+void *flags_e(char *buf, int width, int flag, int score, char *temp_buff_diff,
+              int perc, int spec) {
+    *buf = '\0';
+    if (flag == 1) {
+        s21_strcat(buf, temp_buff_diff);
+        while (*buf != '\0') {
+            buf++;
+        }
+        buf = fill(score, width, buf, flag, perc, spec);
+    } else if (flag == 5) {
+        if (*temp_buff_diff == '-' && score <= width) {
+            *temp_buff_diff = '0';
+            *buf++ = '-';
+            score++;
+        }
+        buf = fill(score, width, buf, flag, perc, spec);
+        s21_strcat(buf, temp_buff_diff);
+    } else if (flag == 6) {
+        if ((width <= score || perc >= width) && temp_buff_diff[0] != '-') {
+            *buf++ = ' ';
+        }
+        buf = fill(score, width, buf, flag, perc, spec);
+        s21_strcat(buf, temp_buff_diff);
+    } else {
+        buf = fill(score, width, buf, flag, perc, spec);
+        s21_strcat(buf, temp_buff_diff);
+    }
+    return buf;
+}
+
+char *record_p(int c, char *temp_mass, char *buf, int perc) {
+    if (c < perc) {
+        perc = perc - c;
+        while (perc != 1) {
+            *buf++ = '0';
+            perc--;
+        }
+    }
+    while (c != -1) {
+        *buf++ = temp_mass[c];
+        temp_mass[c] = '\0';
+        c--;
+    }
+    return buf;
 }
